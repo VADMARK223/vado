@@ -2,10 +2,7 @@ module vado
 
 go 1.25
 
-require (
-	fyne.io/fyne/v2 v2.6.3
-	github.com/k0kubun/pp v3.0.1+incompatible
-)
+require fyne.io/fyne/v2 v2.6.3
 
 require (
 	fyne.io/systray v1.11.0 // indirect
@@ -26,10 +23,7 @@ require (
 	github.com/hack-pad/safejs v0.1.0 // indirect
 	github.com/jeandeaual/go-locale v0.0.0-20250612000132-0ef82f21eade // indirect
 	github.com/jsummers/gobmp v0.0.0-20230614200233-a9de23ed2e25 // indirect
-	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
 	github.com/kr/text v0.2.0 // indirect
-	github.com/mattn/go-colorable v0.1.14 // indirect
-	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 // indirect
 	github.com/nicksnyder/go-i18n/v2 v2.5.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect

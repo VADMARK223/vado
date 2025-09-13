@@ -1,4 +1,10 @@
-go get github.com/k0kubun/pp
-go get fyne.io/fyne/v2
+# Goland
+**Control + Tab** переключение вкладок
 
-go mod tidy
+**Command + W** закрытие вкладки
+# Golang
+**go run -race main.go** определение гонки данных
+
+**go get *link*** добавление новой зависимости
+
+**go mod tidy** оптимизация зависимостей

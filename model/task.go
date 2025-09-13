@@ -9,7 +9,3 @@ type Task struct {
 type TaskList struct {
 	Tasks []Task `json:"tasks"`
 }
-
-func NewTask(id int, name string, done bool) *Task {
-	return &Task{id, name, done}
-}
