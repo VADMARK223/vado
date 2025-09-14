@@ -1,25 +1,24 @@
 package modules
 
 import (
+	gui "vado/gui/common"
 	"vado/module/atomic"
+	"vado/module/http"
 	"vado/module/mutex"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
-	"fyne.io/fyne/v2/widget"
 )
-
-func createButton(label string, tapped func()) *widget.Button {
-	btn := widget.NewButton(label, func() {})
-	btn.OnTapped = tapped
-	return btn
-}
 
 func CreateModulesGui() fyne.CanvasObject {
 	vBox := container.NewVBox()
-	vBox.Add(createButton("RwMutex", mutex.RunRxMutex))
-	vBox.Add(createButton("Mutex", mutex.RunMutex))
-	vBox.Add(createButton("Atomic", atomic.RunAtomic))
+	vBox.Add(gui.CreateBtn("HTTP", func() {
+		go http.StartServer()
+	}))
+	vBox.Add(gui.CreateBtn("RwMutex", mutex.RunRxMutex))
+	vBox.Add(gui.CreateBtn("Mutex", mutex.RunMutex))
+	vBox.Add(gui.CreateBtn("Atomic", atomic.RunAtomic))
+	vBox.Add(gui.CreateBtn("Posts and miners", atomic.RunAtomic, gui.ButtonDisable()))
 
 	return vBox
 }

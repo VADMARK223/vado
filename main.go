@@ -2,8 +2,9 @@ package main
 
 import (
 	c "vado/constant"
-	"vado/gui/modules"
-	"vado/gui/tasks"
+	gui2 "vado/gui"
+	gui "vado/gui/common"
+	"vado/module/http"
 	"vado/util"
 
 	"fyne.io/fyne/v2"
@@ -14,15 +15,29 @@ import (
 )
 
 func main() {
+	if c.ShowGui {
+		showGui()
+	} else {
+		http.StartServer()
+	}
+}
+func showGui() {
 	a := app.New()
 	w := a.NewWindow("Vado")
 
-	tabs := container.NewAppTabs(
-		container.NewTabItem("Modules", modules.CreateModulesGui()),
-		container.NewTabItem("Tasks", tasks.CreateTasksGui()))
-	tabs.SetTabLocation(container.TabLocationTop)
+	//settingsTabItem := gui.CreateTabItem("Settings", settings.CreateSettingsGui())
+	//settingsTabItem.Disabled()
+	//
+	//tabs := container.NewAppTabs(
+	//	gui.CreateTabItem("Modules", modules.CreateModulesGui()),
+	//	gui.CreateTabItem("Tasks", tasks.CreateTasksGui()),
+	//	settingsTabItem,
+	//)
+	//tabs.SetTabLocation(container.TabLocationTop)
 
-	exitBtn := widget.NewButton("Exit", func() { w.Close() })
+	tabs := gui2.CreateAppTabs()
+
+	exitBtn := gui.CreateBtn("Exit", func() { w.Close() })
 	exitBtnWrapper := container.NewVBox(exitBtn)
 	topBar := container.NewBorder(nil, nil, nil, exitBtnWrapper, tabs)
 	bottomBar := container.NewHBox(layout.NewSpacer(), widget.NewLabel(util.Tpl("Version %s", c.Version)))
