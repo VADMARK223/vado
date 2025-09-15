@@ -2,6 +2,7 @@ package tabs
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"image/color"
 	"net/http"
@@ -86,12 +87,15 @@ func CreateHttpTab() fyne.CanvasObject {
 				})
 			}
 
-			time.Sleep(time.Millisecond * 500)
+			time.Sleep(time.Millisecond * constant.GuiUpdateMillisecond)
 		}
 	}()
 
 	hBox := container.NewHBox(startBtn, stopBtn, waitLbl)
 	vBox := container.NewVBox(container.NewHBox(statusLbl, statusIndicatorLayout), hBox)
+	if constant.AutoStart {
+		go startServer()
+	}
 	return container.NewBorder(vBox, nil, nil, nil)
 }
 
@@ -107,15 +111,17 @@ func startServer() {
 	mtx.Unlock()
 
 	fmt.Println("Starting server...")
-	// ListenAndServe блокирующий → запускаем в горутине
-	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+	// ListenAndServe блокирующий
+	// http.ErrServerClosed это не ошибка, а сигнал: «Сервер завершён штатно».
+	// Поэтому её нужно отфильтровать, иначе в логах всегда будет «Error: http: Server closed» даже при нормальном стопе.
+	if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		fmt.Println("Error:", err)
 	}
 }
 
 func slowHandler(w http.ResponseWriter, _ *http.Request) {
 	fmt.Println("Started slow request...")
-	time.Sleep(time.Second * 10)
+	time.Sleep(time.Second * constant.SlowRequestDelaySecond)
 	str := "Hello from slow handler!"
 	_, err := w.Write([]byte(str))
 	if err != nil {
@@ -133,7 +139,7 @@ func stopServer() {
 	}
 	mtx.Unlock()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*constant.ShutdownSecond)
 	defer func() {
 		fmt.Println("Context canceled.")
 		cancel()
