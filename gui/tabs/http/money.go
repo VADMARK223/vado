@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"sync"
 	"sync/atomic"
 	c "vado/constant"
 	"vado/gui/common"
@@ -17,6 +18,7 @@ import (
 )
 
 var (
+	moneyMtx   sync.Mutex
 	balance    atomic.Int64  // Денег у клиента
 	bank       atomic.Int64  // Денег в банке
 	balanceLbl *widget.Label // Информация о балансе клиента
@@ -24,8 +26,8 @@ var (
 )
 
 func init() {
-	balance.Store(100)
-	bank.Store(0)
+	balance.Store(c.InitBalance)
+	bank.Store(c.InitBank)
 }
 
 func createMoneyGui() fyne.CanvasObject {
@@ -37,11 +39,11 @@ func createMoneyGui() fyne.CanvasObject {
 	updateBalanceText()
 
 	balanceDecreaseBtn := common.CreateBtn("-", nil, func() {
-		decreaseBalance(50)
+		decreaseBalance(c.BalanceDeltaGui)
 		updateBalanceText()
 	})
 	balanceIncreaseBtn := common.CreateBtn("+", nil, func() {
-		balance.Add(10)
+		balance.Add(c.BalanceDeltaGui)
 		updateBalanceText()
 	})
 	balanceBox := container.NewHBox(balanceLbl, balanceDecreaseBtn, balanceIncreaseBtn)
@@ -72,6 +74,7 @@ func payHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println("Payment amount:", paymentAmount)
 
+	moneyMtx.Lock()
 	decreaseResult := decreaseBalance(int64(paymentAmount))
 	msg := func() string {
 		if decreaseResult {
@@ -80,6 +83,7 @@ func payHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		return fmt.Sprintf("FAIL: Payment amount out of balance: %d$", paymentAmount)
 	}()
+	moneyMtx.Unlock()
 
 	fmt.Println("Balance after pay:", balance.Load())
 
@@ -107,6 +111,7 @@ func saveHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println("Save amount:", saveAmount)
 
+	moneyMtx.Lock()
 	decreaseResult := decreaseBalance(int64(saveAmount))
 	msg := func() string {
 		if decreaseResult {
@@ -117,6 +122,7 @@ func saveHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		return fmt.Sprintf("FAIL: Save amount out of balance: %d$", saveAmount)
 	}()
+	moneyMtx.Unlock()
 
 	fmt.Println("Balance after save:", balance.Load())
 

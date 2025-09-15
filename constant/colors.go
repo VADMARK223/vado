@@ -2,7 +2,7 @@ package constant
 
 import "image/color"
 
-// внутренние (неэкспортируемые) значения
+// Внутренние (не экспортируемые) значения
 var (
 	red    = color.RGBA{R: 255, G: 0, B: 0, A: 255}
 	green  = color.RGBA{R: 0, G: 255, B: 0, A: 255}

@@ -20,7 +20,7 @@ import (
 
 var (
 	srv           *http.Server // Глобальный сервер, один на все вызовы
-	mtx           sync.Mutex
+	httpMtx       sync.Mutex
 	stopInProcess = false // Сервер в процессе остановки
 )
 
@@ -48,22 +48,22 @@ func CreateHttpTab() fyne.CanvasObject {
 	}
 
 	stopBtn.OnTapped = func() {
-		mtx.Lock()
+		httpMtx.Lock()
 		if srv == nil || stopInProcess {
-			mtx.Unlock()
+			httpMtx.Unlock()
 			return
 		}
 		stopInProcess = true
-		mtx.Unlock()
+		httpMtx.Unlock()
 		go stopServer()
 	}
 
 	go func() {
 		for {
-			mtx.Lock()
+			httpMtx.Lock()
 			running := srv == nil
 			inProcess := stopInProcess
-			mtx.Unlock()
+			httpMtx.Unlock()
 			if running {
 				fyne.Do(func() {
 					waitLbl.Hide()
@@ -107,29 +107,29 @@ func StartServer() {
 	mux.HandleFunc("/pay", payHandler)
 	mux.HandleFunc("/save", saveHandler)
 
-	mtx.Lock()
+	httpMtx.Lock()
 	srv = &http.Server{
 		Addr:    ":9091",
 		Handler: mux,
 	}
-	mtx.Unlock()
+	httpMtx.Unlock()
 
 	fmt.Println("Starting server...")
 	// ListenAndServe блокирующий
-	// http.ErrServerClosed это не ошибка, а сигнал: «Сервер завершён штатно».
-	// Поэтому её нужно отфильтровать, иначе в логах всегда будет «Error: http: Server closed» даже при нормальном стопе.
+	// ErrServerClosed это не ошибка, а сигнал: «Сервер завершён штатно».
+	// Поэтому её нужно отфильтровать, иначе в логах всегда будет «Error: http: Server closed» даже при нормальной остановке.
 	if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		fmt.Println("Error:", err)
 	}
 }
 
 func stopServer() {
-	mtx.Lock()
+	httpMtx.Lock()
 	s := srv
 	if s == nil {
 		panic("Server is nil!")
 	}
-	mtx.Unlock()
+	httpMtx.Unlock()
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*constant.ShutdownSecond)
 	defer func() {
@@ -143,10 +143,10 @@ func stopServer() {
 	} else {
 		fmt.Println("Server stopped.")
 	}
-	mtx.Lock()
+	httpMtx.Lock()
 	stopInProcess = false
 	srv = nil
-	mtx.Unlock()
+	httpMtx.Unlock()
 }
 
 func slowHandler(w http.ResponseWriter, _ *http.Request) {
