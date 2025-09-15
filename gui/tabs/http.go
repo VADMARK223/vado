@@ -91,12 +91,13 @@ func CreateHttpTab() fyne.CanvasObject {
 		}
 	}()
 
-	hBox := container.NewHBox(startBtn, stopBtn, waitLbl)
-	vBox := container.NewVBox(container.NewHBox(statusLbl, statusIndicatorLayout), hBox)
+	controlBox := container.NewHBox(startBtn, stopBtn, waitLbl)
+	mainVerticalBox := container.NewVBox(container.NewHBox(statusLbl, statusIndicatorLayout), controlBox)
+	mainVerticalBox.Add(widget.NewSeparator())
 	if constant.AutoStart {
 		go startServer()
 	}
-	return container.NewBorder(vBox, nil, nil, nil)
+	return container.NewBorder(mainVerticalBox, nil, nil, nil)
 }
 
 func startServer() {
