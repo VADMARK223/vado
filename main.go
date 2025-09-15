@@ -4,7 +4,7 @@ import (
 	c "vado/constant"
 	gui "vado/gui/common"
 	guiTabs "vado/gui/tabs"
-	"vado/module/http"
+	"vado/gui/tabs/http"
 	"vado/util"
 
 	"fyne.io/fyne/v2"

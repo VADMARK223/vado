@@ -3,7 +3,6 @@ package tabs
 import (
 	gui "vado/gui/common"
 	"vado/module/atomic"
-	"vado/module/http"
 	"vado/module/mutex"
 
 	"fyne.io/fyne/v2"
@@ -12,9 +11,6 @@ import (
 
 func CreateModulesTab() fyne.CanvasObject {
 	vBox := container.NewVBox()
-	vBox.Add(gui.CreateBtn("HTTP", nil, func() {
-		go http.StartServer()
-	}))
 	vBox.Add(gui.CreateBtn("RwMutex", nil, mutex.RunRxMutex))
 	vBox.Add(gui.CreateBtn("Mutex", nil, mutex.RunMutex))
 	vBox.Add(gui.CreateBtn("Atomic", nil, atomic.RunAtomic))

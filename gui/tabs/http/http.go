@@ -1,4 +1,4 @@
-package tabs
+package http
 
 import (
 	"context"
@@ -25,7 +25,7 @@ var (
 )
 
 func CreateHttpTab() fyne.CanvasObject {
-	startBtn := common.CreateBtn("Start", theme.MediaPlayIcon(), startServer)
+	startBtn := common.CreateBtn("Start", theme.MediaPlayIcon(), StartServer)
 	startBtn.Disable()
 
 	stopBtn := common.CreateBtn("Stop", theme.MediaStopIcon(), stopServer)
@@ -44,7 +44,7 @@ func CreateHttpTab() fyne.CanvasObject {
 	statusIndicator.Resize(fyne.NewSize(30, 30))
 
 	startBtn.OnTapped = func() {
-		go startServer()
+		go StartServer()
 	}
 
 	stopBtn.OnTapped = func() {
@@ -94,15 +94,18 @@ func CreateHttpTab() fyne.CanvasObject {
 	controlBox := container.NewHBox(startBtn, stopBtn, waitLbl)
 	mainVerticalBox := container.NewVBox(container.NewHBox(statusLbl, statusIndicatorLayout), controlBox)
 	mainVerticalBox.Add(widget.NewSeparator())
+	mainVerticalBox.Add(createMoneyGui())
 	if constant.AutoStart {
-		go startServer()
+		go StartServer()
 	}
 	return container.NewBorder(mainVerticalBox, nil, nil, nil)
 }
 
-func startServer() {
+func StartServer() {
 	mux := http.NewServeMux() // multiplexer = «распределитель запросов»
 	mux.HandleFunc("/slow", slowHandler)
+	mux.HandleFunc("/pay", payHandler)
+	mux.HandleFunc("/save", saveHandler)
 
 	mtx.Lock()
 	srv = &http.Server{
@@ -117,18 +120,6 @@ func startServer() {
 	// Поэтому её нужно отфильтровать, иначе в логах всегда будет «Error: http: Server closed» даже при нормальном стопе.
 	if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		fmt.Println("Error:", err)
-	}
-}
-
-func slowHandler(w http.ResponseWriter, _ *http.Request) {
-	fmt.Println("Started slow request...")
-	time.Sleep(time.Second * constant.SlowRequestDelaySecond)
-	str := "Hello from slow handler!"
-	_, err := w.Write([]byte(str))
-	if err != nil {
-		fmt.Println("Error", err)
-	} else {
-		fmt.Println("Finished slow request")
 	}
 }
 
@@ -156,4 +147,16 @@ func stopServer() {
 	stopInProcess = false
 	srv = nil
 	mtx.Unlock()
+}
+
+func slowHandler(w http.ResponseWriter, _ *http.Request) {
+	fmt.Println("Started slow request...")
+	time.Sleep(time.Second * constant.SlowRequestDelaySecond)
+	str := "Hello from slow handler!"
+	_, err := w.Write([]byte(str))
+	if err != nil {
+		fmt.Println("Error", err)
+	} else {
+		fmt.Println("Finished slow request")
+	}
 }

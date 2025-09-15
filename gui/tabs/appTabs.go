@@ -2,6 +2,7 @@ package tabs
 
 import (
 	"vado/gui/common"
+	"vado/gui/tabs/http"
 
 	"fyne.io/fyne/v2/container"
 )
@@ -11,7 +12,7 @@ func CreateAppTabs() *container.AppTabs {
 	settingsTabItem.Disabled()
 
 	tabs := container.NewAppTabs(
-		common.CreateTabItem("Http", CreateHttpTab()),
+		common.CreateTabItem("Http", http.CreateHttpTab()),
 		common.CreateTabItem("Modules", CreateModulesTab()),
 		common.CreateTabItem("Tasks", CreateTasksTab()),
 		settingsTabItem,
