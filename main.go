@@ -11,6 +11,7 @@ import (
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/layout"
+	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 )
 
@@ -27,7 +28,7 @@ func showGui() {
 
 	tabs := guiTabs.CreateAppTabs()
 
-	exitBtn := gui.CreateBtn("Exit", func() { w.Close() })
+	exitBtn := gui.CreateBtn("Exit", theme.LogoutIcon(), func() { w.Close() })
 	exitBtnWrapper := container.NewVBox(exitBtn)
 	topBar := container.NewBorder(nil, nil, nil, exitBtnWrapper, tabs)
 	bottomBar := container.NewHBox(layout.NewSpacer(), widget.NewLabel(util.Tpl("Version %s", c.Version)))

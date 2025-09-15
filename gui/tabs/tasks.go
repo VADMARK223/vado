@@ -3,7 +3,6 @@ package tabs
 import (
 	"encoding/json"
 	"fmt"
-	"image/color"
 	"log"
 	"os"
 	c "vado/constant"
@@ -16,7 +15,7 @@ import (
 )
 
 func CreateTasksTab() fyne.CanvasObject {
-	title := canvas.NewText("Tasks list", color.RGBA{R: 255, G: 0, B: 0, A: 255})
+	title := canvas.NewText("Tasks list", c.Blue())
 	title.TextStyle = fyne.TextStyle{Bold: true}
 	title.Alignment = fyne.TextAlignCenter
 

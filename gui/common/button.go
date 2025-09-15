@@ -1,6 +1,9 @@
 package common
 
-import "fyne.io/fyne/v2/widget"
+import (
+	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/widget"
+)
 
 type ButtonOption func(*widget.Button)
 
@@ -10,8 +13,8 @@ func ButtonDisable() ButtonOption {
 	}
 }
 
-func CreateBtn(label string, tapped func(), opts ...ButtonOption) *widget.Button {
-	btn := widget.NewButton(label, func() {})
+func CreateBtn(label string, icon fyne.Resource, tapped func(), opts ...ButtonOption) *widget.Button {
+	btn := widget.NewButtonWithIcon(label, icon, func() {})
 	btn.OnTapped = tapped
 
 	for _, opt := range opts {

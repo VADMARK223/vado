@@ -7,25 +7,27 @@ import (
 	"net/http"
 	"sync"
 	"time"
+	"vado/constant"
 	"vado/gui/common"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 )
 
 var (
 	srv           *http.Server // Глобальный сервер, один на все вызовы
 	mtx           sync.Mutex
-	stopInProcess = false // Сделать потокобезопастным
+	stopInProcess = false // Сервер в процессе остановки
 )
 
 func CreateHttpTab() fyne.CanvasObject {
-	startBtn := common.CreateBtn("Start", nil)
+	startBtn := common.CreateBtn("Start", theme.MediaPlayIcon(), startServer)
 	startBtn.Disable()
 
-	stopBtn := common.CreateBtn("Stop", nil)
+	stopBtn := common.CreateBtn("Stop", theme.MediaStopIcon(), stopServer)
 	stopBtn.Disable()
 
 	waitLbl := widget.NewLabel("Wait...")
@@ -34,7 +36,7 @@ func CreateHttpTab() fyne.CanvasObject {
 	statusLbl := widget.NewLabel("Server status:")
 
 	statusIndicator := canvas.NewCircle(color.White)
-	statusIndicator.FillColor = color.RGBA{R: 255, G: 0, B: 0, A: 255} // Red
+	statusIndicator.FillColor = constant.Red() // Red
 	statusIndicator.StrokeColor = color.Gray{Y: 0x99}
 	statusIndicator.StrokeWidth = 1
 	statusIndicatorLayout := container.NewWithoutLayout(statusIndicator)
@@ -45,7 +47,13 @@ func CreateHttpTab() fyne.CanvasObject {
 	}
 
 	stopBtn.OnTapped = func() {
+		mtx.Lock()
+		if srv == nil || stopInProcess {
+			mtx.Unlock()
+			return
+		}
 		stopInProcess = true
+		mtx.Unlock()
 		go stopServer()
 	}
 
@@ -53,26 +61,27 @@ func CreateHttpTab() fyne.CanvasObject {
 		for {
 			mtx.Lock()
 			running := srv == nil
+			inProcess := stopInProcess
 			mtx.Unlock()
 			if running {
 				fyne.Do(func() {
 					waitLbl.Hide()
 					startBtn.Enable()
 					stopBtn.Disable()
-					statusIndicator.FillColor = color.RGBA{R: 255, G: 0, B: 0, A: 255}
+					statusIndicator.FillColor = constant.Red()
 				})
 			} else {
 				fyne.Do(func() {
-					if stopInProcess {
+					if inProcess {
 						waitLbl.Show()
 						startBtn.Disable()
 						stopBtn.Disable()
-						statusIndicator.FillColor = color.RGBA{R: 255, G: 165, B: 0, A: 255}
+						statusIndicator.FillColor = constant.Orange()
 					} else {
 						waitLbl.Hide()
 						startBtn.Disable()
 						stopBtn.Enable()
-						statusIndicator.FillColor = color.RGBA{R: 0, G: 255, B: 0, A: 255}
+						statusIndicator.FillColor = constant.Green()
 					}
 				})
 			}

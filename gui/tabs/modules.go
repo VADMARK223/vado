@@ -12,13 +12,13 @@ import (
 
 func CreateModulesTab() fyne.CanvasObject {
 	vBox := container.NewVBox()
-	vBox.Add(gui.CreateBtn("HTTP", func() {
+	vBox.Add(gui.CreateBtn("HTTP", nil, func() {
 		go http.StartServer()
 	}))
-	vBox.Add(gui.CreateBtn("RwMutex", mutex.RunRxMutex))
-	vBox.Add(gui.CreateBtn("Mutex", mutex.RunMutex))
-	vBox.Add(gui.CreateBtn("Atomic", atomic.RunAtomic))
-	vBox.Add(gui.CreateBtn("Posts and miners", atomic.RunAtomic, gui.ButtonDisable()))
+	vBox.Add(gui.CreateBtn("RwMutex", nil, mutex.RunRxMutex))
+	vBox.Add(gui.CreateBtn("Mutex", nil, mutex.RunMutex))
+	vBox.Add(gui.CreateBtn("Atomic", nil, atomic.RunAtomic))
+	vBox.Add(gui.CreateBtn("Posts and miners", nil, atomic.RunAtomic, gui.ButtonDisable()))
 
 	return vBox
 }
