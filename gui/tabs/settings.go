@@ -1,4 +1,4 @@
-package settings
+package tabs
 
 import (
 	"fyne.io/fyne/v2"

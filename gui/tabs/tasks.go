@@ -1,4 +1,4 @@
-package tasks
+package tabs
 
 import (
 	"encoding/json"
@@ -15,7 +15,7 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-func CreateTasksGui() fyne.CanvasObject {
+func CreateTasksTab() fyne.CanvasObject {
 	title := canvas.NewText("Tasks list", color.RGBA{R: 255, G: 0, B: 0, A: 255})
 	title.TextStyle = fyne.TextStyle{Bold: true}
 	title.Alignment = fyne.TextAlignCenter

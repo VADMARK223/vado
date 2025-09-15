@@ -1,4 +1,4 @@
-package modules
+package tabs
 
 import (
 	gui "vado/gui/common"
@@ -10,7 +10,7 @@ import (
 	"fyne.io/fyne/v2/container"
 )
 
-func CreateModulesGui() fyne.CanvasObject {
+func CreateModulesTab() fyne.CanvasObject {
 	vBox := container.NewVBox()
 	vBox.Add(gui.CreateBtn("HTTP", func() {
 		go http.StartServer()

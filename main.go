@@ -2,8 +2,8 @@ package main
 
 import (
 	c "vado/constant"
-	gui2 "vado/gui"
 	gui "vado/gui/common"
+	guiTabs "vado/gui/tabs"
 	"vado/module/http"
 	"vado/util"
 
@@ -25,17 +25,7 @@ func showGui() {
 	a := app.New()
 	w := a.NewWindow("Vado")
 
-	//settingsTabItem := gui.CreateTabItem("Settings", settings.CreateSettingsGui())
-	//settingsTabItem.Disabled()
-	//
-	//tabs := container.NewAppTabs(
-	//	gui.CreateTabItem("Modules", modules.CreateModulesGui()),
-	//	gui.CreateTabItem("Tasks", tasks.CreateTasksGui()),
-	//	settingsTabItem,
-	//)
-	//tabs.SetTabLocation(container.TabLocationTop)
-
-	tabs := gui2.CreateAppTabs()
+	tabs := guiTabs.CreateAppTabs()
 
 	exitBtn := gui.CreateBtn("Exit", func() { w.Close() })
 	exitBtnWrapper := container.NewVBox(exitBtn)
