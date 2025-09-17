@@ -14,6 +14,7 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
 )
 
@@ -31,22 +32,26 @@ func init() {
 }
 
 func createMoneyGui() fyne.CanvasObject {
-	title := canvas.NewText("Money", c.Gold())
+	title := canvas.NewText("Управление балансом", c.Gold())
 	title.TextStyle = fyne.TextStyle{Bold: true}
 	title.Alignment = fyne.TextAlignCenter
 
 	balanceLbl = widget.NewLabel("")
+	labelCentered := container.New(layout.NewCenterLayout(), balanceLbl)
 	updateBalanceText()
 
 	balanceDecreaseBtn := common.CreateBtn("-", nil, func() {
 		decreaseBalance(c.BalanceDeltaGui)
 		updateBalanceText()
 	})
+	btnDecreaseContainer := container.New(layout.NewGridWrapLayout(fyne.NewSize(60, 40)), balanceDecreaseBtn)
+	balanceDecreaseBtn.Resize(fyne.NewSize(100, 40))
 	balanceIncreaseBtn := common.CreateBtn("+", nil, func() {
 		balance.Add(c.BalanceDeltaGui)
 		updateBalanceText()
 	})
-	balanceBox := container.NewHBox(balanceLbl, balanceDecreaseBtn, balanceIncreaseBtn)
+	btnIncreaseContainer := container.New(layout.NewGridWrapLayout(fyne.NewSize(60, 40)), balanceIncreaseBtn)
+	balanceBox := container.NewHBox(labelCentered, layout.NewSpacer(), btnDecreaseContainer, btnIncreaseContainer)
 
 	bankLbl = widget.NewLabel("")
 	updateBankText()
@@ -156,7 +161,7 @@ func saveHandler(w http.ResponseWriter, r *http.Request) {
 func updateBalanceText() {
 	if a := fyne.CurrentApp(); a != nil {
 		fyne.Do(func() {
-			balanceLbl.SetText(fmt.Sprintf("Balance: %d$", balance.Load()))
+			balanceLbl.SetText(fmt.Sprintf("Баланс: %d$", balance.Load()))
 		})
 	}
 }
@@ -167,7 +172,7 @@ func updateBankText() string {
 			bankLbl.SetText(fmt.Sprintf("Bank: %d$", bank.Load()))
 		})
 	}
-	return fmt.Sprintf("Bank: %d$", bank.Load())
+	return fmt.Sprintf("Банк: %d$", bank.Load())
 }
 
 func decreaseBalance(value int64) bool {

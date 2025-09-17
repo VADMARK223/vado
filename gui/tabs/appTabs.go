@@ -8,16 +8,18 @@ import (
 	"fyne.io/fyne/v2/container"
 )
 
-func CreateAppTabs() *container.AppTabs {
+func CreateAppTabs(win fyne.Window) *container.AppTabs {
 	factories := map[*container.TabItem]func() fyne.CanvasObject{}
 
 	tabs := container.NewAppTabs(
 		common.CreateLazyTabItem("Http", http.CreateHttpTab, factories),
-		common.CreateLazyTabItem("Tasks", CreateTasksTab, factories),
-		common.CreateLazyTabItem("Modules", CreateModulesTab, factories),
-		common.CreateLazyTabItem("Settings", CreateSettingsTab, factories),
+		common.CreateLazyTabItem("Задания", func() fyne.CanvasObject {
+			return CreateTasksTab(win)
+		}, factories),
+		common.CreateLazyTabItem("Модули", CreateModulesTab, factories),
+		common.CreateLazyTabItem("Настройки", CreateSettingsTab, factories),
 	)
-	tabs.SelectIndex(1)
+	tabs.SelectIndex(0)
 	tabs.SetTabLocation(container.TabLocationTop)
 
 	loaded := map[*container.TabItem]bool{}

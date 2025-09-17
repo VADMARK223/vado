@@ -25,16 +25,16 @@ var (
 )
 
 func CreateHttpTab() fyne.CanvasObject {
-	startBtn := common.CreateBtn("Start", theme.MediaPlayIcon(), StartServer)
+	startBtn := common.CreateBtn("Старт", theme.MediaPlayIcon(), StartServer)
 	startBtn.Disable()
 
-	stopBtn := common.CreateBtn("Stop", theme.MediaStopIcon(), stopServer)
+	stopBtn := common.CreateBtn("Стоп", theme.MediaStopIcon(), stopServer)
 	stopBtn.Disable()
 
-	waitLbl := widget.NewLabel("Wait...")
+	waitLbl := widget.NewLabel("Остановка сервера...")
 	waitLbl.Hide()
 
-	statusLbl := widget.NewLabel("Server status:")
+	statusLbl := widget.NewLabel("Состояние сервера:")
 
 	statusIndicator := canvas.NewCircle(color.White)
 	statusIndicator.FillColor = constant.Red() // Red

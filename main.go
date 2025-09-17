@@ -22,35 +22,29 @@ func main() {
 		http.StartServer()
 	}
 }
+
 func showGui() {
-	a := app.New()
-	w := a.NewWindow("Vado")
+	a := app.NewWithID("io.vado")
+	mainWindow := a.NewWindow("Vado")
 
-	tabs := guiTabs.CreateAppTabs()
+	tabs := guiTabs.CreateAppTabs(mainWindow)
+	exitBtn := gui.CreateBtn("", theme.LogoutIcon(), func() { mainWindow.Close() })
+	topBar := container.NewBorder(nil, nil, nil, exitBtn)
 
-	// кнопка выхода
-	exitBtn := gui.CreateBtn("Exit", theme.LogoutIcon(), func() { w.Close() })
-	exitBtnWrapper := container.NewVBox(exitBtn)
-
-	// верхняя панель = кнопка справа
-	topBar := container.NewBorder(nil, nil, nil, exitBtnWrapper)
-
-	// нижняя панель = версия справа
 	bottomBar := container.NewHBox(
 		layout.NewSpacer(),
 		widget.NewLabel(util.Tpl("Version %s", c.Version)),
 	)
 
-	// главный контейнер: сверху topBar, снизу bottomBar, центр = tabs
 	root := container.NewBorder(topBar, bottomBar, nil, nil, tabs)
-	w.SetContent(root)
+	mainWindow.SetContent(root)
 
-	w.Canvas().SetOnTypedKey(func(k *fyne.KeyEvent) {
+	mainWindow.Canvas().SetOnTypedKey(func(k *fyne.KeyEvent) {
 		if k.Name == fyne.KeyEscape {
-			w.Close()
+			mainWindow.Close()
 		}
 	})
 
-	w.Resize(fyne.NewSize(500, 400))
-	w.ShowAndRun()
+	mainWindow.Resize(fyne.NewSize(350, 400))
+	mainWindow.ShowAndRun()
 }

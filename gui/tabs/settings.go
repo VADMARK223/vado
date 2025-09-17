@@ -8,7 +8,7 @@ import (
 )
 
 func CreateSettingsTab() fyne.CanvasObject {
-	label := widget.NewLabel("In development")
+	label := widget.NewLabel("В разработке...")
 	time.Sleep(2 * time.Second)
 	return label
 }
