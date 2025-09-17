@@ -27,11 +27,18 @@ func CreateAppTabs() *container.AppTabs {
 		}
 
 		if factory, ok := factories[item]; ok {
-			item.Content = factory()
-		}
+			go func() {
+				// Создаем контент в фоне
+				content := factory()
+				// Обновляем UI безопасно
+				fyne.Do(func() {
+					item.Content = content
 
-		loaded[item] = true
-		delete(factories, item)
+					loaded[item] = true
+					delete(factories, item)
+				})
+			}()
+		}
 	}
 
 	// На всякий случай — если SelectIndex не вызвал OnSelected (в некоторых версиях/сценариях),
