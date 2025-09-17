@@ -3,8 +3,8 @@ package main
 import (
 	c "vado/constant"
 	gui "vado/gui/common"
-	guiTabs "vado/gui/tabs"
-	"vado/gui/tabs/http"
+	guiTabs "vado/gui/tab"
+	"vado/gui/tab/http"
 	"vado/util"
 
 	"fyne.io/fyne/v2"
@@ -45,6 +45,6 @@ func showGui() {
 		}
 	})
 
-	mainWindow.Resize(fyne.NewSize(350, 400))
+	mainWindow.Resize(fyne.NewSize(c.WindowWidth, 400))
 	mainWindow.ShowAndRun()
 }

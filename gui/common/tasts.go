@@ -1,3 +1,3 @@
 package common
 
-const ShowDeleteConfirm = true
+const ShowDeleteConfirm = false

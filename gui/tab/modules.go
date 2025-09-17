@@ -1,4 +1,4 @@
-package tabs
+package tab
 
 import (
 	gui "vado/gui/common"

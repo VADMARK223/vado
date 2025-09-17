@@ -1,25 +1,28 @@
-package tabs
+package tab
 
 import (
 	"vado/gui/common"
-	"vado/gui/tabs/http"
+	"vado/gui/tab/http"
+	"vado/gui/tab/todo"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 )
+
+const defaultTabIndex = 1
 
 func CreateAppTabs(win fyne.Window) *container.AppTabs {
 	factories := map[*container.TabItem]func() fyne.CanvasObject{}
 
 	tabs := container.NewAppTabs(
 		common.CreateLazyTabItem("Http", http.CreateHttpTab, factories),
-		common.CreateLazyTabItem("Задания", func() fyne.CanvasObject {
-			return CreateTasksTab(win)
+		common.CreateLazyTabItem("TODO", func() fyne.CanvasObject {
+			return todo.CreateTODOTab(win)
 		}, factories),
 		common.CreateLazyTabItem("Модули", CreateModulesTab, factories),
 		common.CreateLazyTabItem("Настройки", CreateSettingsTab, factories),
 	)
-	tabs.SelectIndex(0)
+	tabs.SelectIndex(defaultTabIndex)
 	tabs.SetTabLocation(container.TabLocationTop)
 
 	loaded := map[*container.TabItem]bool{}
