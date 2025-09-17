@@ -1,7 +1,3 @@
-# Goland
-**Control + Tab** переключение вкладок
-
-**Command + W** закрытие вкладки
 # Golang
 **go run -race main.go** определение гонки данных
 

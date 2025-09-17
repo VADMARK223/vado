@@ -59,6 +59,15 @@ func createMoneyGui() fyne.CanvasObject {
 }
 
 func payHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		msg := "Error: Method not allowed."
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		fmt.Println(msg)
+		if _, err := w.Write([]byte(msg)); err != nil {
+			fmt.Println("Error writing response:", err)
+		}
+		return
+	}
 	httpRequestBody, errRequestBody := io.ReadAll(r.Body)
 	if errRequestBody != nil {
 		fmt.Println("Fail to read HTTP request body:", errRequestBody)
@@ -69,7 +78,12 @@ func payHandler(w http.ResponseWriter, r *http.Request) {
 
 	paymentAmount, paymentAmountErr := strconv.Atoi(httpRequestBodyStr)
 	if paymentAmountErr != nil {
-		fmt.Println("Fail to parse payment amount:", paymentAmountErr)
+		msg := "Fail to parse payment amount:" + paymentAmountErr.Error()
+		w.WriteHeader(http.StatusBadRequest)
+		if _, err := w.Write([]byte(msg)); err != nil {
+			fmt.Println(msg)
+		}
+		fmt.Println(msg)
 		return
 	}
 	fmt.Println("Payment amount:", paymentAmount)
@@ -106,7 +120,12 @@ func saveHandler(w http.ResponseWriter, r *http.Request) {
 
 	saveAmount, saveAmountErr := strconv.Atoi(httpRequestBodyStr)
 	if saveAmountErr != nil {
-		fmt.Println("Fail to parse save amount:", saveAmountErr)
+		msg := fmt.Sprintf("Fail to parse save amount: %s", saveAmountErr)
+		fmt.Println(msg)
+		w.WriteHeader(http.StatusBadRequest)
+		if _, err := w.Write([]byte(msg)); err != nil {
+			fmt.Println("Error writing response:", err)
+		}
 		return
 	}
 	fmt.Println("Save amount:", saveAmount)

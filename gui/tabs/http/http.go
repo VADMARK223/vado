@@ -104,6 +104,8 @@ func CreateHttpTab() fyne.CanvasObject {
 func StartServer() {
 	mux := http.NewServeMux() // multiplexer = «распределитель запросов»
 	mux.HandleFunc("/slow", slowHandler)
+	mux.HandleFunc("/query", queryParamsHandler)
+
 	mux.HandleFunc("/pay", payHandler)
 	mux.HandleFunc("/save", saveHandler)
 
@@ -147,16 +149,4 @@ func stopServer() {
 	stopInProcess = false
 	srv = nil
 	httpMtx.Unlock()
-}
-
-func slowHandler(w http.ResponseWriter, _ *http.Request) {
-	fmt.Println("Started slow request...")
-	time.Sleep(time.Second * constant.SlowRequestDelaySecond)
-	str := "Hello from slow handler!"
-	_, err := w.Write([]byte(str))
-	if err != nil {
-		fmt.Println("Error", err)
-	} else {
-		fmt.Println("Finished slow request")
-	}
 }
