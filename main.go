@@ -28,18 +28,29 @@ func showGui() {
 
 	tabs := guiTabs.CreateAppTabs()
 
+	// кнопка выхода
 	exitBtn := gui.CreateBtn("Exit", theme.LogoutIcon(), func() { w.Close() })
 	exitBtnWrapper := container.NewVBox(exitBtn)
-	topBar := container.NewBorder(nil, nil, nil, exitBtnWrapper, tabs)
-	bottomBar := container.NewHBox(layout.NewSpacer(), widget.NewLabel(util.Tpl("Version %s", c.Version)))
-	header := container.NewBorder(topBar, bottomBar, nil, nil)
-	w.SetContent(header)
+
+	// верхняя панель = кнопка справа
+	topBar := container.NewBorder(nil, nil, nil, exitBtnWrapper)
+
+	// нижняя панель = версия справа
+	bottomBar := container.NewHBox(
+		layout.NewSpacer(),
+		widget.NewLabel(util.Tpl("Version %s", c.Version)),
+	)
+
+	// главный контейнер: сверху topBar, снизу bottomBar, центр = tabs
+	root := container.NewBorder(topBar, bottomBar, nil, nil, tabs)
+	w.SetContent(root)
 
 	w.Canvas().SetOnTypedKey(func(k *fyne.KeyEvent) {
 		if k.Name == fyne.KeyEscape {
 			w.Close()
 		}
 	})
+
 	w.Resize(fyne.NewSize(500, 400))
 	w.ShowAndRun()
 }
