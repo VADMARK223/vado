@@ -5,7 +5,7 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-func CreateSettingsGui() fyne.CanvasObject {
+func CreateSettingsTab() fyne.CanvasObject {
 	label := widget.NewLabel("In development")
 	return label
 }
