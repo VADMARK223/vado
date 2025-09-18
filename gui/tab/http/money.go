@@ -8,8 +8,9 @@ import (
 	"strconv"
 	"sync"
 	"sync/atomic"
-	c "vado/constant"
 	"vado/gui/common"
+	"vado/gui/constant"
+	"vado/util"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
@@ -17,6 +18,10 @@ import (
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
 )
+
+const initBalance = 50
+const initBank = 0         // Стартовый капитал в банке
+const balanceDeltaGui = 30 // Изменение на которое изменяется баланс из GUI// Стартовый капитал клиента
 
 var (
 	moneyMtx   sync.Mutex
@@ -27,12 +32,12 @@ var (
 )
 
 func init() {
-	balance.Store(c.InitBalance)
-	bank.Store(c.InitBank)
+	balance.Store(initBalance)
+	bank.Store(initBank)
 }
 
 func createMoneyGui() fyne.CanvasObject {
-	title := canvas.NewText("Управление балансом", c.Gold())
+	title := canvas.NewText("Управление балансом", constant.Gold())
 	title.TextStyle = fyne.TextStyle{Bold: true}
 	title.Alignment = fyne.TextAlignCenter
 
@@ -41,13 +46,13 @@ func createMoneyGui() fyne.CanvasObject {
 	updateBalanceText()
 
 	balanceDecreaseBtn := common.CreateBtn("-", nil, func() {
-		decreaseBalance(c.BalanceDeltaGui)
+		decreaseBalance(balanceDeltaGui)
 		updateBalanceText()
 	})
 	btnDecreaseContainer := container.New(layout.NewGridWrapLayout(fyne.NewSize(60, 40)), balanceDecreaseBtn)
 	balanceDecreaseBtn.Resize(fyne.NewSize(100, 40))
 	balanceIncreaseBtn := common.CreateBtn("+", nil, func() {
-		balance.Add(c.BalanceDeltaGui)
+		balance.Add(balanceDeltaGui)
 		updateBalanceText()
 	})
 	btnIncreaseContainer := container.New(layout.NewGridWrapLayout(fyne.NewSize(60, 40)), balanceIncreaseBtn)
@@ -98,9 +103,9 @@ func payHandler(w http.ResponseWriter, r *http.Request) {
 	msg := func() string {
 		if decreaseResult {
 			updateBalanceText()
-			return fmt.Sprintf("Successful payment: %s$, current balance: %d$", httpRequestBodyStr, balance.Load())
+			return util.Tpl("Successful payment: %s$, current balance: %d$", httpRequestBodyStr, balance.Load())
 		}
-		return fmt.Sprintf("FAIL: Payment amount out of balance: %d$", paymentAmount)
+		return util.Tpl("FAIL: Payment amount out of balance: %d$", paymentAmount)
 	}()
 	moneyMtx.Unlock()
 
@@ -125,7 +130,7 @@ func saveHandler(w http.ResponseWriter, r *http.Request) {
 
 	saveAmount, saveAmountErr := strconv.Atoi(httpRequestBodyStr)
 	if saveAmountErr != nil {
-		msg := fmt.Sprintf("Fail to parse save amount: %s", saveAmountErr)
+		msg := util.Tpl("Fail to parse save amount: %s", saveAmountErr)
 		fmt.Println(msg)
 		w.WriteHeader(http.StatusBadRequest)
 		if _, err := w.Write([]byte(msg)); err != nil {
@@ -142,9 +147,9 @@ func saveHandler(w http.ResponseWriter, r *http.Request) {
 			bank.Add(int64(saveAmount))
 			updateBalanceText()
 			updateBankText()
-			return fmt.Sprintf("Success save: %s$, current balance: %d$", httpRequestBodyStr, balance.Load())
+			return util.Tpl("Success save: %s$, current balance: %d$", httpRequestBodyStr, balance.Load())
 		}
-		return fmt.Sprintf("FAIL: Save amount out of balance: %d$", saveAmount)
+		return util.Tpl("FAIL: Save amount out of balance: %d$", saveAmount)
 	}()
 	moneyMtx.Unlock()
 
@@ -161,7 +166,7 @@ func saveHandler(w http.ResponseWriter, r *http.Request) {
 func updateBalanceText() {
 	if a := fyne.CurrentApp(); a != nil {
 		fyne.Do(func() {
-			balanceLbl.SetText(fmt.Sprintf("Баланс: %d$", balance.Load()))
+			balanceLbl.SetText(util.Tpl("Баланс: %d$", balance.Load()))
 		})
 	}
 }
@@ -169,10 +174,10 @@ func updateBalanceText() {
 func updateBankText() string {
 	if a := fyne.CurrentApp(); a != nil {
 		fyne.Do(func() {
-			bankLbl.SetText(fmt.Sprintf("Bank: %d$", bank.Load()))
+			bankLbl.SetText(util.Tpl("Bank: %d$", bank.Load()))
 		})
 	}
-	return fmt.Sprintf("Банк: %d$", bank.Load())
+	return util.Tpl("Банк: %d$", bank.Load())
 }
 
 func decreaseBalance(value int64) bool {

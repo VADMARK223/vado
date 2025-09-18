@@ -1,3 +1,3 @@
 package constant
 
-const TaskFileName = "./tasks.json"
+const TaskFilePath = "./data/tasks.json"

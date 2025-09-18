@@ -1,4 +1,4 @@
-package tab
+package settings
 
 import (
 	"time"
@@ -7,7 +7,7 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-func CreateSettingsTab() fyne.CanvasObject {
+func CreateView() fyne.CanvasObject {
 	label := widget.NewLabel("В разработке...")
 	time.Sleep(2 * time.Second)
 	return label

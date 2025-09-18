@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"net/http"
 	"time"
-	"vado/constant"
+	"vado/util"
 )
 
 func slowHandler(w http.ResponseWriter, _ *http.Request) {
 	fmt.Println("Started slow request...")
-	time.Sleep(time.Second * constant.SlowRequestDelaySecond)
+	time.Sleep(time.Second * slowRequestDelaySecond)
 	str := "Hello from slow handler!"
 	_, err := w.Write([]byte(str))
 	if err != nil {
@@ -23,7 +23,7 @@ func queryParamsHandler(w http.ResponseWriter, r *http.Request) {
 	nameParam := r.URL.Query().Get("name")
 	surnameParam := r.URL.Query().Get("surname")
 
-	msg := fmt.Sprintf("Name: %s, Surname: %s", nameParam, surnameParam)
+	msg := util.Tpl("Name: %s, Surname: %s", nameParam, surnameParam)
 	_, err := w.Write([]byte(msg))
 	if err != nil {
 		return

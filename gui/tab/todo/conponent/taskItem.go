@@ -1,8 +1,8 @@
 package conponent
 
 import (
-	"fmt"
 	m "vado/model"
+	"vado/util"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
@@ -12,9 +12,9 @@ import (
 )
 
 func CreateTaskItem(task m.Task, deleteCallback func()) fyne.CanvasObject {
-	text := fmt.Sprintf("%d %s%s", task.Id, task.Name, func() string {
+	text := util.Tpl("%d %s%s", task.Id, task.Name, func() string {
 		if task.Desc != "" {
-			return fmt.Sprintf(" (%s)", task.Desc)
+			return util.Tpl(" (%s)", task.Desc)
 		}
 		return ""
 	}())

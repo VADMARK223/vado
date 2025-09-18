@@ -11,6 +11,7 @@ import (
 	"vado/gui/tab/todo/conponent"
 	"vado/gui/tab/todo/constant"
 	m "vado/model"
+	"vado/util"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
@@ -21,12 +22,12 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-func CreateTODOTab(win fyne.Window) fyne.CanvasObject {
+func CreateView(win fyne.Window) fyne.CanvasObject {
 	title := canvas.NewText("Список заданий", color.White)
 	title.TextStyle = fyne.TextStyle{Bold: true}
 	title.Alignment = fyne.TextAlignCenter
 
-	data, err := os.ReadFile(constant.TaskFileName)
+	data, err := os.ReadFile(constant.TaskFilePath)
 
 	if err != nil {
 		log.Fatal(err)
@@ -50,7 +51,7 @@ func CreateTODOTab(win fyne.Window) fyne.CanvasObject {
 
 	quickAddBtn := common.CreateBtn("Добавить (быстро)", theme.ContentAddIcon(), func() {
 		id := rand.Intn(3)
-		addSaveRedraw(&list, vBox, win, m.Task{Id: id, Name: fmt.Sprintf("Задание %d", id)})
+		addSaveRedraw(&list, vBox, win, m.Task{Id: id, Name: util.Tpl("Задание %d", id)})
 	})
 
 	deleteAllBtn := common.CreateBtn("Удалить все", theme.DeleteIcon(), func() {
@@ -146,9 +147,9 @@ func saveJSON(list *m.TaskList) {
 		6 → владелец может читать и писать (4+2).
 		4 → группа может только читать.
 		4 → остальные пользователи могут только читать.
-		os.ModePerm - это 0777, то есть максимально открытые права.
+		Флаг os. ModePerm - это 0777, то есть максимально открытые права.
 	*/
-	if err := os.WriteFile(constant.TaskFileName, data, 0644); err != nil {
+	if err := os.WriteFile(constant.TaskFilePath, data, 0644); err != nil {
 		fmt.Println("Error writing file:", err)
 		return
 	}

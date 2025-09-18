@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"sync"
 	"time"
-	"vado/constant"
 	"vado/gui/common"
+	constant2 "vado/gui/constant"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
@@ -18,13 +18,18 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
+const autoStart = true            // Автоматически стартовать сервер
+const guiUpdateMillisecond = 500  // Частота обновления GUI
+const slowRequestDelaySecond = 10 // Длительность выполнения медленного запроса
+const shutdownSecond = 5          // Время "мягкой" остановки сервера
+
 var (
 	srv           *http.Server // Глобальный сервер, один на все вызовы
 	httpMtx       sync.Mutex
 	stopInProcess = false // Сервер в процессе остановки
 )
 
-func CreateHttpTab() fyne.CanvasObject {
+func CreateView() fyne.CanvasObject {
 	startBtn := common.CreateBtn("Старт", theme.MediaPlayIcon(), StartServer)
 	startBtn.Disable()
 
@@ -37,7 +42,7 @@ func CreateHttpTab() fyne.CanvasObject {
 	statusLbl := widget.NewLabel("Состояние сервера:")
 
 	statusIndicator := canvas.NewCircle(color.White)
-	statusIndicator.FillColor = constant.Red() // Red
+	statusIndicator.FillColor = constant2.Red()
 	statusIndicator.StrokeColor = color.Gray{Y: 0x99}
 	statusIndicator.StrokeWidth = 1
 	statusIndicatorLayout := container.NewWithoutLayout(statusIndicator)
@@ -69,7 +74,7 @@ func CreateHttpTab() fyne.CanvasObject {
 					waitLbl.Hide()
 					startBtn.Enable()
 					stopBtn.Disable()
-					statusIndicator.FillColor = constant.Red()
+					statusIndicator.FillColor = constant2.Red()
 				})
 			} else {
 				fyne.Do(func() {
@@ -77,17 +82,17 @@ func CreateHttpTab() fyne.CanvasObject {
 						waitLbl.Show()
 						startBtn.Disable()
 						stopBtn.Disable()
-						statusIndicator.FillColor = constant.Orange()
+						statusIndicator.FillColor = constant2.Orange()
 					} else {
 						waitLbl.Hide()
 						startBtn.Disable()
 						stopBtn.Enable()
-						statusIndicator.FillColor = constant.Green()
+						statusIndicator.FillColor = constant2.Green()
 					}
 				})
 			}
 
-			time.Sleep(time.Millisecond * constant.GuiUpdateMillisecond)
+			time.Sleep(time.Millisecond * guiUpdateMillisecond)
 		}
 	}()
 
@@ -95,7 +100,7 @@ func CreateHttpTab() fyne.CanvasObject {
 	mainVerticalBox := container.NewVBox(container.NewHBox(statusLbl, statusIndicatorLayout), controlBox)
 	mainVerticalBox.Add(widget.NewSeparator())
 	mainVerticalBox.Add(createMoneyGui())
-	if constant.AutoStart {
+	if autoStart {
 		go StartServer()
 	}
 	return container.NewBorder(mainVerticalBox, nil, nil, nil)
@@ -133,7 +138,7 @@ func stopServer() {
 	}
 	httpMtx.Unlock()
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*constant.ShutdownSecond)
+	ctx, cancel := context.WithTimeout(context.Background(), shutdownSecond*time.Second)
 	defer func() {
 		fmt.Println("Context canceled.")
 		cancel()

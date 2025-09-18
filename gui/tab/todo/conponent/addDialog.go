@@ -1,9 +1,9 @@
 package conponent
 
 import (
-	"fmt"
 	"math/rand"
 	m "vado/model"
+	"vado/util"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/dialog"
@@ -12,7 +12,7 @@ import (
 
 func ShowAddTaskDialog(parent fyne.Window, f func(task m.Task)) {
 	nameEntry := widget.NewEntry()
-	initName := fmt.Sprintf("Задача %d", rand.Intn(10))
+	initName := util.Tpl("Задача %d", rand.Intn(10))
 	nameEntry.SetText(initName)
 	nameEntry.SetPlaceHolder("Название задачи")
 
