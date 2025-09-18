@@ -49,12 +49,12 @@ func CreateTODOTab(win fyne.Window) fyne.CanvasObject {
 	})
 
 	quickAddBtn := common.CreateBtn("Добавить (быстро)", theme.ContentAddIcon(), func() {
-		id := rand.Intn(1000)
-		addSaveRedraw(&list, vBox, win, m.Task{Id: id, Name: fmt.Sprintf("Задаиние %d", id)})
+		id := rand.Intn(3)
+		addSaveRedraw(&list, vBox, win, m.Task{Id: id, Name: fmt.Sprintf("Задание %d", id)})
 	})
 
 	deleteAllBtn := common.CreateBtn("Удалить все", theme.DeleteIcon(), func() {
-		list.Tasks = nil
+		list.Tasks = []m.Task{}
 		saveJSON(&list)
 		redraw(&list, vBox, win)
 	})
@@ -74,7 +74,10 @@ func CreateTODOTab(win fyne.Window) fyne.CanvasObject {
 }
 
 func addSaveRedraw(list *m.TaskList, listBox *fyne.Container, win fyne.Window, task m.Task) {
-	addTask(&list.Tasks, task)
+	if err := addTask(&list.Tasks, task, win); err != nil {
+		fmt.Printf("Error: %s id = %d\n", err, task.Id)
+		return
+	}
 	saveJSON(list)
 	redraw(list, listBox, win)
 }
@@ -106,8 +109,17 @@ func deleteTaskAndRedraw(list *m.TaskList, taskId int, listBox *fyne.Container, 
 	redraw(list, listBox, win)
 }
 
-func addTask(list *[]m.Task, task m.Task) {
-	*list = append(*list, task)
+func addTask(tasks *[]m.Task, newTask m.Task, win fyne.Window) error {
+	for _, t := range *tasks {
+		if t.Id == newTask.Id {
+			dialog.NewCustom("Ошибка", "OK", widget.NewLabel("Задача с таким ID уже существует"), win).Show()
+			return constant.ErrTaskAlreadyExists
+		}
+	}
+
+	*tasks = append(*tasks, newTask)
+
+	return nil
 }
 
 func deleteTask(list *m.TaskList, taskId int) {
