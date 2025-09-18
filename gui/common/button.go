@@ -13,6 +13,7 @@ func ButtonDisable() ButtonOption {
 	}
 }
 
+// CreateBtn создает кнопку
 func CreateBtn(label string, icon fyne.Resource, tapped func(), opts ...ButtonOption) *widget.Button {
 	btn := widget.NewButtonWithIcon(label, icon, func() {})
 	btn.OnTapped = tapped

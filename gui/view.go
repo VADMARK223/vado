@@ -1,3 +1,4 @@
+// Package gui содержит графические представления.
 package gui
 
 import (

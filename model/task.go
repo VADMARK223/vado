@@ -1,5 +1,7 @@
+// Package model содержит модели данных.
 package model
 
+// Task модель задания.
 type Task struct {
 	Id        int    `json:"id"`
 	Name      string `json:"name"`
@@ -7,6 +9,7 @@ type Task struct {
 	Completed bool   `json:"completed"`
 }
 
+// TaskList модель списка заданий.
 type TaskList struct {
 	Tasks []Task `json:"tasks"`
 }

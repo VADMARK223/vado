@@ -11,5 +11,12 @@
 
 **go list -m all | grep fyne** версии подключенных библиотек
 
+# Godoc
+**go install golang.org/x/tools/cmd/godoc@latest** установка
+
+**godoc -http=:6060** запуск на порту (http://localhost:6060/pkg/vado/)
+
+**wget -r -np -nH --cut-dirs=1 -P docs http://localhost:6060/pkg/vado/** генерация статической страницы.
+
 # Idea
 **Ctrl + Alt + L** Переформатировать код
