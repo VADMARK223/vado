@@ -45,6 +45,6 @@ func showGui() {
 		}
 	})
 
-	mainWindow.Resize(fyne.NewSize(c.WindowWidth, 400))
+	mainWindow.Resize(fyne.NewSize(c.WindowWidth, c.WindowHeight))
 	mainWindow.ShowAndRun()
 }

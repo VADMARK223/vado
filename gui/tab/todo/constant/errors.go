@@ -1,4 +1,4 @@
-package todo
+package constant
 
 import "errors"
 

@@ -1,4 +1,4 @@
-package todo
+package conponent
 
 import (
 	"fmt"
@@ -12,7 +12,13 @@ import (
 )
 
 func CreateTaskItem(task m.Task, deleteCallback func()) fyne.CanvasObject {
-	taskLabel := widget.NewLabel(fmt.Sprintf("%d %s", task.Id, task.Name))
+	text := fmt.Sprintf("%d %s%s", task.Id, task.Name, func() string {
+		if task.Desc != "" {
+			return fmt.Sprintf(" (%s)", task.Desc)
+		}
+		return ""
+	}())
+	taskLabel := widget.NewLabel(text)
 	hBox := container.NewHBox(taskLabel, layout.NewSpacer())
 	taskDelBtn := widget.NewButtonWithIcon("", theme.CancelIcon(), deleteCallback)
 	hBox.Add(taskDelBtn)

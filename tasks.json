@@ -1,14 +1,3 @@
 {
-  "tasks": [
-    {
-      "id": 9919,
-      "name": "Task 9919",
-      "done": false
-    },
-    {
-      "id": 825,
-      "name": "Task 825",
-      "done": false
-    }
-  ]
+  "tasks": null
 }
