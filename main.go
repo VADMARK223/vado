@@ -2,7 +2,7 @@ package main
 
 import (
 	"vado/gui"
-	"vado/gui/tab/http"
+	"vado/gui/tab/lesson/database"
 )
 
 const showGui = true
@@ -11,6 +11,6 @@ func main() {
 	if showGui {
 		gui.ShowMainApp()
 	} else {
-		http.StartServer()
+		database.RunDatabase()
 	}
 }

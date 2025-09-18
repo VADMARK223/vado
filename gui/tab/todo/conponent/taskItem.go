@@ -13,8 +13,8 @@ import (
 
 func CreateTaskItem(task m.Task, deleteCallback func()) fyne.CanvasObject {
 	text := util.Tpl("%d %s%s%s", task.Id, task.Name, func() string {
-		if task.Desc != "" {
-			return util.Tpl(" (%s)", task.Desc)
+		if task.Description != "" {
+			return util.Tpl(" (%s)", task.Description)
 		}
 		return ""
 	}(), func() string {

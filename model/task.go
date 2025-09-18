@@ -2,10 +2,10 @@ package model
 
 // Task модель задания.
 type Task struct {
-	Id        int    `json:"id"`
-	Name      string `json:"name"`
-	Desc      string `json:"desc"`
-	Completed bool   `json:"completed"`
+	Id          int    `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Completed   bool   `json:"completed"`
 }
 
 // TaskList модель списка заданий.

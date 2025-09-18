@@ -11,7 +11,7 @@ import (
 	"fyne.io/fyne/v2/container"
 )
 
-const defaultTabIndex = 1
+const defaultTabIndex = 2
 
 func CreateAppTabs(win fyne.Window) *container.AppTabs {
 	factories := map[*container.TabItem]func() fyne.CanvasObject{}

@@ -25,7 +25,7 @@ func ShowAddTaskDialog(parent fyne.Window, f func(task m.Task)) {
 	}
 	dlg := dialog.NewForm("Новая задача", "Добавить", "Отмена", formItems, func(confirm bool) {
 		if confirm {
-			newTask := m.Task{Id: rand.Intn(10000), Name: nameEntry.Text, Desc: descEntry.Text}
+			newTask := m.Task{Id: rand.Intn(10000), Name: nameEntry.Text, Description: descEntry.Text}
 			f(newTask)
 		}
 	}, parent)
