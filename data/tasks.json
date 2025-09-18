@@ -1,3 +1,16 @@
 {
-  "tasks": []
+  "tasks": [
+    {
+      "id": 1,
+      "name": "Задание 1",
+      "desc": "",
+      "completed": false
+    },
+    {
+      "id": 2,
+      "name": "Задание 2",
+      "desc": "",
+      "completed": false
+    }
+  ]
 }

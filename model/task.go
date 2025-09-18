@@ -1,4 +1,3 @@
-// Package model содержит модели данных.
 package model
 
 // Task модель задания.
