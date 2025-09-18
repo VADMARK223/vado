@@ -12,11 +12,16 @@ import (
 )
 
 func CreateTaskItem(task m.Task, deleteCallback func()) fyne.CanvasObject {
-	text := util.Tpl("%d %s%s", task.Id, task.Name, func() string {
+	text := util.Tpl("%d %s%s%s", task.Id, task.Name, func() string {
 		if task.Desc != "" {
 			return util.Tpl(" (%s)", task.Desc)
 		}
 		return ""
+	}(), func() string {
+		if task.Completed {
+			return " Выполнено"
+		}
+		return " Не выполнено"
 	}())
 	taskLabel := widget.NewLabel(text)
 	hBox := container.NewHBox(taskLabel, layout.NewSpacer())
