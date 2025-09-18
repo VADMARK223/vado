@@ -15,8 +15,10 @@ import (
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
+	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
+	"github.com/k0kubun/pp"
 )
 
 func CreateTODOTab(win fyne.Window) fyne.CanvasObject {
@@ -43,7 +45,23 @@ func CreateTODOTab(win fyne.Window) fyne.CanvasObject {
 	addBtn := common.CreateBtn("Добавить", theme.ContentAddIcon(), func() {
 		showAddTaskDialog(win, &list, vBox)
 	})
-	controlBox := container.NewHBox(refreshBtn, addBtn)
+
+	quickAddBtn := common.CreateBtn("Добавить (быстро)", theme.ContentAddIcon(), func() {
+		log.Print("============")
+		pp.Println("Tasks", list.Tasks)
+		id := rand.Intn(10000)
+		addTask(&list.Tasks, m.Task{Id: id, Name: fmt.Sprintf("Task %d", id)})
+		saveJSON(&list)
+		redrawList(list, vBox, win)
+		pp.Println("Tasks", list.Tasks)
+	})
+
+	deleteAllBtn := common.CreateBtn("Удалить все", theme.DeleteIcon(), func() {
+		list.Tasks = nil
+		saveJSON(&list)
+		redrawList(list, vBox, win)
+	})
+	controlBox := container.NewHBox(refreshBtn, addBtn, quickAddBtn, layout.NewSpacer(), deleteAllBtn)
 
 	redrawList(list, vBox, win)
 

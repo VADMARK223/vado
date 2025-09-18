@@ -1,23 +1,13 @@
 {
   "tasks": [
     {
-      "id": 9046,
-      "name": "Задача 1",
+      "id": 9919,
+      "name": "Task 9919",
       "done": false
     },
     {
-      "id": 5406,
-      "name": "Задача 1",
-      "done": false
-    },
-    {
-      "id": 7652,
-      "name": "Задача 9",
-      "done": false
-    },
-    {
-      "id": 283,
-      "name": "Задача 8",
+      "id": 825,
+      "name": "Task 825",
       "done": false
     }
   ]
