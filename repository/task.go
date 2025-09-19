@@ -26,7 +26,6 @@ func (r *TaskRepository) LoadTasksList() (model.TaskList, error) {
 }
 
 func (r *TaskRepository) SaveTasks(tasksList model.TaskList) error {
-	log.Println("Save Tasks")
 	err := os.MkdirAll(filepath.Dir(r.FilePath), 0755)
 	if err != nil {
 		return err

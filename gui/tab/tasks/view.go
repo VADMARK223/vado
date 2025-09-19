@@ -14,6 +14,7 @@ import (
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/data/binding"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
@@ -21,15 +22,14 @@ import (
 )
 
 type ViewTasks struct {
-	service *service.TaskService
-	list    *widget.List
-	tasks   []m.Task
+	service     *service.TaskService
+	untypedList binding.UntypedList
 }
 
 const newVersion = true
 
 func CreateView(win fyne.Window, s *service.TaskService) fyne.CanvasObject {
-	vt := &ViewTasks{service: s}
+	vt := &ViewTasks{service: s, untypedList: binding.NewUntypedList()}
 	vt.reloadTasks()
 	tasksList, _ := s.GetAllTasks()
 
@@ -60,15 +60,15 @@ func CreateView(win fyne.Window, s *service.TaskService) fyne.CanvasObject {
 		redraw(&tasksList, vBox, win)
 	})
 
-	vt.list = widget.NewList(func() int {
-		return len(tasksList.Tasks)
-	}, func() fyne.CanvasObject {
-		return widget.NewLabel("")
-	}, func(id widget.ListItemID, object fyne.CanvasObject) {
-		item := object.(*widget.Label)
-		item.SetText(tasksList.Tasks[id].Name)
-	})
-	scroll := container.NewVScroll(vt.list)
+	list := widget.NewListWithData(
+		vt.untypedList,
+		func() fyne.CanvasObject {
+			return widget.NewLabel("")
+		}, func(item binding.DataItem, obj fyne.CanvasObject) {
+			task, _ := item.(binding.Untyped).Get()
+			obj.(*widget.Label).SetText(task.(m.Task).Name)
+		})
+	scroll := container.NewVScroll(list)
 	controlBox := container.NewHBox(refreshBtn, addBtn, quickAddBtn, layout.NewSpacer(), deleteAllBtn)
 	topBox := container.NewVBox(controlBox, conponent.CreateTasksTitle())
 	content := container.NewBorder(topBox, nil, nil, nil, scroll)
@@ -78,7 +78,13 @@ func CreateView(win fyne.Window, s *service.TaskService) fyne.CanvasObject {
 
 func (vt *ViewTasks) reloadTasks() {
 	tasksList, _ := vt.service.GetAllTasks()
-	vt.tasks = tasksList.Tasks
+	_ = vt.untypedList.Set(nil) // Очищаем лист
+	for _, task := range tasksList.Tasks {
+		err := vt.untypedList.Append(task)
+		if err != nil {
+			return
+		}
+	}
 }
 
 func addSaveRedraw(list *m.TaskList, listBox *fyne.Container, win fyne.Window, task m.Task) {
