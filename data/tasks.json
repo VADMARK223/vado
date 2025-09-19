@@ -1,21 +1,9 @@
 {
   "tasks": [
     {
-      "id": 2,
-      "name": "Задание 2",
+      "id": 2305,
+      "name": "Fast task",
       "description": "",
-      "completed": false
-    },
-    {
-      "id": 1,
-      "name": "Задание 1",
-      "description": "",
-      "completed": false
-    },
-    {
-      "id": 5386,
-      "name": "Задача 7",
-      "description": "asd",
       "completed": false
     }
   ]

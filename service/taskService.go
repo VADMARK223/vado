@@ -1,7 +1,9 @@
 package service
 
 import (
+	"errors"
 	"fmt"
+	"log"
 	"vado/model"
 	"vado/repository"
 )
@@ -16,7 +18,20 @@ func NewTaskService(repo *repository.TaskRepository) *TaskService {
 
 func (s *TaskService) GetAllTasks() (model.TaskList, error) {
 	fmt.Println("Get All Tasks")
-	return s.repo.LoadTasks()
+	return s.repo.LoadTasksList()
+}
+
+func (s *TaskService) Create(t model.Task) error {
+	log.Println("Create Task")
+	list, _ := s.repo.LoadTasksList()
+	for _, task := range list.Tasks {
+		if task.Id == t.Id {
+			return errors.New("task already exists")
+		}
+	}
+	list.Tasks = append(list.Tasks, t)
+
+	return s.repo.SaveTasks(list)
 }
 
 func GetTaskById(id int) {

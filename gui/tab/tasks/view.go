@@ -3,7 +3,6 @@ package tasks
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"math/rand"
 	"os"
 	"vado/gui/common"
@@ -24,70 +23,62 @@ import (
 type ViewTasks struct {
 	service *service.TaskService
 	list    *widget.List
+	tasks   []m.Task
 }
 
-const oldGui = false
+const newVersion = true
 
 func CreateView(win fyne.Window, s *service.TaskService) fyne.CanvasObject {
-	if oldGui {
-		data, err := os.ReadFile(constant.TaskFilePath)
+	vt := &ViewTasks{service: s}
+	vt.reloadTasks()
+	tasksList, _ := s.GetAllTasks()
 
-		if err != nil {
-			log.Fatal(err)
+	vBox := container.NewVBox()
+
+	refreshBtn := common.CreateBtn("Обновить", theme.ViewRefreshIcon(), func() {
+		redraw(&tasksList, vBox, win)
+	})
+
+	addBtn := common.CreateBtn("Добавить", theme.ContentAddIcon(), func() {
+		conponent.ShowAddTaskDialog(win, func(task m.Task) {
+			addSaveRedraw(&tasksList, vBox, win, task)
+		})
+	})
+
+	quickAddBtn := common.CreateBtn("Добавить (быстро)", theme.ContentAddIcon(), func() {
+		if newVersion {
+			vt.AddTaskFast("Fast task")
+		} else {
+			id := rand.Intn(10000)
+			addSaveRedraw(&tasksList, vBox, win, m.Task{Id: id, Name: util.Tpl("Задание %d", id)})
 		}
+	})
 
-		var list m.TaskList
-		if err = json.Unmarshal(data, &list); err != nil {
-			fmt.Printf("Error: '%s'\n", err)
-		}
-		log.Println("Old len", len(list.Tasks))
-		vBox := container.NewVBox()
+	deleteAllBtn := common.CreateBtn("Удалить все", theme.DeleteIcon(), func() {
+		tasksList.Tasks = []m.Task{}
+		saveJSON(&tasksList)
+		redraw(&tasksList, vBox, win)
+	})
 
-		refreshBtn := common.CreateBtn("Обновить", theme.ViewRefreshIcon(), func() {
-			redraw(&list, vBox, win)
-		})
+	vt.list = widget.NewList(func() int {
+		return len(tasksList.Tasks)
+	}, func() fyne.CanvasObject {
+		return widget.NewLabel("")
+	}, func(id widget.ListItemID, object fyne.CanvasObject) {
+		item := object.(*widget.Label)
+		item.SetText(tasksList.Tasks[id].Name)
+	})
+	scroll := container.NewVScroll(vt.list)
+	controlBox := container.NewHBox(refreshBtn, addBtn, quickAddBtn, layout.NewSpacer(), deleteAllBtn)
+	topBox := container.NewVBox(controlBox, conponent.CreateTasksTitle())
+	content := container.NewBorder(topBox, nil, nil, nil, scroll)
+	return content
 
-		addBtn := common.CreateBtn("Добавить", theme.ContentAddIcon(), func() {
-			conponent.ShowAddTaskDialog(win, func(task m.Task) {
-				addSaveRedraw(&list, vBox, win, task)
-			})
-		})
+}
 
-		quickAddBtn := common.CreateBtn("Добавить (быстро)", theme.ContentAddIcon(), func() {
-			id := rand.Intn(3)
-			addSaveRedraw(&list, vBox, win, m.Task{Id: id, Name: util.Tpl("Задание %d", id)})
-		})
-
-		deleteAllBtn := common.CreateBtn("Удалить все", theme.DeleteIcon(), func() {
-			list.Tasks = []m.Task{}
-			saveJSON(&list)
-			redraw(&list, vBox, win)
-		})
-
-		redraw(&list, vBox, win)
-
-		scroll := container.NewVScroll(vBox)
-		controlBox := container.NewHBox(refreshBtn, addBtn, quickAddBtn, layout.NewSpacer(), deleteAllBtn)
-		topBox := container.NewVBox(controlBox, conponent.CreateTasksTitle())
-		content := container.NewBorder(topBox, nil, nil, nil, scroll)
-
-		return content
-	} else {
-		vt := &ViewTasks{service: s}
-		tasksList, _ := s.GetAllTasks()
-
-		vt.list = widget.NewList(func() int {
-			return len(tasksList.Tasks)
-		}, func() fyne.CanvasObject {
-			return widget.NewLabel("")
-		}, func(id widget.ListItemID, object fyne.CanvasObject) {
-			item := object.(*widget.Label)
-			item.SetText(tasksList.Tasks[id].Name)
-		})
-		scroll := container.NewVScroll(vt.list)
-		return scroll
-	}
-
+func (vt *ViewTasks) reloadTasks() {
+	tasksList, _ := vt.service.GetAllTasks()
+	vt.tasks = tasksList.Tasks
 }
 
 func addSaveRedraw(list *m.TaskList, listBox *fyne.Container, win fyne.Window, task m.Task) {
