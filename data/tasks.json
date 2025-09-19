@@ -1,22 +1,3 @@
 {
-  "tasks": [
-    {
-      "id": 3951,
-      "name": "Fast task 1",
-      "description": "",
-      "completed": false
-    },
-    {
-      "id": 5912,
-      "name": "Fast task",
-      "description": "",
-      "completed": false
-    },
-    {
-      "id": 1176,
-      "name": "Fast task",
-      "description": "",
-      "completed": false
-    }
-  ]
+  "tasks": []
 }

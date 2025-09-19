@@ -2,7 +2,6 @@ package service
 
 import (
 	"errors"
-	"fmt"
 	"vado/model"
 	"vado/repository"
 )
@@ -31,6 +30,8 @@ func (s *TaskService) Create(t model.Task) error {
 	return s.repo.SaveTasks(list)
 }
 
+// Delete удаляет задание по его идентификатору
+// TODO: добавить проверку на отсутствие задания с таким идентификатором
 func (s *TaskService) Delete(id int) error {
 	list, _ := s.repo.LoadTasksList()
 	newTasks := make([]model.Task, 0)
@@ -43,14 +44,11 @@ func (s *TaskService) Delete(id int) error {
 	return s.repo.SaveTasks(list)
 }
 
-func GetTaskById(id int) {
-	fmt.Println("Get Task By Id")
-}
-
-func DeleteTask() {
-
-}
-
-func UpdateTask() {
-	fmt.Println("Update Task")
+func (s *TaskService) DeleteAllTasks() {
+	list, _ := s.repo.LoadTasksList()
+	list.Tasks = []model.Task{}
+	err := s.repo.SaveTasks(list)
+	if err != nil {
+		panic(err)
+	}
 }

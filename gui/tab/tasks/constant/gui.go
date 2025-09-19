@@ -1,3 +1,4 @@
 package constant
 
-const ShowDeleteConfirm = true
+const ShowTaskDeleteConfirm = false
+const ShowTaskDeleteALLConfirm = false

@@ -12,7 +12,7 @@ import (
 )
 
 type TaskItem struct {
-	widget.BaseWidget
+	widget.BaseWidget // Встраивание
 
 	label    *widget.Label
 	button   *widget.Button
@@ -29,7 +29,7 @@ func NewTaskItem(text string, onDelete func()) *TaskItem {
 		ti.OnDelete()
 	})
 
-	ti.ExtendBaseWidget(ti)
+	ti.ExtendBaseWidget(ti) // Сообщаем движку, что не простая структура
 	return ti
 }
 
@@ -53,24 +53,4 @@ func (ti *TaskItem) SetText(task m.Task) {
 	}())
 
 	ti.label.SetText(text)
-}
-
-// CreateTaskItem deprecated
-func CreateTaskItem(task m.Task, deleteCallback func()) fyne.CanvasObject {
-	text := util.Tpl("%d %s%s%s", task.Id, task.Name, func() string {
-		if task.Description != "" {
-			return util.Tpl(" (%s)", task.Description)
-		}
-		return ""
-	}(), func() string {
-		if task.Completed {
-			return " Выполнено"
-		}
-		return " Не выполнено"
-	}())
-	taskLabel := widget.NewLabel(text)
-	hBox := container.NewHBox(taskLabel, layout.NewSpacer())
-	taskDelBtn := widget.NewButtonWithIcon("", theme.CancelIcon(), deleteCallback)
-	hBox.Add(taskDelBtn)
-	return hBox
 }

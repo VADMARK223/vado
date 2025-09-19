@@ -1,10 +1,7 @@
 package tasks
 
 import (
-	"encoding/json"
-	"fmt"
 	"math/rand"
-	"os"
 	"vado/gui/common"
 	"vado/gui/tab/tasks/conponent"
 	"vado/gui/tab/tasks/constant"
@@ -26,38 +23,48 @@ type ViewTasks struct {
 	untypedList binding.UntypedList
 }
 
-const newVersion = true
-
 func NewTasksView(win fyne.Window, s *service.TaskService) fyne.CanvasObject {
 	vt := &ViewTasks{service: s, untypedList: binding.NewUntypedList()}
-	tasksList, err := vt.reloadTasks()
+	err := vt.reloadTasks()
 	if err != nil {
 		return nil
 	}
 
-	vBox := container.NewVBox()
-	refreshBtn := common.CreateBtn("Обновить", theme.ViewRefreshIcon(), func() {
-		redraw(&tasksList, vBox, win)
-	})
+	refreshBtn := common.CreateBtn("Обновить", theme.ViewRefreshIcon(), nil)
+	refreshBtn.Disable()
 	addBtn := common.CreateBtn("Добавить", theme.ContentAddIcon(), func() {
-		conponent.ShowAddTaskDialog(win, func(task m.Task) {
-			addSaveRedraw(&tasksList, vBox, win, task)
+		conponent.ShowAddTaskDialog(win, func(newTask m.Task) {
+			vt.AddTask(newTask)
 		})
 	})
 	quickAddBtn := common.CreateBtn("Добавить (быстро)", theme.ContentAddIcon(), func() {
-		if newVersion {
-			vt.AddTaskFast("Fast task")
-		} else {
-			id := rand.Intn(10000)
-			addSaveRedraw(&tasksList, vBox, win, m.Task{Id: id, Name: util.Tpl("Задание %d", id)})
+		id := rand.Intn(10000)
+		newTask := m.Task{
+			Id:   id,
+			Name: util.Tpl("Fast task %d", id),
 		}
+		vt.AddTask(newTask)
 	})
 
 	deleteAllBtn := common.CreateBtn("Удалить все", theme.DeleteIcon(), func() {
-		tasksList.Tasks = []m.Task{}
-		saveJSON(&tasksList)
-		redraw(&tasksList, vBox, win)
+		if constant.ShowTaskDeleteALLConfirm {
+			dialog.ShowConfirm("Удаление задания", "Вы действительно хотите удалить все задания?", func(b bool) {
+				if b {
+					vt.DeleteAllTasks()
+				}
+			}, win)
+		} else {
+			vt.DeleteAllTasks()
+		}
 	})
+
+	vt.untypedList.AddListener(binding.NewDataListener(func() {
+		if vt.untypedList.Length() == 0 {
+			deleteAllBtn.Disable()
+		} else {
+			deleteAllBtn.Enable()
+		}
+	}))
 
 	list := widget.NewListWithData(
 		vt.untypedList,
@@ -70,11 +77,29 @@ func NewTasksView(win fyne.Window, s *service.TaskService) fyne.CanvasObject {
 
 			taskItem := obj.(*conponent.TaskItem)
 			taskItem.SetText(t)
-			taskItem.OnDelete = func() {
-				vt.service.Delete(t.Id)
-				_, err := vt.reloadTasks()
-				if err != nil {
+
+			doDelete := func() {
+				delErr := vt.service.Delete(t.Id)
+				if delErr != nil {
+					panic(delErr)
 					return
+				}
+				_ = vt.reloadTasks()
+				if err != nil {
+					panic(err)
+					return
+				}
+			}
+
+			taskItem.OnDelete = func() {
+				if constant.ShowTaskDeleteConfirm {
+					dialog.ShowConfirm("Удаление задания", "Вы действительно хотите удалить задание?", func(b bool) {
+						if b {
+							doDelete()
+						}
+					}, win)
+				} else {
+					doDelete()
 				}
 			}
 		})
@@ -86,96 +111,17 @@ func NewTasksView(win fyne.Window, s *service.TaskService) fyne.CanvasObject {
 
 }
 
-func (vt *ViewTasks) reloadTasks() (m.TaskList, error) {
-	tasksList, _ := vt.service.GetAllTasks()
-	_ = vt.untypedList.Set(nil) // Очищаем лист
-	for _, task := range tasksList.Tasks {
-		err := vt.untypedList.Append(task)
-		if err != nil {
-			return tasksList, err
-		}
-	}
-
-	return tasksList, nil
-}
-
-func addSaveRedraw(list *m.TaskList, listBox *fyne.Container, win fyne.Window, task m.Task) {
-	if err := addTask(&list.Tasks, task, win); err != nil {
-		fmt.Printf("Error: %s id = %d\n", err, task.Id)
-		return
-	}
-	saveJSON(list)
-	redraw(list, listBox, win)
-}
-
-func redraw(list *m.TaskList, listBox *fyne.Container, win fyne.Window) {
-	listBox.RemoveAll()
-	for i := range list.Tasks {
-		task := list.Tasks[i]
-
-		listBox.Add(conponent.CreateTaskItem(task, func() {
-			doDelete := func() {
-				deleteTaskAndRedraw(list, task.Id, listBox, win)
-			}
-			if constant.ShowDeleteConfirm {
-				dialog.ShowConfirm("Удаление задания", "Вы действительно хотите удалить задание?", func(b bool) {
-					if b {
-						doDelete()
-					}
-				}, win)
-			} else {
-				doDelete()
-			}
-		}))
-	}
-}
-
-func deleteTaskAndRedraw(list *m.TaskList, taskId int, listBox *fyne.Container, win fyne.Window) {
-	deleteTask(list, taskId)
-	redraw(list, listBox, win)
-}
-
-func addTask(tasks *[]m.Task, newTask m.Task, win fyne.Window) error {
-	for _, t := range *tasks {
-		if t.Id == newTask.Id {
-			dialog.NewCustom("Ошибка", "OK", widget.NewLabel("Задача с таким ID уже существует"), win).Show()
-			return constant.ErrTaskAlreadyExists
-		}
-	}
-
-	*tasks = append(*tasks, newTask)
-
-	return nil
-}
-
-func deleteTask(list *m.TaskList, taskId int) {
-	var newTasks []m.Task
-	for _, t := range list.Tasks {
-		if t.Id != taskId {
-			newTasks = append(newTasks, t)
-		}
-	}
-	list.Tasks = newTasks
-
-	saveJSON(list)
-}
-
-func saveJSON(list *m.TaskList) {
-	// Сохраняем в json
-	data, err := json.MarshalIndent(list, "", "  ")
+func (vt *ViewTasks) reloadTasks() error {
+	tasksList, err := vt.service.GetAllTasks()
 	if err != nil {
-		fmt.Println("Error marshal JSON:", err)
-		return
+		return err
 	}
-	/*
-		0 → это префикс, который говорит Go, что число в восьмеричной системе.
-		6 → владелец может читать и писать (4+2).
-		4 → группа может только читать.
-		4 → остальные пользователи могут только читать.
-		Флаг os. ModePerm - это 0777, то есть максимально открытые права.
-	*/
-	if err := os.WriteFile(constant.TaskFilePath, data, 0644); err != nil {
-		fmt.Println("Error writing file:", err)
-		return
+
+	// преобразуем []Task → []any, потому что UntypedList принимает any
+	items := make([]any, len(tasksList.Tasks))
+	for i, t := range tasksList.Tasks {
+		items[i] = t
 	}
+
+	return vt.untypedList.Set(items)
 }
