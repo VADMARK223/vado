@@ -1,20 +1,18 @@
-package todo
+package tasks
 
 import (
 	"encoding/json"
 	"fmt"
-	"image/color"
 	"log"
 	"math/rand"
 	"os"
 	"vado/gui/common"
-	"vado/gui/tab/todo/conponent"
-	"vado/gui/tab/todo/constant"
+	"vado/gui/tab/tasks/conponent"
+	"vado/gui/tab/tasks/constant"
 	m "vado/model"
 	"vado/util"
 
 	"fyne.io/fyne/v2"
-	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/layout"
@@ -23,10 +21,6 @@ import (
 )
 
 func CreateView(win fyne.Window) fyne.CanvasObject {
-	title := canvas.NewText("Список заданий", color.White)
-	title.TextStyle = fyne.TextStyle{Bold: true}
-	title.Alignment = fyne.TextAlignCenter
-
 	data, err := os.ReadFile(constant.TaskFilePath)
 
 	if err != nil {
@@ -59,16 +53,12 @@ func CreateView(win fyne.Window) fyne.CanvasObject {
 		saveJSON(&list)
 		redraw(&list, vBox, win)
 	})
-	findInt := widget.NewEntry()
-	findInt.SetPlaceHolder("Поиск")
-	findInt.Hide()
-
-	controlBox := container.NewHBox(refreshBtn, addBtn, quickAddBtn, layout.NewSpacer(), findInt, deleteAllBtn)
 
 	redraw(&list, vBox, win)
 
 	scroll := container.NewVScroll(vBox)
-	topBox := container.NewVBox(controlBox, title)
+	controlBox := container.NewHBox(refreshBtn, addBtn, quickAddBtn, layout.NewSpacer(), deleteAllBtn)
+	topBox := container.NewVBox(controlBox, conponent.CreateTasksTitle())
 	content := container.NewBorder(topBox, nil, nil, nil, scroll)
 
 	return content

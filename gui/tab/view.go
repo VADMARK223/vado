@@ -5,21 +5,21 @@ import (
 	"vado/gui/tab/http"
 	"vado/gui/tab/lesson"
 	"vado/gui/tab/settings"
-	"vado/gui/tab/todo"
+	"vado/gui/tab/tasks"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 )
 
-const defaultTabIndex = 2
+const defaultTabIndex = 1
 
 func CreateAppTabs(win fyne.Window) *container.AppTabs {
 	factories := map[*container.TabItem]func() fyne.CanvasObject{}
 
 	tabs := container.NewAppTabs(
 		common.CreateLazyTabItem("Http", http.CreateView, factories),
-		common.CreateLazyTabItem("TODO", func() fyne.CanvasObject {
-			return todo.CreateView(win)
+		common.CreateLazyTabItem("Задания", func() fyne.CanvasObject {
+			return tasks.CreateView(win)
 		}, factories),
 		common.CreateLazyTabItem("Уроки", lesson.CreateView, factories),
 		common.CreateLazyTabItem("Настройки", settings.CreateView, factories),
