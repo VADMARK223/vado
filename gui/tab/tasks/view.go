@@ -28,23 +28,22 @@ type ViewTasks struct {
 
 const newVersion = true
 
-func CreateView(win fyne.Window, s *service.TaskService) fyne.CanvasObject {
+func NewTasksView(win fyne.Window, s *service.TaskService) fyne.CanvasObject {
 	vt := &ViewTasks{service: s, untypedList: binding.NewUntypedList()}
-	vt.reloadTasks()
-	tasksList, _ := s.GetAllTasks()
+	tasksList, err := vt.reloadTasks()
+	if err != nil {
+		return nil
+	}
 
 	vBox := container.NewVBox()
-
 	refreshBtn := common.CreateBtn("Обновить", theme.ViewRefreshIcon(), func() {
 		redraw(&tasksList, vBox, win)
 	})
-
 	addBtn := common.CreateBtn("Добавить", theme.ContentAddIcon(), func() {
 		conponent.ShowAddTaskDialog(win, func(task m.Task) {
 			addSaveRedraw(&tasksList, vBox, win, task)
 		})
 	})
-
 	quickAddBtn := common.CreateBtn("Добавить (быстро)", theme.ContentAddIcon(), func() {
 		if newVersion {
 			vt.AddTaskFast("Fast task")
@@ -63,10 +62,21 @@ func CreateView(win fyne.Window, s *service.TaskService) fyne.CanvasObject {
 	list := widget.NewListWithData(
 		vt.untypedList,
 		func() fyne.CanvasObject {
-			return widget.NewLabel("")
-		}, func(item binding.DataItem, obj fyne.CanvasObject) {
+			return conponent.NewTaskItem("", nil)
+		},
+		func(item binding.DataItem, obj fyne.CanvasObject) {
 			task, _ := item.(binding.Untyped).Get()
-			obj.(*widget.Label).SetText(task.(m.Task).Name)
+			t := task.(m.Task)
+
+			taskItem := obj.(*conponent.TaskItem)
+			taskItem.SetText(t)
+			taskItem.OnDelete = func() {
+				vt.service.Delete(t.Id)
+				_, err := vt.reloadTasks()
+				if err != nil {
+					return
+				}
+			}
 		})
 	scroll := container.NewVScroll(list)
 	controlBox := container.NewHBox(refreshBtn, addBtn, quickAddBtn, layout.NewSpacer(), deleteAllBtn)
@@ -76,15 +86,17 @@ func CreateView(win fyne.Window, s *service.TaskService) fyne.CanvasObject {
 
 }
 
-func (vt *ViewTasks) reloadTasks() {
+func (vt *ViewTasks) reloadTasks() (m.TaskList, error) {
 	tasksList, _ := vt.service.GetAllTasks()
 	_ = vt.untypedList.Set(nil) // Очищаем лист
 	for _, task := range tasksList.Tasks {
 		err := vt.untypedList.Append(task)
 		if err != nil {
-			return
+			return tasksList, err
 		}
 	}
+
+	return tasksList, nil
 }
 
 func addSaveRedraw(list *m.TaskList, listBox *fyne.Container, win fyne.Window, task m.Task) {

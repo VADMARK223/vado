@@ -16,7 +16,7 @@ import (
 
 const defaultTabIndex = 1
 
-func CreateAppTabs(win fyne.Window) *container.AppTabs {
+func NewTabsView(win fyne.Window) *container.AppTabs {
 	factories := map[*container.TabItem]func() fyne.CanvasObject{}
 	r := &repository.TaskRepository{FilePath: constant.TaskFilePath}
 	s := service.NewTaskService(r)
@@ -24,7 +24,7 @@ func CreateAppTabs(win fyne.Window) *container.AppTabs {
 	tabs := container.NewAppTabs(
 		common.CreateLazyTabItem("Http", http.CreateView, factories),
 		common.CreateLazyTabItem("Задания", func() fyne.CanvasObject {
-			return tasks.CreateView(win, s)
+			return tasks.NewTasksView(win, s)
 		}, factories),
 		common.CreateLazyTabItem("Уроки", lesson.CreateView, factories),
 		common.CreateLazyTabItem("Настройки", settings.CreateView, factories),

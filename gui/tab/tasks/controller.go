@@ -13,5 +13,8 @@ func (vt *ViewTasks) AddTaskFast(name string) {
 		return
 	}
 
-	vt.reloadTasks()
+	_, err = vt.reloadTasks()
+	if err != nil {
+		return
+	}
 }

@@ -27,7 +27,7 @@ func ShowMainApp() {
 		widget.NewLabel(util.Tpl("Version %s", c.Version)),
 	)
 
-	root := container.NewBorder(topBar, bottomBar, nil, nil, tabs.CreateAppTabs(mainWindow))
+	root := container.NewBorder(topBar, bottomBar, nil, nil, tabs.NewTabsView(mainWindow))
 	mainWindow.SetContent(root)
 
 	mainWindow.Canvas().SetOnTypedKey(func(k *fyne.KeyEvent) {

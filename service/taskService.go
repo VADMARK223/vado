@@ -31,6 +31,18 @@ func (s *TaskService) Create(t model.Task) error {
 	return s.repo.SaveTasks(list)
 }
 
+func (s *TaskService) Delete(id int) error {
+	list, _ := s.repo.LoadTasksList()
+	newTasks := make([]model.Task, 0)
+	for _, t := range list.Tasks {
+		if id != t.Id {
+			newTasks = append(newTasks, t)
+		}
+	}
+	list.Tasks = newTasks
+	return s.repo.SaveTasks(list)
+}
+
 func GetTaskById(id int) {
 	fmt.Println("Get Task By Id")
 }
