@@ -2,9 +2,9 @@ package tasks
 
 import (
 	"image/color"
+	constant2 "vado/constant"
 	"vado/gui/common"
 	"vado/gui/tab/tasks/conponent"
-	"vado/gui/tab/tasks/constant"
 	m "vado/model"
 	"vado/service"
 	"vado/util"
@@ -20,11 +20,11 @@ import (
 )
 
 type ViewTasks struct {
-	service     *service.TaskService
+	service     service.ITaskService
 	untypedList binding.UntypedList
 }
 
-func NewTasksView(win fyne.Window, s *service.TaskService) fyne.CanvasObject {
+func NewTasksView(win fyne.Window, s service.ITaskService) fyne.CanvasObject {
 	vt := &ViewTasks{service: s, untypedList: binding.NewUntypedList()}
 	err := vt.reloadTasks()
 	if err != nil {
@@ -43,14 +43,14 @@ func NewTasksView(win fyne.Window, s *service.TaskService) fyne.CanvasObject {
 	})
 
 	deleteAllBtn := common.CreateBtn("Удалить все", theme.DeleteIcon(), func() {
-		if constant.ShowTaskDeleteALLConfirm {
+		if util.GetBoolPrefByKey(constant2.DevModePref) {
+			vt.DeleteAllTasks()
+		} else {
 			dialog.ShowConfirm("Удаление задания", "Вы действительно хотите удалить все задания?", func(b bool) {
 				if b {
 					vt.DeleteAllTasks()
 				}
 			}, win)
-		} else {
-			vt.DeleteAllTasks()
 		}
 	})
 
@@ -67,7 +67,7 @@ func NewTasksView(win fyne.Window, s *service.TaskService) fyne.CanvasObject {
 			taskItem.SetTask(t)
 
 			doDelete := func() {
-				delErr := vt.service.Delete(t.Id)
+				delErr := vt.service.DeleteTask(t.Id)
 				if delErr != nil {
 					panic(delErr)
 					return
@@ -80,14 +80,14 @@ func NewTasksView(win fyne.Window, s *service.TaskService) fyne.CanvasObject {
 			}
 
 			taskItem.OnDelete = func() {
-				if constant.ShowTaskDeleteConfirm {
+				if util.GetBoolPrefByKey(constant2.DevModePref) {
+					doDelete()
+				} else {
 					dialog.ShowConfirm("Удаление задания", "Вы действительно хотите удалить задание?", func(b bool) {
 						if b {
 							doDelete()
 						}
 					}, win)
-				} else {
-					doDelete()
 				}
 			}
 		})

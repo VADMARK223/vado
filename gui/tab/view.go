@@ -8,19 +8,27 @@ import (
 	"vado/gui/tab/settings"
 	"vado/gui/tab/tasks"
 	"vado/gui/tab/tasks/constant"
-	"vado/repository"
+	http3 "vado/repository/http"
+	http2 "vado/repository/json"
 	"vado/service"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 )
 
-const defaultTabIndex = 3
+const defaultTabIndex = 1
+const isJSONMode = true
 
 func NewTabsView(win fyne.Window) *container.AppTabs {
 	factories := map[*container.TabItem]func() fyne.CanvasObject{}
-	r := &repository.TaskRepository{FilePath: constant.TasksFilePath}
-	s := service.NewTaskService(r)
+	//r := &repository.TaskRepository{FilePath: constant.TasksFilePath}
+	//s := service.NewTaskService(r)
+	var s service.ITaskService
+	if isJSONMode {
+		s = http2.NewTaskJSONRepo(constant.TasksFilePath)
+	} else {
+		s = http3.NewTaskHTTPRepo(constant.TasksBaseURL)
+	}
 
 	tabs := container.NewAppTabs(
 		common.CreateLazyTabItem("Http", http.CreateView, factories),

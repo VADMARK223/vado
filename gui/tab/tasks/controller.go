@@ -9,14 +9,15 @@ import (
 func (vt *ViewTasks) AddTaskQuick() {
 	id := rand.Intn(10000)
 	newTask := model.Task{
-		Id:   id,
-		Name: util.Tpl("Fast task %d", id),
+		Id:        id,
+		Name:      util.Tpl("Fast task %d", id),
+		Completed: rand.Intn(2) == 1,
 	}
 	vt.AddTask(newTask)
 }
 
 func (vt *ViewTasks) AddTask(newTask model.Task) {
-	_ = vt.service.Create(newTask)
+	_ = vt.service.CreateTask(newTask)
 	_ = vt.reloadTasks()
 }
 

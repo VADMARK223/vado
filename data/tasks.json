@@ -1,26 +1,32 @@
 {
   "tasks": [
     {
-      "id": 9221,
-      "name": "Задача 6",
+      "id": 3593,
+      "name": "Fast task 3593",
       "description": "",
       "completed": false
     },
     {
-      "id": 4774,
-      "name": "Fast task 4774",
-      "description": "",
-      "completed": false
-    },
-    {
-      "id": 1917,
-      "name": "Fast task 1917",
+      "id": 2270,
+      "name": "Fast task 2270",
       "description": "",
       "completed": true
     },
     {
-      "id": 4576,
-      "name": "Fast task 4576",
+      "id": 8011,
+      "name": "Fast task 8011",
+      "description": "",
+      "completed": true
+    },
+    {
+      "id": 9834,
+      "name": "Fast task 9834",
+      "description": "",
+      "completed": false
+    },
+    {
+      "id": 6513,
+      "name": "Fast task 6513",
       "description": "",
       "completed": false
     }

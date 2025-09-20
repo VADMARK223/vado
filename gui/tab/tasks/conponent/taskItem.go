@@ -1,7 +1,6 @@
 package conponent
 
 import (
-	"log"
 	m "vado/model"
 	"vado/util"
 
@@ -22,9 +21,7 @@ type TaskItem struct {
 }
 
 func NewTaskItem(text string, onDelete func()) *TaskItem {
-	check := widget.NewCheck("", func(b bool) {
-		log.Println("Check set to", b)
-	})
+	check := widget.NewCheck("", func(b bool) {})
 	check.Disable()
 
 	ti := &TaskItem{
@@ -48,7 +45,7 @@ func (ti *TaskItem) CreateRenderer() fyne.WidgetRenderer {
 
 // SetTask прокидывает данные из представления
 func (ti *TaskItem) SetTask(task m.Task) {
-	ti.check.Checked = task.Completed
+	ti.check.SetChecked(task.Completed)
 
 	text := util.Tpl("%d %s%s", task.Id, task.Name, func() string {
 		if task.Description != "" {
