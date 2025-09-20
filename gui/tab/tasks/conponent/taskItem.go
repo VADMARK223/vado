@@ -1,6 +1,7 @@
 package conponent
 
 import (
+	"log"
 	m "vado/model"
 	"vado/util"
 
@@ -14,13 +15,20 @@ import (
 type TaskItem struct {
 	widget.BaseWidget // Встраивание
 
+	check    *widget.Check
 	label    *widget.Label
 	button   *widget.Button
 	OnDelete func()
 }
 
 func NewTaskItem(text string, onDelete func()) *TaskItem {
+	check := widget.NewCheck("", func(b bool) {
+		log.Println("Check set to", b)
+	})
+	check.Disable()
+
 	ti := &TaskItem{
+		check:    check,
 		label:    widget.NewLabel(text),
 		OnDelete: onDelete,
 	}
@@ -34,22 +42,19 @@ func NewTaskItem(text string, onDelete func()) *TaskItem {
 }
 
 func (ti *TaskItem) CreateRenderer() fyne.WidgetRenderer {
-	content := container.NewHBox(ti.label, layout.NewSpacer(), ti.button)
+	content := container.NewHBox(ti.check, ti.label, layout.NewSpacer(), ti.button)
 	return widget.NewSimpleRenderer(content)
 }
 
-// SetText обновляет текст задачи
-func (ti *TaskItem) SetText(task m.Task) {
-	text := util.Tpl("%d %s%s%s", task.Id, task.Name, func() string {
+// SetTask прокидывает данные из представления
+func (ti *TaskItem) SetTask(task m.Task) {
+	ti.check.Checked = task.Completed
+
+	text := util.Tpl("%d %s%s", task.Id, task.Name, func() string {
 		if task.Description != "" {
 			return util.Tpl(" (%s)", task.Description)
 		}
 		return ""
-	}(), func() string {
-		if task.Completed {
-			return " Выполнено"
-		}
-		return " Не выполнено"
 	}())
 
 	ti.label.SetText(text)

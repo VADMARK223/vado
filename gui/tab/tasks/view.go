@@ -1,7 +1,7 @@
 package tasks
 
 import (
-	"math/rand"
+	"image/color"
 	"vado/gui/common"
 	"vado/gui/tab/tasks/conponent"
 	"vado/gui/tab/tasks/constant"
@@ -10,6 +10,7 @@ import (
 	"vado/util"
 
 	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/data/binding"
 	"fyne.io/fyne/v2/dialog"
@@ -38,12 +39,7 @@ func NewTasksView(win fyne.Window, s *service.TaskService) fyne.CanvasObject {
 		})
 	})
 	quickAddBtn := common.CreateBtn("Добавить (быстро)", theme.ContentAddIcon(), func() {
-		id := rand.Intn(10000)
-		newTask := m.Task{
-			Id:   id,
-			Name: util.Tpl("Fast task %d", id),
-		}
-		vt.AddTask(newTask)
+		vt.AddTaskQuick()
 	})
 
 	deleteAllBtn := common.CreateBtn("Удалить все", theme.DeleteIcon(), func() {
@@ -58,14 +54,6 @@ func NewTasksView(win fyne.Window, s *service.TaskService) fyne.CanvasObject {
 		}
 	})
 
-	vt.untypedList.AddListener(binding.NewDataListener(func() {
-		if vt.untypedList.Length() == 0 {
-			deleteAllBtn.Disable()
-		} else {
-			deleteAllBtn.Enable()
-		}
-	}))
-
 	list := widget.NewListWithData(
 		vt.untypedList,
 		func() fyne.CanvasObject {
@@ -76,7 +64,7 @@ func NewTasksView(win fyne.Window, s *service.TaskService) fyne.CanvasObject {
 			t := task.(m.Task)
 
 			taskItem := obj.(*conponent.TaskItem)
-			taskItem.SetText(t)
+			taskItem.SetTask(t)
 
 			doDelete := func() {
 				delErr := vt.service.Delete(t.Id)
@@ -105,7 +93,20 @@ func NewTasksView(win fyne.Window, s *service.TaskService) fyne.CanvasObject {
 		})
 	scroll := container.NewVScroll(list)
 	controlBox := container.NewHBox(refreshBtn, addBtn, quickAddBtn, layout.NewSpacer(), deleteAllBtn)
-	topBox := container.NewVBox(controlBox, conponent.CreateTasksTitle())
+	title := canvas.NewText("Список заданий", color.White)
+	title.TextStyle = fyne.TextStyle{Bold: true}
+	title.Alignment = fyne.TextAlignCenter
+	vt.untypedList.AddListener(binding.NewDataListener(func() {
+		tasksListLen := vt.untypedList.Length()
+		if tasksListLen == 0 {
+			deleteAllBtn.Disable()
+			title.Text = "Список заданий пуст."
+		} else {
+			deleteAllBtn.Enable()
+			title.Text = util.Tpl("Список заданий (Всего: %d)", tasksListLen)
+		}
+	}))
+	topBox := container.NewVBox(controlBox, title)
 	content := container.NewBorder(topBox, nil, nil, nil, scroll)
 	return content
 

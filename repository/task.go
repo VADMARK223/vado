@@ -14,7 +14,7 @@ type TaskRepository struct {
 }
 
 func (r *TaskRepository) LoadTasksList() (model.TaskList, error) {
-	data, err := os.ReadFile(constant.TaskFilePath)
+	data, err := os.ReadFile(constant.TasksFilePath)
 
 	if err != nil {
 		log.Fatal("Error open file:", err)

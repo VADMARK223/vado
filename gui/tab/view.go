@@ -2,6 +2,7 @@ package tab
 
 import (
 	"vado/gui/common"
+	"vado/gui/tab/heavy"
 	"vado/gui/tab/http"
 	"vado/gui/tab/lesson"
 	"vado/gui/tab/settings"
@@ -14,11 +15,11 @@ import (
 	"fyne.io/fyne/v2/container"
 )
 
-const defaultTabIndex = 1
+const defaultTabIndex = 3
 
 func NewTabsView(win fyne.Window) *container.AppTabs {
 	factories := map[*container.TabItem]func() fyne.CanvasObject{}
-	r := &repository.TaskRepository{FilePath: constant.TaskFilePath}
+	r := &repository.TaskRepository{FilePath: constant.TasksFilePath}
 	s := service.NewTaskService(r)
 
 	tabs := container.NewAppTabs(
@@ -28,6 +29,7 @@ func NewTabsView(win fyne.Window) *container.AppTabs {
 		}, factories),
 		common.CreateLazyTabItem("Уроки", lesson.CreateView, factories),
 		common.CreateLazyTabItem("Настройки", settings.CreateView, factories),
+		common.CreateLazyTabItem("Тяжелая вкладка", heavy.NewHeavyView, factories),
 	)
 	tabs.SelectIndex(defaultTabIndex)
 	tabs.SetTabLocation(container.TabLocationTop)
