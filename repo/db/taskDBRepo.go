@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"vado/model"
+
+	_ "github.com/lib/pq"
 )
 
 type TaskDBRepo struct {
@@ -15,7 +17,7 @@ type TaskDBRepo struct {
 func NewTaskDBRepo(dataSourceName string) *TaskDBRepo {
 	db, err := sql.Open("postgres", dataSourceName)
 	if err != nil {
-		log.Fatal("Err open connection", err)
+		log.Fatal("Err open sql", err)
 	}
 
 	err = db.Ping()
