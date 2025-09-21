@@ -9,7 +9,7 @@ import (
 func (vt *ViewTasks) AddTaskQuick() {
 	id := rand.Intn(10000)
 	newTask := model.Task{
-		Id:        id,
+		ID:        id,
 		Name:      util.Tpl("Fast task %d", id),
 		Completed: rand.Intn(2) == 1,
 	}

@@ -17,7 +17,7 @@ func NewTaskJSONRepo(path string) *TaskJSONRepo {
 	return &TaskJSONRepo{filePath: path}
 }
 
-func (r *TaskJSONRepo) GetAllTasks() (model.TaskList, error) {
+func (r *TaskJSONRepo) FetchAll() (model.TaskList, error) {
 	data, err := os.ReadFile(constant.TasksFilePath)
 
 	if err != nil {
@@ -29,10 +29,10 @@ func (r *TaskJSONRepo) GetAllTasks() (model.TaskList, error) {
 	return list, err
 }
 
-func (r *TaskJSONRepo) CreateTask(t model.Task) error {
-	list, _ := r.GetAllTasks()
+func (r *TaskJSONRepo) Save(t model.Task) error {
+	list, _ := r.FetchAll()
 	for _, task := range list.Tasks {
-		if task.Id == t.Id {
+		if task.ID == t.ID {
 			return errors.New("task already exists")
 		}
 	}
@@ -41,11 +41,11 @@ func (r *TaskJSONRepo) CreateTask(t model.Task) error {
 	return r.SaveTasks(list)
 }
 
-func (r *TaskJSONRepo) DeleteTask(id int) error {
-	list, _ := r.GetAllTasks()
+func (r *TaskJSONRepo) Remove(id int) error {
+	list, _ := r.FetchAll()
 	newTasks := make([]model.Task, 0)
 	for _, t := range list.Tasks {
-		if id != t.Id {
+		if id != t.ID {
 			newTasks = append(newTasks, t)
 		}
 	}
@@ -53,11 +53,8 @@ func (r *TaskJSONRepo) DeleteTask(id int) error {
 	return r.SaveTasks(list)
 }
 
-func (r *TaskJSONRepo) DeleteAllTasks() {
-	list, _ := r.GetAllTasks()
+func (r *TaskJSONRepo) RemoveAll() error {
+	list, _ := r.FetchAll()
 	list.Tasks = []model.Task{}
-	err := r.SaveTasks(list)
-	if err != nil {
-		panic(err)
-	}
+	return r.SaveTasks(list)
 }

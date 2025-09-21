@@ -47,7 +47,7 @@ func (ti *TaskItem) CreateRenderer() fyne.WidgetRenderer {
 func (ti *TaskItem) SetTask(task m.Task) {
 	ti.check.SetChecked(task.Completed)
 
-	text := util.Tpl("%d %s%s", task.Id, task.Name, func() string {
+	text := util.Tpl("%d %s%s", task.ID, task.Name, func() string {
 		if task.Description != "" {
 			return util.Tpl(" (%s)", task.Description)
 		}

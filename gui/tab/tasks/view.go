@@ -67,7 +67,7 @@ func NewTasksView(win fyne.Window, s service.ITaskService) fyne.CanvasObject {
 			taskItem.SetTask(t)
 
 			doDelete := func() {
-				delErr := vt.service.DeleteTask(t.Id)
+				delErr := vt.service.DeleteTask(t.ID)
 				if delErr != nil {
 					panic(delErr)
 					return

@@ -19,13 +19,19 @@ func ShowAddTaskDialog(parent fyne.Window, f func(task m.Task)) {
 	descEntry := widget.NewMultiLineEntry()
 	descEntry.SetPlaceHolder("Описание задачи")
 
+	var complete = false
+	check := widget.NewCheck("Выполнено", func(checked bool) {
+		complete = checked
+	})
+
 	formItems := []*widget.FormItem{
 		widget.NewFormItem("Название", nameEntry),
 		widget.NewFormItem("Описание", descEntry),
+		widget.NewFormItem("", check),
 	}
 	dlg := dialog.NewForm("Новая задача", "Добавить", "Отмена", formItems, func(confirm bool) {
 		if confirm {
-			newTask := m.Task{Id: rand.Intn(10000), Name: nameEntry.Text, Description: descEntry.Text}
+			newTask := m.Task{ID: rand.Intn(10000), Name: nameEntry.Text, Description: descEntry.Text, Completed: complete}
 			f(newTask)
 		}
 	}, parent)

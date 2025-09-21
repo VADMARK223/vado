@@ -56,7 +56,7 @@ func RunDatabase() {
 	var tasks []model.Task
 	for rows.Next() {
 		var t model.Task
-		err := rows.Scan(&t.Id, &t.Name, &t.Description)
+		err := rows.Scan(&t.ID, &t.Name, &t.Description)
 		if err != nil {
 			log.Fatal(err)
 		}
