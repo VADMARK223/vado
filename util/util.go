@@ -12,5 +12,8 @@ func Tpl(format string, args ...any) string {
 
 func GetBoolPrefByKey(key string) bool {
 	return fyne.CurrentApp().Preferences().Bool(key)
+}
 
+func Pln(args ...any) {
+	fmt.Println(args)
 }
