@@ -8,6 +8,7 @@ import (
 	"vado/gui/tab/lesson/points"
 	"vado/gui/tab/lesson/sliceArray"
 	"vado/gui/tab/lesson/waitGroup"
+	"vado/gui/tab/lesson/workers"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
@@ -15,6 +16,7 @@ import (
 
 func CreateView() fyne.CanvasObject {
 	vBox := container.NewVBox()
+	vBox.Add(gui.CreateBtn("3 workers", nil, func() { run(workers.RunWorkers) }))
 	vBox.Add(gui.CreateBtn("Slice and array", nil, sliceArray.RunSliceArray))
 	vBox.Add(gui.CreateBtn("Wait group", nil, waitGroup.RunWaitGroup))
 	vBox.Add(gui.CreateBtn("Pointers", nil, points.RunPointers))
@@ -25,4 +27,8 @@ func CreateView() fyne.CanvasObject {
 	vBox.Add(gui.CreateBtn("Posts and miners", nil, atomic.RunAtomic, gui.ButtonDisable()))
 
 	return vBox
+}
+
+func run(task func()) {
+	go task()
 }

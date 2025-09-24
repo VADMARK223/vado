@@ -2,15 +2,15 @@ package main
 
 import (
 	"vado/gui"
-	"vado/gui/tab/lesson/waitGroup"
+	"vado/gui/tab/lesson/workers"
 )
 
-const showGui = false
+const showGui = true
 
 func main() {
 	if showGui {
 		gui.ShowMainApp()
 	} else {
-		waitGroup.RunWaitGroup()
+		workers.RunWorkers()
 	}
 }
