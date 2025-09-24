@@ -1,6 +1,7 @@
 package workers
 
 import (
+	"context"
 	"fmt"
 	"math/rand/v2"
 	"time"
@@ -18,4 +19,24 @@ func (w *Worker) Work(channel chan<- int) {
 	fmt.Printf("  %s write in channel.\n", w.name)
 	channel <- w.value
 	fmt.Printf("  %s stop work.\n", w.name)
+}
+
+func (w *Worker) WorkWithContext(ctx context.Context, ch chan<- int) {
+	workTime := rand.IntN(4) + 1
+	fmt.Printf("  %s start work (%d sec)...\n", w.name, workTime)
+
+	select {
+	case <-time.After(time.Duration(workTime) * time.Second): // Рабочий доработал. Сработает, когда timeWork истечет
+		fmt.Printf("  %s finished work, writing in channel.\n", w.name)
+		// Если сделать без select, и канал никто не читает, тут будет блокировка.
+		select {
+		case ch <- w.value:
+			fmt.Printf("  %s wrote result.\n", w.name)
+		case <-ctx.Done():
+			// Отменили пока ждал запись
+			fmt.Printf("  %s canceled (timeout).\n", w.name)
+		}
+	case <-ctx.Done(): // Рабочий не успел доработать
+		fmt.Printf("  %s canceled before finishing.\n", w.name)
+	}
 }

@@ -5,12 +5,12 @@ import (
 	"vado/gui/tab/lesson/workers"
 )
 
-const showGui = true
+const showGui = false
 
 func main() {
 	if showGui {
 		gui.ShowMainApp()
 	} else {
-		workers.RunWorkers()
+		workers.RunWorkersWithContext()
 	}
 }
