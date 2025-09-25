@@ -17,7 +17,7 @@ import (
 	"fyne.io/fyne/v2/container"
 )
 
-const defaultTabIndex = 2
+const defaultTabIndex = 1
 const isJSONMode = false
 
 func NewTabsView(win fyne.Window) *container.AppTabs {
@@ -35,7 +35,7 @@ func NewTabsView(win fyne.Window) *container.AppTabs {
 			}
 
 			s := service.NewTaskService(r)
-			return tasks.NewTasksView(win, s)
+			return tasks.NewTasksView(win, s, isJSONMode)
 		}, factories),
 		common.CreateLazyTabItem("Уроки", lesson.CreateView, factories),
 		common.CreateLazyTabItem("Настройки", settings.CreateView, factories),

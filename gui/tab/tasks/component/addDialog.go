@@ -1,4 +1,4 @@
-package conponent
+package component
 
 import (
 	"math/rand"

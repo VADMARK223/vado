@@ -2,6 +2,7 @@ package util
 
 import (
 	"fmt"
+	"math/rand"
 
 	"fyne.io/fyne/v2"
 )
@@ -14,6 +15,6 @@ func GetBoolPrefByKey(key string) bool {
 	return fyne.CurrentApp().Preferences().Bool(key)
 }
 
-func Pln(args ...any) {
-	fmt.Println(args)
+func GetRandomBool() bool {
+	return rand.Intn(2) == 1
 }

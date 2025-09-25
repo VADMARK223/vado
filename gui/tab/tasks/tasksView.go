@@ -1,10 +1,11 @@
 package tasks
 
 import (
+	"fmt"
 	"image/color"
 	constant2 "vado/constant"
 	"vado/gui/common"
-	"vado/gui/tab/tasks/conponent"
+	"vado/gui/tab/tasks/component"
 	m "vado/model"
 	"vado/service"
 	"vado/util"
@@ -24,17 +25,28 @@ type ViewTasks struct {
 	untypedList binding.UntypedList
 }
 
-func NewTasksView(win fyne.Window, s service.ITaskService) fyne.CanvasObject {
+func NewTasksView(win fyne.Window, s service.ITaskService, isJSON bool) fyne.CanvasObject {
 	vt := &ViewTasks{service: s, untypedList: binding.NewUntypedList()}
 	err := vt.reloadTasks()
 	if err != nil {
 		return nil
 	}
 
-	refreshBtn := common.CreateBtn("Обновить", theme.ViewRefreshIcon(), nil)
+	modeLbl := widget.NewRichTextFromMarkdown(func() string {
+		var mode string
+		if isJSON {
+			mode = "JSON"
+		} else {
+			mode = "DB"
+		}
+
+		return fmt.Sprintf("Режим: **%s**", mode)
+	}())
+
+	refreshBtn := common.CreateBtn("", theme.ViewRefreshIcon(), nil)
 	refreshBtn.Disable()
 	addBtn := common.CreateBtn("Добавить", theme.ContentAddIcon(), func() {
-		conponent.ShowAddTaskDialog(win, func(newTask m.Task) {
+		component.ShowAddTaskDialog(win, func(newTask m.Task) {
 			vt.AddTask(newTask)
 		})
 	})
@@ -57,13 +69,13 @@ func NewTasksView(win fyne.Window, s service.ITaskService) fyne.CanvasObject {
 	list := widget.NewListWithData(
 		vt.untypedList,
 		func() fyne.CanvasObject {
-			return conponent.NewTaskItem("", nil)
+			return component.NewTaskItem("", nil)
 		},
 		func(item binding.DataItem, obj fyne.CanvasObject) {
 			task, _ := item.(binding.Untyped).Get()
 			t := task.(m.Task)
 
-			taskItem := obj.(*conponent.TaskItem)
+			taskItem := obj.(*component.TaskItem)
 			taskItem.SetTask(t)
 
 			doDelete := func() {
@@ -92,7 +104,7 @@ func NewTasksView(win fyne.Window, s service.ITaskService) fyne.CanvasObject {
 			}
 		})
 	scroll := container.NewVScroll(list)
-	controlBox := container.NewHBox(refreshBtn, addBtn, quickAddBtn, layout.NewSpacer(), deleteAllBtn)
+	controlBox := container.NewHBox(modeLbl, refreshBtn, addBtn, quickAddBtn, layout.NewSpacer(), deleteAllBtn)
 	title := canvas.NewText("Список заданий", color.White)
 	title.TextStyle = fyne.TextStyle{Bold: true}
 	title.Alignment = fyne.TextAlignCenter

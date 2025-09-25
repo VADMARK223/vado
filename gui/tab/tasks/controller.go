@@ -11,7 +11,7 @@ func (vt *ViewTasks) AddTaskQuick() {
 	newTask := model.Task{
 		ID:        id,
 		Name:      util.Tpl("Fast task %d", id),
-		Completed: rand.Intn(2) == 1,
+		Completed: util.GetRandomBool(),
 	}
 	vt.AddTask(newTask)
 }
