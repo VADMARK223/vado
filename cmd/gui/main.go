@@ -1,6 +1,8 @@
 package main
 
-import "vado/gui"
+import (
+	"vado/internal/gui"
+)
 
 func main() {
 	gui.ShowMainApp()
