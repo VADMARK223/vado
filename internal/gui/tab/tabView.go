@@ -36,8 +36,8 @@ func NewTabsView(win fyne.Window) *container.AppTabs {
 			s := service.NewTaskService(r)
 			return tasks.NewTasksView(win, s, isJSONMode)
 		}, factories),
-		common.CreateLazyTabItem("Уроки", lesson.CreateView, factories),
 		common.CreateLazyTabItem("Настройки", settings.CreateView, factories),
+		common.CreateLazyTabItem("Уроки", lesson.CreateView, factories),
 		common.CreateLazyTabItem("Баланс", http.CreateView, factories),
 		common.CreateLazyTabItem("Тяжелая вкладка", heavy.NewHeavyView, factories),
 	)

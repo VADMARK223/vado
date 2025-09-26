@@ -1,17 +1,16 @@
 package tasks
 
 import (
-	"math/rand"
 	"vado/internal/model"
 	"vado/pkg/util"
 )
 
 func (vt *ViewTasks) AddTaskQuick() {
-	id := rand.Intn(10000)
+	id := util.RndIntn(10000)
 	newTask := model.Task{
 		ID:        id,
 		Name:      util.Tpl("Fast task %d", id),
-		Completed: util.GetRandomBool(),
+		Completed: util.RndBool(),
 	}
 	vt.AddTask(newTask)
 }

@@ -12,7 +12,8 @@ import (
 
 func ShowAddTaskDialog(parent fyne.Window, f func(task m.Task)) {
 	nameEntry := widget.NewEntry()
-	initName := util.Tpl("Задача %d", rand.Intn(10))
+
+	initName := util.Tpl("Задача %d", util.RndIntn(10))
 	nameEntry.SetText(initName)
 	nameEntry.SetPlaceHolder("Название задачи")
 

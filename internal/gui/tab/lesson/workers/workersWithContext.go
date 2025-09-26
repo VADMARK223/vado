@@ -3,14 +3,10 @@ package workers
 import (
 	"context"
 	"fmt"
-	"math/rand"
 	"sync"
-	"time"
 )
 
 func RunWorkersWithContext() {
-	rand.Seed(time.Now().UnixNano())
-
 	ctx, cancel := context.WithTimeout(context.Background(), workerTimeout)
 	defer cancel()
 

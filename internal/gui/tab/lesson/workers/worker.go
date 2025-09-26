@@ -3,8 +3,8 @@ package workers
 import (
 	"context"
 	"fmt"
-	"math/rand/v2"
 	"time"
+	"vado/pkg/util"
 )
 
 type Worker struct {
@@ -13,7 +13,7 @@ type Worker struct {
 }
 
 func (w *Worker) Work(channel chan<- int) {
-	workTime := rand.IntN(4) + 1
+	workTime := util.RndIntn(4) + 1
 	fmt.Printf("  %s start work (%d sec)...\n", w.name, workTime)
 	time.Sleep(time.Duration(workTime) * time.Second)
 	fmt.Printf("  %s write in channel.\n", w.name)
@@ -22,7 +22,7 @@ func (w *Worker) Work(channel chan<- int) {
 }
 
 func (w *Worker) WorkWithContext(ctx context.Context, ch chan<- int) {
-	workTime := rand.IntN(4) + 1
+	workTime := util.RndIntn(4) + 1
 	fmt.Printf("  %s start work (%d sec)...\n", w.name, workTime)
 
 	select {

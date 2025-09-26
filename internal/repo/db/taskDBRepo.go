@@ -25,13 +25,13 @@ func NewTaskDBRepo(dataSourceName string) *TaskDBRepo {
 		log.Fatal("Error ping connection: ", err)
 	}
 
-	fmt.Println("Successfully database connected!")
+	fmt.Printf("Successfully database connected! (%s)\n", dataSourceName)
 
 	return &TaskDBRepo{dataSourceName: dataSourceName, db: db}
 }
 
-func (r TaskDBRepo) FetchAll() (model.TaskList, error) {
-	rows, err := r.db.Query("SELECT id, name, description, completed FROM tasks")
+func (t *TaskDBRepo) FetchAll() (model.TaskList, error) {
+	rows, err := t.db.Query("SELECT id, name, description, completed FROM tasks")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -62,18 +62,18 @@ func (r TaskDBRepo) FetchAll() (model.TaskList, error) {
 	return list, nil
 }
 
-func (r *TaskDBRepo) Save(task model.Task) error {
+func (t *TaskDBRepo) Save(task model.Task) error {
 	query := `INSERT INTO tasks (id, name, description, completed) VALUES ($1, $2, $3, $4)`
-	_, err := r.db.Exec(query, task.ID, task.Name, task.Description, task.Completed)
+	_, err := t.db.Exec(query, task.ID, task.Name, task.Description, task.Completed)
 	if err != nil {
 		return fmt.Errorf("error saving task: %w", err)
 	}
 	return nil
 }
 
-func (r TaskDBRepo) Remove(id int) error {
+func (t *TaskDBRepo) Remove(id int) error {
 	query := `DELETE FROM tasks WHERE id = $1`
-	result, err := r.db.Exec(query, id)
+	result, err := t.db.Exec(query, id)
 	if err != nil {
 		return fmt.Errorf("error deleting task with id %d: %w", id, err)
 	}
@@ -90,9 +90,9 @@ func (r TaskDBRepo) Remove(id int) error {
 	return nil
 }
 
-func (r TaskDBRepo) RemoveAll() error {
+func (t *TaskDBRepo) RemoveAll() error {
 	// Выполняем удаление
-	_, err := r.db.Exec("TRUNCATE TABLE tasks CASCADE")
+	_, err := t.db.Exec("TRUNCATE TABLE tasks CASCADE")
 	if err != nil {
 		return fmt.Errorf("error delete all tasks: %w", err)
 	}

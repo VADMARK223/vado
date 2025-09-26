@@ -18,6 +18,12 @@ func CreateView() fyne.CanvasObject {
 		prefs.SetBool(constant.DevModePref, checked)
 	})
 	devModeCheck.Checked = prefs.Bool(constant.DevModePref)
-	content := container.NewVBox(devModeCheck)
+
+	autoStartServerCheck := widget.NewCheck("Стартовать сервер при загрузке", func(checked bool) {
+		prefs.SetBool(constant.AutoStartServer, checked)
+	})
+	autoStartServerCheck.Checked = prefs.Bool(constant.AutoStartServer)
+
+	content := container.NewVBox(devModeCheck, autoStartServerCheck)
 	return content
 }

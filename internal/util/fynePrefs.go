@@ -21,6 +21,14 @@ func IsDevMode() bool {
 	return GetBoolPrefByKey(constant.DevModePref)
 }
 
+func AutoStartServer() bool {
+	if fyne.CurrentApp() == nil {
+		return false
+	}
+
+	return GetBoolPrefByKey(constant.AutoStartServer)
+}
+
 func OnDevModeChange(callback func(newValue bool)) {
 	if fyne.CurrentApp() == nil {
 		return

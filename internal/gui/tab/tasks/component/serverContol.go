@@ -10,6 +10,9 @@ import (
 	"time"
 	"vado/internal/gui/common"
 	constant2 "vado/internal/gui/constant"
+	"vado/internal/service"
+	http2 "vado/internal/transport/http"
+	"vado/internal/util"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
@@ -18,9 +21,8 @@ import (
 )
 
 const (
-	guiUpdateMillisecond   = 500 // Частота обновления GUI
-	shutdownSecond         = 5
-	slowRequestDelaySecond = 10 // Длительность выполнения медленного запроса// Время "мягкой" остановки сервер
+	guiUpdateMillisecond = 500 // Частота обновления GUI
+	shutdownSecond       = 5
 )
 
 var (
@@ -29,12 +31,12 @@ var (
 	stopInProcess = false // Сервер в процессе остановки
 )
 
-func NewServerControl() fyne.CanvasObject {
+func NewServerControl(service service.ITaskService) fyne.CanvasObject {
 	lbl := widget.NewLabel("Сервер:")
 	startBtn := common.NewBtn("Старт", theme.MediaPlayIcon(), nil)
 	startBtn.OnTapped = func() {
 		go func() {
-			if err := startServer(); err != nil {
+			if err := startServer(service); err != nil {
 				fmt.Println("Start server error:", err)
 			}
 		}()
@@ -50,12 +52,6 @@ func NewServerControl() fyne.CanvasObject {
 		httpMtx.Unlock()
 		go stopServer()
 	})
-	//statusIndicator := canvas.NewCircle(color.White)
-	//statusIndicator.FillColor = constant2.Red()
-	//statusIndicator.StrokeColor = color.Gray{Y: 0x99}
-	//statusIndicator.StrokeWidth = 1
-	//statusIndicator.Resize(fyne.NewSize(15, 15))
-	//statusIndicatorLayout := container.NewWithoutLayout(statusIndicator)
 
 	statusIndicator := common.NewIndicator(color.RGBA{R: 255, G: 0, B: 0, A: 255}, fyne.NewSize(15, 15))
 
@@ -95,18 +91,23 @@ func NewServerControl() fyne.CanvasObject {
 		}
 	}()
 
+	if util.AutoStartServer() {
+		_ = startServer(service)
+	}
+
 	return container.NewHBox(lbl, startBtn, stopBtn, container.NewCenter(statusIndicator), waitLbl)
 }
 
-func startServer() error {
+func startServer(service service.ITaskService) error {
 	httpMtx.Lock()
 	if srv != nil {
 		return errors.New("server already running")
 	}
 
 	mux := http.NewServeMux() // multiplexer = «распределитель запросов»
-	mux.HandleFunc("/slow", slowHandler)
-	mux.HandleFunc("/tasks", taskHandler)
+	handler := &http2.TaskHandler{Service: service}
+	mux.HandleFunc("/tasks", handler.GetTaskHandler)
+	mux.HandleFunc("/slow", handler.SlowHandler)
 
 	srv = &http.Server{
 		Addr:    ":9091",
@@ -115,7 +116,7 @@ func startServer() error {
 	httpMtx.Unlock()
 
 	go func() {
-		fmt.Println("Tasks server started on :9091...")
+		fmt.Println("Tasks server started on :9091")
 
 		// ListenAndServe блокирующий
 		// ErrServerClosed это не ошибка, а сигнал: «Сервер завершён штатно».

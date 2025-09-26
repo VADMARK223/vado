@@ -40,11 +40,12 @@ func NewTasksView(win fyne.Window, s service.ITaskService, isJSON bool) fyne.Can
 			mode = "DB"
 		}
 
-		return fmt.Sprintf("Режим: **%s**", mode)
+		return fmt.Sprintf("Источник: **%s**", mode)
 	}())
 
-	refreshBtn := common.NewBtn("", theme.ViewRefreshIcon(), nil)
-	refreshBtn.Disable()
+	refreshBtn := common.NewBtn("", theme.ViewRefreshIcon(), func() {
+		_ = vt.reloadTasks()
+	})
 	addBtn := common.NewBtn("", theme.ContentAddIcon(), func() {
 		c.ShowAddTaskDialog(win, func(newTask m.Task) {
 			vt.AddTask(newTask)
@@ -111,7 +112,7 @@ func NewTasksView(win fyne.Window, s service.ITaskService, isJSON bool) fyne.Can
 			}
 		})
 	scroll := container.NewVScroll(list)
-	controlBox := container.NewHBox(modeLbl, refreshBtn, addBtn, quickAddBtn, layout.NewSpacer(), deleteAllBtn)
+	controlBox := container.NewHBox(modeLbl, refreshBtn, addBtn, layout.NewSpacer(), quickAddBtn, deleteAllBtn)
 	title := canvas.NewText("Список заданий", color.White)
 	title.TextStyle = fyne.TextStyle{Bold: true}
 	title.Alignment = fyne.TextAlignCenter
@@ -125,7 +126,7 @@ func NewTasksView(win fyne.Window, s service.ITaskService, isJSON bool) fyne.Can
 			title.Text = util.Tpl("Список заданий (Всего: %d)", tasksListLen)
 		}
 	}))
-	topBox := container.NewVBox(c.NewServerControl(), controlBox, title)
+	topBox := container.NewVBox(c.NewServerControl(vt.service), controlBox, title)
 	content := container.NewBorder(topBox, nil, nil, nil, scroll)
 	return content
 
