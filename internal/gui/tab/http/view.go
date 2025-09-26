@@ -30,10 +30,10 @@ var (
 )
 
 func CreateView() fyne.CanvasObject {
-	startBtn := common.CreateBtn("Старт", theme.MediaPlayIcon(), StartServer)
+	startBtn := common.NewBtn("Старт", theme.MediaPlayIcon(), nil)
 	startBtn.Disable()
 
-	stopBtn := common.CreateBtn("Стоп", theme.MediaStopIcon(), stopServer)
+	stopBtn := common.NewBtn("Стоп", theme.MediaStopIcon(), stopServer)
 	stopBtn.Disable()
 
 	waitLbl := widget.NewLabel("Остановка сервера...")

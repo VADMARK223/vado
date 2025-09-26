@@ -17,14 +17,13 @@ import (
 	"fyne.io/fyne/v2/container"
 )
 
-const defaultTabIndex = 1
+const defaultTabIndex = 0
 const isJSONMode = false
 
 func NewTabsView(win fyne.Window) *container.AppTabs {
 	factories := map[*container.TabItem]func() fyne.CanvasObject{}
 
 	tabs := container.NewAppTabs(
-		common.CreateLazyTabItem("Http", http.CreateView, factories),
 		common.CreateLazyTabItem("Задания", func() fyne.CanvasObject {
 			var r repo.TaskRepo
 			if isJSONMode {
@@ -39,6 +38,7 @@ func NewTabsView(win fyne.Window) *container.AppTabs {
 		}, factories),
 		common.CreateLazyTabItem("Уроки", lesson.CreateView, factories),
 		common.CreateLazyTabItem("Настройки", settings.CreateView, factories),
+		common.CreateLazyTabItem("Баланс", http.CreateView, factories),
 		common.CreateLazyTabItem("Тяжелая вкладка", heavy.NewHeavyView, factories),
 	)
 	tabs.SelectIndex(defaultTabIndex)

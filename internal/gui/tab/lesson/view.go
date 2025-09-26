@@ -16,15 +16,15 @@ import (
 
 func CreateView() fyne.CanvasObject {
 	vBox := container.NewVBox()
-	vBox.Add(gui.CreateBtn("3 workers", nil, func() { run(workers.RunWorkers) }))
-	vBox.Add(gui.CreateBtn("Slice and array", nil, sliceArray.RunSliceArray))
-	vBox.Add(gui.CreateBtn("Wait group", nil, waitGroup.RunWaitGroup))
-	vBox.Add(gui.CreateBtn("Pointers", nil, points.RunPointers))
-	vBox.Add(gui.CreateBtn("In-memory cache", nil, inMemoryCache.RunInMemoryCache))
-	vBox.Add(gui.CreateBtn("RwMutex", nil, mutex2.RunRxMutex))
-	vBox.Add(gui.CreateBtn("Mutex", nil, mutex2.RunMutex))
-	vBox.Add(gui.CreateBtn("Atomic", nil, atomic.RunAtomic))
-	vBox.Add(gui.CreateBtn("Posts and miners", nil, atomic.RunAtomic, gui.ButtonDisable()))
+	vBox.Add(gui.NewBtn("3 workers", nil, func() { run(workers.RunWorkers) }))
+	vBox.Add(gui.NewBtn("Slice and array", nil, sliceArray.RunSliceArray))
+	vBox.Add(gui.NewBtn("Wait group", nil, waitGroup.RunWaitGroup))
+	vBox.Add(gui.NewBtn("Pointers", nil, points.RunPointers))
+	vBox.Add(gui.NewBtn("In-memory cache", nil, inMemoryCache.RunInMemoryCache))
+	vBox.Add(gui.NewBtn("RwMutex", nil, mutex2.RunRxMutex))
+	vBox.Add(gui.NewBtn("Mutex", nil, mutex2.RunMutex))
+	vBox.Add(gui.NewBtn("Atomic", nil, atomic.RunAtomic))
+	vBox.Add(gui.NewBtn("Posts and miners", nil, atomic.RunAtomic, gui.ButtonDisable()))
 
 	return vBox
 }

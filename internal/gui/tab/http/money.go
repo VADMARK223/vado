@@ -45,13 +45,13 @@ func createMoneyGui() fyne.CanvasObject {
 	labelCentered := container.New(layout.NewCenterLayout(), balanceLbl)
 	updateBalanceText()
 
-	balanceDecreaseBtn := common.CreateBtn("-", nil, func() {
+	balanceDecreaseBtn := common.NewBtn("-", nil, func() {
 		decreaseBalance(balanceDeltaGui)
 		updateBalanceText()
 	})
 	btnDecreaseContainer := container.New(layout.NewGridWrapLayout(fyne.NewSize(60, 40)), balanceDecreaseBtn)
 	balanceDecreaseBtn.Resize(fyne.NewSize(100, 40))
-	balanceIncreaseBtn := common.CreateBtn("+", nil, func() {
+	balanceIncreaseBtn := common.NewBtn("+", nil, func() {
 		balance.Add(balanceDeltaGui)
 		updateBalanceText()
 	})

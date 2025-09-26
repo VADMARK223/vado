@@ -2,10 +2,11 @@
 package gui
 
 import (
+	"fmt"
 	c "vado/internal/constant"
 	gui "vado/internal/gui/common"
 	tabs "vado/internal/gui/tab"
-	"vado/pkg/util"
+	"vado/internal/util"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -19,12 +20,18 @@ func ShowMainApp() {
 	a := app.NewWithID("io.vado")
 	mainWindow := a.NewWindow("Vado")
 
-	exitBtn := gui.CreateBtn("", theme.LogoutIcon(), func() { mainWindow.Close() })
+	exitBtn := gui.NewBtn("", theme.LogoutIcon(), func() { mainWindow.Close() })
 	topBar := container.NewBorder(nil, nil, nil, exitBtn)
+
+	modeTxt := widget.NewRichTextFromMarkdown(getModeTxt(util.IsDevMode()))
+	util.OnDevModeChange(func(newValue bool) {
+		modeTxt.ParseMarkdown(getModeTxt(newValue))
+	})
 
 	bottomBar := container.NewHBox(
 		layout.NewSpacer(),
-		widget.NewLabel(util.Tpl("Version %s", c.Version)),
+		modeTxt,
+		widget.NewRichTextFromMarkdown(fmt.Sprintf("Версия: **%s**", c.Version)),
 	)
 
 	root := container.NewBorder(topBar, bottomBar, nil, nil, tabs.NewTabsView(mainWindow))
@@ -38,4 +45,15 @@ func ShowMainApp() {
 
 	mainWindow.Resize(fyne.NewSize(700, 400))
 	mainWindow.ShowAndRun()
+}
+
+func getModeTxt(isMode bool) string {
+	var mode string
+	if isMode {
+		mode = "DEV"
+	} else {
+		mode = "PROD"
+	}
+
+	return fmt.Sprintf("Режим: **%s**", mode)
 }

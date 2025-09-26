@@ -3,9 +3,8 @@ package tasks
 import (
 	"fmt"
 	"image/color"
-	constant2 "vado/internal/constant"
 	"vado/internal/gui/common"
-	component2 "vado/internal/gui/tab/tasks/component"
+	c "vado/internal/gui/tab/tasks/component"
 	m "vado/internal/model"
 	"vado/internal/service"
 	util2 "vado/internal/util"
@@ -44,22 +43,29 @@ func NewTasksView(win fyne.Window, s service.ITaskService, isJSON bool) fyne.Can
 		return fmt.Sprintf("Режим: **%s**", mode)
 	}())
 
-	refreshBtn := common.CreateBtn("", theme.ViewRefreshIcon(), nil)
+	refreshBtn := common.NewBtn("", theme.ViewRefreshIcon(), nil)
 	refreshBtn.Disable()
-	addBtn := common.CreateBtn("Добавить", theme.ContentAddIcon(), func() {
-		component2.ShowAddTaskDialog(win, func(newTask m.Task) {
+	addBtn := common.NewBtn("", theme.ContentAddIcon(), func() {
+		c.ShowAddTaskDialog(win, func(newTask m.Task) {
 			vt.AddTask(newTask)
 		})
 	})
-	quickAddBtn := common.CreateBtn("Добавить (быстро)", theme.ContentAddIcon(), func() {
+	quickAddBtn := common.NewBtn("Быстро", theme.ContentAddIcon(), func() {
 		vt.AddTaskQuick()
 	})
+	util2.OnDevModeChange(func(newValue bool) {
+		if newValue {
+			quickAddBtn.Show()
+		} else {
+			quickAddBtn.Hide()
+		}
+	})
 
-	deleteAllBtn := common.CreateBtn("Удалить все", theme.DeleteIcon(), func() {
-		if util2.GetBoolPrefByKey(constant2.DevModePref) {
+	deleteAllBtn := common.NewBtn("Удалить все", theme.DeleteIcon(), func() {
+		if util2.IsDevMode() {
 			vt.DeleteAllTasks()
 		} else {
-			dialog.ShowConfirm("Удаление задания", "Вы действительно хотите удалить все задания?", func(b bool) {
+			dialog.ShowConfirm("Удаление всех заданий", "Вы действительно хотите удалить все задания?", func(b bool) {
 				if b {
 					vt.DeleteAllTasks()
 				}
@@ -70,13 +76,13 @@ func NewTasksView(win fyne.Window, s service.ITaskService, isJSON bool) fyne.Can
 	list := widget.NewListWithData(
 		vt.untypedList,
 		func() fyne.CanvasObject {
-			return component2.NewTaskItem("", nil)
+			return c.NewTaskItem("", nil)
 		},
 		func(item binding.DataItem, obj fyne.CanvasObject) {
 			task, _ := item.(binding.Untyped).Get()
 			t := task.(m.Task)
 
-			taskItem := obj.(*component2.TaskItem)
+			taskItem := obj.(*c.TaskItem)
 			taskItem.SetTask(t)
 
 			doDelete := func() {
@@ -93,7 +99,7 @@ func NewTasksView(win fyne.Window, s service.ITaskService, isJSON bool) fyne.Can
 			}
 
 			taskItem.OnDelete = func() {
-				if util2.GetBoolPrefByKey(constant2.DevModePref) {
+				if util2.IsDevMode() {
 					doDelete()
 				} else {
 					dialog.ShowConfirm("Удаление задания", "Вы действительно хотите удалить задание?", func(b bool) {
@@ -119,7 +125,7 @@ func NewTasksView(win fyne.Window, s service.ITaskService, isJSON bool) fyne.Can
 			title.Text = util.Tpl("Список заданий (Всего: %d)", tasksListLen)
 		}
 	}))
-	topBox := container.NewVBox(controlBox, title)
+	topBox := container.NewVBox(c.NewServerControl(), controlBox, title)
 	content := container.NewBorder(topBox, nil, nil, nil, scroll)
 	return content
 
