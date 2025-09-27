@@ -106,7 +106,11 @@ func startServer(service service.ITaskService) error {
 
 	mux := http.NewServeMux() // multiplexer = «распределитель запросов»
 	handler := &http2.TaskHandler{Service: service}
-	mux.HandleFunc("/tasks", handler.GetTaskHandler)
+	mux.HandleFunc("/task", func(writer http.ResponseWriter, request *http.Request) {
+
+	})
+	mux.HandleFunc("/tasks", handler.TasksHandler)
+	mux.HandleFunc("/tasks/", handler.TaskByIDHandler)
 	mux.HandleFunc("/slow", handler.SlowHandler)
 
 	srv = &http.Server{

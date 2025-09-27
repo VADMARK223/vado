@@ -13,6 +13,11 @@ type TaskJSONRepo struct {
 	filePath string
 }
 
+func (r *TaskJSONRepo) GetTask(id int) (model.Task, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
 func NewTaskJSONRepo(path string) *TaskJSONRepo {
 	return &TaskJSONRepo{filePath: path}
 }

@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 	"vado/internal/model"
@@ -69,6 +70,26 @@ func (t *TaskDBRepo) Save(task model.Task) error {
 		return fmt.Errorf("error saving task: %w", err)
 	}
 	return nil
+}
+
+func (t *TaskDBRepo) GetTask(id int) (model.Task, error) {
+	query := `SELECT id, name, description, completed FROM tasks WHERE id = $1`
+	var task model.Task
+	err := t.db.QueryRow(query, id).Scan(
+		&task.ID,
+		&task.Name,
+		&task.Description,
+		&task.Completed,
+	)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			// если задачи нет → вернем понятную ошибку
+			return model.Task{}, fmt.Errorf("task with id %d not found", id)
+		}
+		return model.Task{}, fmt.Errorf("query error: %w", err)
+	}
+
+	return task, nil
 }
 
 func (t *TaskDBRepo) Remove(id int) error {
