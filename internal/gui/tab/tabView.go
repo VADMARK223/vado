@@ -3,7 +3,6 @@ package tab
 import (
 	"vado/internal/gui/common"
 	"vado/internal/gui/tab/heavy"
-	"vado/internal/gui/tab/http"
 	"vado/internal/gui/tab/lesson"
 	"vado/internal/gui/tab/settings"
 	"vado/internal/gui/tab/tasks"
@@ -37,7 +36,6 @@ func NewTabsView(win fyne.Window) *container.AppTabs {
 		}, factories),
 		common.CreateLazyTabItem("Настройки", settings.CreateView, factories),
 		common.CreateLazyTabItem("Уроки", lesson.CreateView, factories),
-		common.CreateLazyTabItem("Баланс", http.CreateView, factories),
 		common.CreateLazyTabItem("Тяжелая вкладка", heavy.NewHeavyView, factories),
 	)
 	tabs.SelectIndex(defaultTabIndex)

@@ -134,13 +134,13 @@ func StartServer(service service.ITaskService) error {
 	mux.HandleFunc("/slow", handler.SlowHandler)
 
 	srv = &http.Server{
-		Addr:    ":9091",
+		Addr:    ":5555",
 		Handler: mux,
 	}
 	httpMtx.Unlock()
 
 	//go func() {
-	fmt.Println("Tasks server started on :9091")
+	fmt.Println("Tasks server started on :5555")
 
 	// ListenAndServe блокирующий
 	// ErrServerClosed это не ошибка, а сигнал: «Сервер завершён штатно».

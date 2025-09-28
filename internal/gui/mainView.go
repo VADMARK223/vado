@@ -20,9 +20,6 @@ func ShowMainApp() {
 	a := app.NewWithID("io.vado")
 	mainWindow := a.NewWindow("Vado")
 
-	exitBtn := gui.NewBtn("", theme.LogoutIcon(), func() { mainWindow.Close() })
-	topBar := container.NewBorder(nil, nil, nil, exitBtn)
-
 	modeTxt := widget.NewRichTextFromMarkdown(getModeTxt(util.IsDevMode()))
 	util.OnDevModeChange(func(newValue bool) {
 		modeTxt.ParseMarkdown(getModeTxt(newValue))
@@ -32,9 +29,10 @@ func ShowMainApp() {
 		layout.NewSpacer(),
 		modeTxt,
 		widget.NewRichTextFromMarkdown(fmt.Sprintf("Версия: **%s**", c.Version)),
+		gui.NewBtn("", theme.LogoutIcon(), func() { mainWindow.Close() }),
 	)
 
-	root := container.NewBorder(topBar, bottomBar, nil, nil, tabs.NewTabsView(mainWindow))
+	root := container.NewBorder(nil /*topBar*/, bottomBar, nil, nil, tabs.NewTabsView(mainWindow))
 	mainWindow.SetContent(root)
 
 	mainWindow.Canvas().SetOnTypedKey(func(k *fyne.KeyEvent) {

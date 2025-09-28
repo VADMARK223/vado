@@ -1,11 +1,17 @@
 # Docker compose
+
 Запуск в фонвом режиме (`-d`):
 ```shell
 docker compose up --build -d
 ```
-Проверить статус:
+Остановка (`-v` удаляет Контейнеры и Сеть и Тома, без -v тома остаются, данные БД схраняются):
 ```shell
-docker compose ps
+docker compose down -v
+```
+
+Проверить статус (-a показать все):
+```shell
+docker compose ps -a
 ```
 Логи приложения:
 ```bash
@@ -48,7 +54,7 @@ docker build . -t vado
 ```
 Запускаем контейнер
 ```bash
-docker run -d -p 5555:9091 vado
+docker run -d -p 5555:5555 vado
 ```
 Заходим на `http://localhost:5555/`
 # Golang

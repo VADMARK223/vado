@@ -7,19 +7,6 @@ import (
 
 const TasksFilePath = "./data/tasks.json"
 
-//var GetDSN = util.Tpl(
-//	"host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-//	"127.0.0.1", 5432, "vadmark", "5125341", "vadodb",
-//)
-
-const (
-	Host     = "127.0.0.1"
-	Port     = 5432
-	User     = "vadmark"
-	Password = "5125341"
-	DBName   = "vadodb"
-)
-
 func GetDSN() string {
 	host := getEnv("DB_HOST", "127.0.0.1")
 	port := getEnv("DB_PORT", "5432")

@@ -3,6 +3,7 @@ package json
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log"
 	"os"
 	"vado/internal/gui/tab/tasks/constant"
@@ -15,7 +16,8 @@ type TaskJSONRepo struct {
 
 func (r *TaskJSONRepo) GetTask(id int) (model.Task, error) {
 	//TODO implement me
-	panic("implement me")
+	fmt.Println(id)
+	panic("implement me for get by id: ")
 }
 
 func NewTaskJSONRepo(path string) *TaskJSONRepo {
