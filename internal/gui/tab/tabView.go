@@ -29,7 +29,6 @@ func NewTabsView(win fyne.Window) *container.AppTabs {
 			if isJSONMode {
 				r = repoJson.NewTaskJSONRepo(constant.TasksFilePath)
 			} else {
-				//r = repoHttp.NewTaskHTTPRepo(constant.TasksBaseURL)
 				r = db.NewTaskDBRepo(constant.TasksDataSourceName)
 			}
 

@@ -35,11 +35,7 @@ func NewServerControl(service service.ITaskService) fyne.CanvasObject {
 	lbl := widget.NewLabel("Сервер:")
 	startBtn := common.NewBtn("Старт", theme.MediaPlayIcon(), nil)
 	startBtn.OnTapped = func() {
-		go func() {
-			if err := startServer(service); err != nil {
-				fmt.Println("Start server error:", err)
-			}
-		}()
+		startOnTapped(service)
 	}
 
 	stopBtn := common.NewBtn("Стоп", theme.MediaStopIcon(), func() {
@@ -92,13 +88,21 @@ func NewServerControl(service service.ITaskService) fyne.CanvasObject {
 	}()
 
 	if util.AutoStartServer() {
-		_ = startServer(service)
+		startOnTapped(service)
 	}
 
 	return container.NewHBox(lbl, startBtn, stopBtn, container.NewCenter(statusIndicator), waitLbl)
 }
 
-func startServer(service service.ITaskService) error {
+func startOnTapped(service service.ITaskService) {
+	go func() {
+		if err := StartServer(service); err != nil {
+			fmt.Println("Start server error:", err)
+		}
+	}()
+}
+
+func StartServer(service service.ITaskService) error {
 	httpMtx.Lock()
 	if srv != nil {
 		return errors.New("server already running")
@@ -106,9 +110,6 @@ func startServer(service service.ITaskService) error {
 
 	mux := http.NewServeMux() // multiplexer = «распределитель запросов»
 	handler := &http2.TaskHandler{Service: service}
-	mux.HandleFunc("/task", func(writer http.ResponseWriter, request *http.Request) {
-
-	})
 	mux.HandleFunc("/tasks", handler.TasksHandler)
 	mux.HandleFunc("/tasks/", handler.TaskByIDHandler)
 	mux.HandleFunc("/slow", handler.SlowHandler)
@@ -119,16 +120,16 @@ func startServer(service service.ITaskService) error {
 	}
 	httpMtx.Unlock()
 
-	go func() {
-		fmt.Println("Tasks server started on :9091")
+	//go func() {
+	fmt.Println("Tasks server started on :9091")
 
-		// ListenAndServe блокирующий
-		// ErrServerClosed это не ошибка, а сигнал: «Сервер завершён штатно».
-		// Поэтому её нужно отфильтровать, иначе в логах всегда будет «Error: http: Server closed» даже при нормальной остановке.
-		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			fmt.Println("Error:", err)
-		}
-	}()
+	// ListenAndServe блокирующий
+	// ErrServerClosed это не ошибка, а сигнал: «Сервер завершён штатно».
+	// Поэтому её нужно отфильтровать, иначе в логах всегда будет «Error: http: Server closed» даже при нормальной остановке.
+	if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+		fmt.Println("Error:", err)
+	}
+	//}()
 
 	return nil
 }
