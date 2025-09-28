@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"html/template"
 	"image/color"
 	"net/http"
 	"sync"
@@ -102,6 +103,11 @@ func startOnTapped(service service.ITaskService) {
 	}()
 }
 
+type PageData struct {
+	Title   string
+	Message string
+}
+
 func StartServer(service service.ITaskService) error {
 	httpMtx.Lock()
 	if srv != nil {
@@ -110,6 +116,19 @@ func StartServer(service service.ITaskService) error {
 
 	mux := http.NewServeMux() // multiplexer = «распределитель запросов»
 	handler := &http2.TaskHandler{Service: service}
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		tmpl := template.Must(template.ParseFiles("./data/index.html"))
+
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		data := PageData{
+			Title:   "Привет из Vado 🚀",
+			Message: "Сервер работает.",
+		}
+		err := tmpl.Execute(w, data)
+		if err != nil {
+			return
+		}
+	})
 	mux.HandleFunc("/tasks", handler.TasksHandler)
 	mux.HandleFunc("/tasks/", handler.TaskByIDHandler)
 	mux.HandleFunc("/slow", handler.SlowHandler)
