@@ -9,10 +9,13 @@ services:
       POSTGRES_PASSWORD: 5125341
       POSTGRES_DB: vadodb
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U vadodb" ]
+      test: [ "CMD-SHELL", "pg_isready -U vadmark -d vadodb" ]
       interval: 5s
       timeout: 5s
       retries: 5
+    volumes:
+      - db_data:/var/lib/postgresql/data   # том для сохранения БД
+      - ./db/init:/docker-entrypoint-initdb.d # SQL-скрипты при старте
 
 
   app:
@@ -29,3 +32,6 @@ services:
       DB_NAME: vadodb
     ports:
       - "5555:5555"   # если приложение слушает веб-порт
+
+volumes:
+  db_data:
