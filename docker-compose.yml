@@ -1,0 +1,40 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: vadmark
+      POSTGRES_PASSWORD: 5125341
+      POSTGRES_DB: vadodb
+#    ports:
+#      - "5432:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U vadmark" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+#      db:
+#        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: vadmark
+      DB_PASSWORD: 5125341
+      DB_NAME: vadodb
+    ports:
+      - "5555:9091"   # если приложение слушает веб-порт
+    #volumes:
+    #  - .:/app        # удобно при разработке (горячая правка кода)
+    # можно добавить restart: unless-stopped
+#  volumes:
+#    db_data:

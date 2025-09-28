@@ -1,3 +1,56 @@
+# Docker compose
+Запуск в фонвом режиме (`-d`):
+```shell
+docker compose up --build -d
+```
+Проверить статус:
+```shell
+docker compose ps
+```
+Логи приложения:
+```bash
+docker compose logs -f app
+```
+Логи DB:
+```bash
+docker compose logs -f db
+```
+
+# Docker
+Файл `Docker`
+```Dockerfile
+# Этап сборки
+FROM golang:1.25 AS builder
+
+WORKDIR /app
+
+# Копируем go.mod и go.sum, качаем зависимости
+COPY go.mod go.sum ./
+RUN go mod download
+
+# Копируем весь проект
+COPY . .
+
+# Собираем бинарь
+RUN go build -o vado-go ./cmd/cli
+
+# Минимальный финальный образ
+FROM debian:bookworm-slim
+
+WORKDIR /app
+COPY --from=builder /app/vado-go .
+
+CMD ["./vado-go"]
+```
+Собираем образ
+```bash
+docker build . -t vado
+```
+Запускаем контейнер
+```bash
+docker run -d -p 5555:9091 vado
+```
+Заходим на `http://localhost:5555/`
 # Golang
 **go run -race main.go** определение гонки данных
 

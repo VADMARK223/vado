@@ -16,7 +16,7 @@ func main() {
 func startServer() {
 	fmt.Println("Vado start...")
 	var r repo.TaskRepo
-	r = db.NewTaskDBRepo(constant.TasksDataSourceName)
+	r = db.NewTaskDBRepo(constant.GetDSN())
 	var s service.ITaskService = service.NewTaskService(r)
 	err := component.StartServer(s)
 	if err != nil {

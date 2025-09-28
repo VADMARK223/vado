@@ -15,8 +15,8 @@ type TaskDBRepo struct {
 	db             *sql.DB
 }
 
-func NewTaskDBRepo(dataSourceName string) *TaskDBRepo {
-	db, err := sql.Open("postgres", dataSourceName)
+func NewTaskDBRepo(dsn string) *TaskDBRepo {
+	db, err := sql.Open("postgres", dsn)
 	if err != nil {
 		log.Fatal("Err open sql", err)
 	}
@@ -26,9 +26,9 @@ func NewTaskDBRepo(dataSourceName string) *TaskDBRepo {
 		log.Fatal("Error ping connection: ", err)
 	}
 
-	fmt.Printf("Successfully database connected! (%s)\n", dataSourceName)
+	fmt.Printf("Successfully database connected! (%s)\n", dsn)
 
-	return &TaskDBRepo{dataSourceName: dataSourceName, db: db}
+	return &TaskDBRepo{dataSourceName: dsn, db: db}
 }
 
 func (t *TaskDBRepo) FetchAll() (model.TaskList, error) {
