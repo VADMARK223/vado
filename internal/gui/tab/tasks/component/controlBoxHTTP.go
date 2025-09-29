@@ -22,8 +22,7 @@ import (
 )
 
 const (
-	guiUpdateMillisecond = 500 // Частота обновления GUI
-	shutdownSecond       = 5
+	shutdownSecond = 5
 )
 
 var (
@@ -61,15 +60,14 @@ func NewControlBoxHTTP(service service.ITaskService) fyne.CanvasObject {
 			running := srv == nil
 			inProcess := stopInProcess
 			httpMtx.Unlock()
-			if running {
-				fyne.Do(func() {
+
+			fyne.Do(func() {
+				if running {
 					waitLbl.Hide()
 					startBtn.Enable()
 					stopBtn.Disable()
 					statusIndicator.SetFillColor(constant2.Red())
-				})
-			} else {
-				fyne.Do(func() {
+				} else {
 					if inProcess {
 						waitLbl.Show()
 						startBtn.Disable()
@@ -81,14 +79,15 @@ func NewControlBoxHTTP(service service.ITaskService) fyne.CanvasObject {
 						stopBtn.Enable()
 						statusIndicator.SetFillColor(constant2.Green())
 					}
-				})
-			}
+				}
 
-			time.Sleep(time.Millisecond * guiUpdateMillisecond)
+			})
+
+			time.Sleep(time.Millisecond * GuiUpdateMillisecond)
 		}
 	}()
 
-	if util.AutoStartServer() {
+	if util.AutoStartServerHTTP() {
 		startOnTapped(service)
 	}
 
