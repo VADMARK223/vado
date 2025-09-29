@@ -1,4 +1,4 @@
-version: "3.9"
+#version: "3.9"
 
 services:
   db:
@@ -15,21 +15,24 @@ services:
       retries: 5
     volumes:
       - db_data:/var/lib/postgresql/data   # том для сохранения БД
+      - ./data:/app/data   # монтируем локальную папку внутрь контейнера
       - ./db/init:/docker-entrypoint-initdb.d # SQL-скрипты при старте
-
 
   app:
     build:
       context: .
       dockerfile: Dockerfile
     depends_on:
-      - db
+      db:
+        condition: service_healthy # app ждет healthcheck БД
     environment:
       DB_HOST: db
       DB_PORT: 5432
       DB_USER: vadmark
       DB_PASSWORD: 5125341
       DB_NAME: vadodb
+    volumes:
+      - ./data:/app/data   # монтируем локальную папку внутрь контейнера
     ports:
       - "5555:5555"   # если приложение слушает веб-порт
 

@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package taskpb;
+
+option go_package = "vado/internal/pb/taskpb;taskpb";
+
+message Empty {}
+
+message TaskID {
+  int32 id = 1;
+}
+
+message Task {
+  int32 id = 1;
+  string name = 2;
+  string description = 3;
+  bool completed = 4;
+}
+
+message TaskList {
+  repeated Task tasks = 1;
+}
+
+// gRPC сервис для работы с задачами
+service TaskService {
+  rpc GetAllTasks (Empty) returns (TaskList);
+  rpc CreateTask (Task) returns (Empty);
+  rpc GetTaskByID (TaskID) returns (Task);
+  rpc DeleteTask (TaskID) returns (Empty);
+  rpc DeleteAllTasks (Empty) returns (Empty);
+}
+
+message GetAllTasksRequest {}
+message GetAllTasksResponse {
+  TaskList task_list = 1;
+}
+
+message CreateTaskRequest {
+  Task task = 1;
+}
+message CreateTaskResponse {}
+
+message GetTaskByIDRequest {
+  int32 id = 1;
+}
+message GetTaskByIDResponse {
+  Task task = 1;
+}
+
+message DeleteTaskRequest {
+  int32 id = 1;
+}
+message DeleteTaskResponse {}
+
+message DeleteAllTasksRequest {}
+message DeleteAllTasksResponse {}

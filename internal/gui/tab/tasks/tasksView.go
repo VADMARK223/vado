@@ -126,7 +126,7 @@ func NewTasksView(win fyne.Window, s service.ITaskService, isJSON bool) fyne.Can
 			title.Text = util.Tpl("Список заданий (Всего: %d)", tasksListLen)
 		}
 	}))
-	topBox := container.NewVBox(c.NewServerControl(vt.service), controlBox, title)
+	topBox := container.NewVBox(c.NewControlBoxHTTP(vt.service), c.NewControlBoxGRPC(vt.service), controlBox, title)
 	content := container.NewBorder(topBox, nil, nil, nil, scroll)
 	return content
 

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"html/template"
 	"image/color"
 	"net/http"
 	"sync"
@@ -11,7 +12,7 @@ import (
 	"vado/internal/gui/common"
 	constant2 "vado/internal/gui/constant"
 	"vado/internal/service"
-	http2 "vado/internal/transport/http"
+	http2 "vado/internal/transport/rest"
 	"vado/internal/util"
 
 	"fyne.io/fyne/v2"
@@ -31,8 +32,8 @@ var (
 	stopInProcess = false // Сервер в процессе остановки
 )
 
-func NewServerControl(service service.ITaskService) fyne.CanvasObject {
-	lbl := widget.NewLabel("Сервер:")
+func NewControlBoxHTTP(service service.ITaskService) fyne.CanvasObject {
+	lbl := widget.NewLabel("Сервер HTTP:")
 	startBtn := common.NewBtn("Старт", theme.MediaPlayIcon(), nil)
 	startBtn.OnTapped = func() {
 		startOnTapped(service)
@@ -116,8 +117,8 @@ func StartServer(service service.ITaskService) error {
 	mux := http.NewServeMux() // multiplexer = «распределитель запросов»
 	handler := &http2.TaskHandler{Service: service}
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		_, _ = w.Write([]byte("Hello from vado!"))
-		/*tmpl := template.Must(template.ParseFiles("./data/index.html"))
+		//_, _ = w.Write([]byte("Hello from vado!"))
+		tmpl := template.Must(template.ParseFiles("data/index.html"))
 
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		data := PageData{
@@ -127,7 +128,7 @@ func StartServer(service service.ITaskService) error {
 		err := tmpl.Execute(w, data)
 		if err != nil {
 			return
-		}*/
+		}
 	})
 	mux.HandleFunc("/tasks", handler.TasksHandler)
 	mux.HandleFunc("/tasks/", handler.TaskByIDHandler)
@@ -139,16 +140,14 @@ func StartServer(service service.ITaskService) error {
 	}
 	httpMtx.Unlock()
 
-	//go func() {
-	fmt.Println("Tasks server started on :5555")
+	fmt.Println("HTTP-server started on :5555")
 
 	// ListenAndServe блокирующий
 	// ErrServerClosed это не ошибка, а сигнал: «Сервер завершён штатно».
-	// Поэтому её нужно отфильтровать, иначе в логах всегда будет «Error: http: Server closed» даже при нормальной остановке.
+	// Поэтому её нужно отфильтровать, иначе в логах всегда будет «Error: rest: Server closed» даже при нормальной остановке.
 	if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		fmt.Println("Error:", err)
 	}
-	//}()
 
 	return nil
 }

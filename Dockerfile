@@ -23,8 +23,10 @@ RUN apt-get update && apt-get install -y postgresql-client ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-# копируем бинарь из билдера
+# Копируем бинарь из билдера и статические данные
 COPY --from=builder /app/vado-go .
+COPY data ./data
+
 # копируем скрипт ожидания (привожу ниже)
 COPY wait-for-postgres.sh .
 RUN chmod +x wait-for-postgres.sh
