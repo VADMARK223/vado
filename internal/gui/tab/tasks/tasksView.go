@@ -55,16 +55,27 @@ func NewTasksView(win fyne.Window, s service.ITaskService, isJSON bool) fyne.Can
 	quickAddBtn := common.NewBtn("Быстро", theme.ContentAddIcon(), func() {
 		vt.AddTaskQuick()
 	})
-	util2.OnDevModeChange(func(newValue bool) {
-		if newValue {
+	updateQuickAddBtnVisibility := func() {
+		if util2.IsFastMode() {
 			quickAddBtn.Show()
 		} else {
 			quickAddBtn.Hide()
 		}
+	}
+
+	updateQuickAddBtnVisibility()
+
+	util2.OnFastModeChange(func(newValue bool) {
+		updateQuickAddBtnVisibility()
+		//if newValue {
+		//	quickAddBtn.Show()
+		//} else {
+		//	quickAddBtn.Hide()
+		//}
 	})
 
 	deleteAllBtn := common.NewBtn("Удалить все", theme.DeleteIcon(), func() {
-		if util2.IsDevMode() {
+		if util2.IsFastMode() {
 			vt.DeleteAllTasks()
 		} else {
 			dialog.ShowConfirm("Удаление всех заданий", "Вы действительно хотите удалить все задания?", func(b bool) {
@@ -101,7 +112,7 @@ func NewTasksView(win fyne.Window, s service.ITaskService, isJSON bool) fyne.Can
 			}
 
 			taskItem.OnDelete = func() {
-				if util2.IsDevMode() {
+				if util2.IsFastMode() {
 					doDelete()
 				} else {
 					dialog.ShowConfirm("Удаление задания", "Вы действительно хотите удалить задание?", func(b bool) {

@@ -4,7 +4,11 @@ go 1.25
 
 require (
 	fyne.io/fyne/v2 v2.6.3
+	github.com/k0kubun/pp v3.0.1+incompatible
 	github.com/lib/pq v1.10.9
+	go.uber.org/zap v1.27.0
+	google.golang.org/grpc v1.75.1
+	google.golang.org/protobuf v1.36.6
 )
 
 require (
@@ -26,8 +30,7 @@ require (
 	github.com/hack-pad/safejs v0.1.1 // indirect
 	github.com/jeandeaual/go-locale v0.0.0-20250612000132-0ef82f21eade // indirect
 	github.com/jsummers/gobmp v0.0.0-20230614200233-a9de23ed2e25 // indirect
-	github.com/k0kubun/pp v3.0.1+incompatible // indirect
-	github.com/kr/text v0.2.0 // indirect
+	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 // indirect
@@ -38,12 +41,11 @@ require (
 	github.com/srwiley/rasterx v0.0.0-20220730225603-2ab79fcdd4ef // indirect
 	github.com/stretchr/testify v1.11.1 // indirect
 	github.com/yuin/goldmark v1.7.13 // indirect
+	go.uber.org/multierr v1.10.0 // indirect
 	golang.org/x/image v0.31.0 // indirect
 	golang.org/x/net v0.44.0 // indirect
 	golang.org/x/sys v0.36.0 // indirect
 	golang.org/x/text v0.29.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250707201910-8d1bb00bc6a7 // indirect
-	google.golang.org/grpc v1.75.1 // indirect
-	google.golang.org/protobuf v1.36.6 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

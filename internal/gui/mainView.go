@@ -3,9 +3,11 @@ package gui
 
 import (
 	"fmt"
+	"strings"
 	c "vado/internal/constant"
 	gui "vado/internal/gui/common"
 	tabs "vado/internal/gui/tab"
+	"vado/internal/gui/tab/settings"
 	"vado/internal/util"
 
 	"fyne.io/fyne/v2"
@@ -19,20 +21,33 @@ import (
 func ShowMainApp() {
 	a := app.NewWithID("io.vado")
 	mainWindow := a.NewWindow("Vado")
+	modeTxt := widget.NewRichTextFromMarkdown(fmt.Sprintf("Режим: **%s**", strings.ToUpper(util.GetModeValue())))
 
-	modeTxt := widget.NewRichTextFromMarkdown(getModeTxt(util.IsDevMode()))
-	util.OnDevModeChange(func(newValue bool) {
-		modeTxt.ParseMarkdown(getModeTxt(newValue))
+	fastModeTxt := widget.NewRichTextFromMarkdown(getModeTxt(util.IsFastMode()))
+	util.OnFastModeChange(func(newValue bool) {
+		fastModeTxt.ParseMarkdown(getModeTxt(newValue))
 	})
+	fastBlock := func() []fyne.CanvasObject {
+		if util.IsFastMode() {
+			return []fyne.CanvasObject{
+				fastModeTxt,
+				settings.NewFastModeCheck(false),
+			}
+		}
+		return nil
+	}
 
-	bottomBar := container.NewHBox(
-		layout.NewSpacer(),
+	objs := []fyne.CanvasObject{layout.NewSpacer()}
+
+	objs = append(objs, fastBlock()...)
+	objs = append(objs,
 		modeTxt,
 		widget.NewRichTextFromMarkdown(fmt.Sprintf("Версия: **%s**", c.Version)),
 		gui.NewBtn("", theme.LogoutIcon(), func() { mainWindow.Close() }),
 	)
 
-	root := container.NewBorder(nil /*topBar*/, bottomBar, nil, nil, tabs.NewTabsView(mainWindow))
+	bottomBar := container.NewHBox(objs...)
+	root := container.NewBorder(nil, bottomBar, nil, nil, tabs.NewTabsView(mainWindow))
 	mainWindow.SetContent(root)
 
 	mainWindow.Canvas().SetOnTypedKey(func(k *fyne.KeyEvent) {
@@ -48,10 +63,10 @@ func ShowMainApp() {
 func getModeTxt(isMode bool) string {
 	var mode string
 	if isMode {
-		mode = "DEV"
+		mode = "ВКЛ"
 	} else {
-		mode = "PROD"
+		mode = "ВЫКЛ"
 	}
 
-	return fmt.Sprintf("Режим: **%s**", mode)
+	return fmt.Sprintf("**%s**", mode)
 }

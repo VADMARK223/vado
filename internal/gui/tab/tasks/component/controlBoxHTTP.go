@@ -14,6 +14,7 @@ import (
 	"vado/internal/service"
 	http2 "vado/internal/transport/rest"
 	"vado/internal/util"
+	"vado/pkg/logger"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
@@ -34,6 +35,7 @@ var (
 func NewControlBoxHTTP(service service.ITaskService) fyne.CanvasObject {
 	lbl := widget.NewLabel("Сервер HTTP:")
 	startBtn := common.NewBtn("Старт", theme.MediaPlayIcon(), nil)
+	startBtn.Disable()
 	startBtn.OnTapped = func() {
 		startOnTapped(service)
 	}
@@ -139,7 +141,7 @@ func StartServer(service service.ITaskService) error {
 	}
 	httpMtx.Unlock()
 
-	fmt.Println("HTTP-server started on :5555")
+	logger.L().Info("HTTP-server started on :5555")
 
 	// ListenAndServe блокирующий
 	// ErrServerClosed это не ошибка, а сигнал: «Сервер завершён штатно».
@@ -161,7 +163,7 @@ func stopServer() {
 
 	ctx, cancel := context.WithTimeout(context.Background(), shutdownSecond*time.Second)
 	defer func() {
-		fmt.Println("Context canceled.")
+		logger.L().Debug("Context canceled.")
 		cancel()
 	}()
 
@@ -169,7 +171,7 @@ func stopServer() {
 	if err := s.Shutdown(ctx); err != nil {
 		fmt.Println("Shutdown error:", err)
 	} else {
-		fmt.Println("Server stopped.")
+		logger.L().Info("HTTP server stopped.")
 	}
 	httpMtx.Lock()
 	stopInProcess = false

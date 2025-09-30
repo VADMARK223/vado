@@ -6,6 +6,8 @@ import (
 	"fyne.io/fyne/v2"
 )
 
+// /home/vadmark/.var/app/com.jetbrains.GoLand/config/fyne/io.vado
+
 func GetBoolPrefByKey(key string) bool {
 	if fyne.CurrentApp() == nil {
 		panic("Current app is nil!")
@@ -13,12 +15,15 @@ func GetBoolPrefByKey(key string) bool {
 	return fyne.CurrentApp().Preferences().Bool(key)
 }
 
-func IsDevMode() bool {
+func IsFastMode() bool {
+	if !IsDevMode() {
+		return IsDevMode()
+	}
 	if fyne.CurrentApp() == nil {
 		return false
 	}
 
-	return GetBoolPrefByKey(constant.DevModePref)
+	return GetBoolPrefByKey(constant.FastModePref)
 }
 
 func AutoStartServerHTTP() bool {
@@ -37,13 +42,13 @@ func AutoStartServerGRPC() bool {
 	return GetBoolPrefByKey(constant.AutoStartServerGRPC)
 }
 
-func OnDevModeChange(callback func(newValue bool)) {
+func OnFastModeChange(callback func(newValue bool)) {
 	if fyne.CurrentApp() == nil {
 		return
 	}
 	pref := fyne.CurrentApp().Preferences()
 	pref.AddChangeListener(func() {
-		newValue := GetBoolPrefByKey(constant.DevModePref)
+		newValue := GetBoolPrefByKey(constant.FastModePref)
 		callback(newValue)
 	})
 }

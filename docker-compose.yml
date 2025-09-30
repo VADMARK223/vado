@@ -31,6 +31,7 @@ services:
       DB_USER: vadmark
       DB_PASSWORD: 5125341
       DB_NAME: vadodb
+      APP_ENV: production
     volumes:
       - ./data:/app/data   # монтируем локальную папку внутрь контейнера
     ports:

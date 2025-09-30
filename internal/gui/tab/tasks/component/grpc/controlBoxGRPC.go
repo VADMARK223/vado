@@ -13,6 +13,7 @@ import (
 	"vado/internal/pb/taskpb"
 	"vado/internal/service"
 	"vado/internal/util"
+	"vado/pkg/logger"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
@@ -34,6 +35,7 @@ func NewControlBoxGRPC(s service.ITaskService, win fyne.Window) fyne.CanvasObjec
 	startBtn := common.NewBtn("Старт", theme.MediaPlayIcon(), func() {
 		startServerGRPC(s)
 	})
+	startBtn.Disable()
 	stopBtn := common.NewBtn("Стоп", theme.MediaStopIcon(), func() {
 		stopServerGRPC()
 	})
@@ -89,7 +91,7 @@ func startServerGRPC(s service.ITaskService) {
 	reflection.Register(grpcServer)
 
 	go func() {
-		fmt.Println("gRPC-server started on :50051")
+		logger.L().Info("gRPC-server started on :50051")
 
 		if err := grpcServer.Serve(listener); err != nil {
 			log.Printf("failed to serve: %v", err)

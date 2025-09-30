@@ -14,11 +14,6 @@ import (
 func CreateView() fyne.CanvasObject {
 	prefs := fyne.CurrentApp().Preferences()
 
-	devModeCheck := widget.NewCheck("Режим разработчика", func(checked bool) {
-		prefs.SetBool(constant.DevModePref, checked)
-	})
-	devModeCheck.Checked = prefs.Bool(constant.DevModePref)
-
 	autoStartServerHTTPCheck := widget.NewCheck("Стартовать HTTP-сервер при загрузке", func(checked bool) {
 		prefs.SetBool(constant.AutoStartServerHTTP, checked)
 	})
@@ -29,6 +24,6 @@ func CreateView() fyne.CanvasObject {
 	})
 	autoStartServerGRPCCheck.Checked = prefs.Bool(constant.AutoStartServerGRPC)
 
-	content := container.NewVBox(devModeCheck, autoStartServerHTTPCheck, autoStartServerGRPCCheck)
+	content := container.NewVBox(NewFastModeCheck(true), autoStartServerHTTPCheck, autoStartServerGRPCCheck)
 	return content
 }

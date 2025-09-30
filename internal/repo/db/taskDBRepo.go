@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"vado/internal/model"
+	"vado/pkg/logger"
 
 	_ "github.com/lib/pq"
 )
@@ -26,7 +27,7 @@ func NewTaskDBRepo(dsn string) *TaskDBRepo {
 		log.Fatal("Error ping connection: ", err)
 	}
 
-	fmt.Printf("Successfully database connected! (%s)\n", dsn)
+	logger.L().Info(fmt.Sprintf("Successfully database connected! (%s)", dsn))
 
 	return &TaskDBRepo{dataSourceName: dsn, db: db}
 }
@@ -118,6 +119,6 @@ func (t *TaskDBRepo) RemoveAll() error {
 		return fmt.Errorf("error delete all tasks: %w", err)
 	}
 
-	fmt.Println("All tasks removed successfully")
+	logger.L().Debug("Successfully deleted all tasks")
 	return nil
 }
