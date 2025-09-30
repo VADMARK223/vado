@@ -1,5 +1,11 @@
 package rest
 
+// @title           Vado API
+// @version         1.0
+// @description     Это REST API для задач.
+// @host            localhost:5555
+// @BasePath        /
+
 import (
 	"encoding/json"
 	"fmt"
@@ -9,8 +15,10 @@ import (
 	"time"
 	"vado/internal/model"
 	"vado/internal/service"
+	"vado/pkg/logger"
 
 	"github.com/k0kubun/pp"
+	"go.uber.org/zap"
 )
 
 const (
@@ -24,47 +32,81 @@ type TaskHandler struct {
 func (th *TaskHandler) TasksHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
-		tasksList, err := th.Service.GetAllTasks()
-		if err != nil {
-			http.Error(w, "failed to get tasks: "+err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-
-		if err := json.NewEncoder(w).Encode(tasksList); err != nil {
-			http.Error(w, "failed to encode response: "+err.Error(), http.StatusInternalServerError)
-			return
-		}
+		getAllTasks(th, w, r)
 	case http.MethodPost:
-		var task model.Task
-		if err := json.NewDecoder(r.Body).Decode(&task); err != nil {
-			http.Error(w, "bad request: "+err.Error(), http.StatusBadRequest)
-			return
-		}
-
-		_, _ = pp.Println("Create task", task)
-
-		if task.Name == "" {
-			http.Error(w, "Task name empty.", http.StatusBadRequest)
-			return
-		}
-
-		err := th.Service.CreateTask(task)
-		if err != nil {
-			http.Error(w, "failed to create task: "+err.Error(), http.StatusInternalServerError)
-			return
-		}
-		_, err = w.Write([]byte("Task created."))
-		if err != nil {
-			http.Error(w, "failed to write: "+err.Error(), http.StatusInternalServerError)
-			return
-		}
+		createTask(th, w, r)
 	case http.MethodDelete:
-		th.Service.DeleteAllTasks()
-		_, _ = w.Write([]byte("Delete tasks."))
+		deleteAllTasks(th, w, r)
 	default:
 		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
+	}
+}
+
+// @Summary      Удалить все задачи
+// @Description  Чистит список задач
+// @Tags         tasks
+// @Produce      plain
+// @Success      200  {string}  string  "Delete tasks."
+// @Router       /tasks [delete]
+func deleteAllTasks(th *TaskHandler, w http.ResponseWriter, _ *http.Request) {
+	th.Service.DeleteAllTasks()
+	_, _ = w.Write([]byte("Delete tasks."))
+}
+
+// @Summary      Создать задачу
+// @Description  Добавляет новую задачу
+// @Tags         tasks
+// @Accept       json
+// @Produce      plain
+// @Param        task  body      model.Task  true  "Task info"
+// @Success      200   {string}  string      "Task created."
+// @Router       /tasks [post]
+func createTask(th *TaskHandler, w http.ResponseWriter, r *http.Request) {
+	var task model.Task
+	if err := json.NewDecoder(r.Body).Decode(&task); err != nil {
+		http.Error(w, "bad request: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if task.Name == "" {
+		logger.L().Error("create task failed")
+		http.Error(w, "Task name empty.", http.StatusBadRequest)
+		return
+	}
+
+	err := th.Service.CreateTask(task)
+	if err != nil {
+		logger.L().Error("create task failed", zap.Error(err))
+		http.Error(w, "failed to create task: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	_, _ = pp.Println("Created task", task)
+	_, err = w.Write([]byte("Task created."))
+	if err != nil {
+		http.Error(w, "failed to write: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+// @Summary      Получить список задач.
+// @Description  Возвращает все задачи
+// @Tags         tasks
+// @Produce      json
+// @Success      200  {array}  model.Task
+// @Router       /tasks [get]
+func getAllTasks(th *TaskHandler, w http.ResponseWriter, _ *http.Request) {
+	tasksList, err := th.Service.GetAllTasks()
+	if err != nil {
+		http.Error(w, "failed to get tasks: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	if err := json.NewEncoder(w).Encode(tasksList); err != nil {
+		http.Error(w, "failed to encode response: "+err.Error(), http.StatusInternalServerError)
+		return
 	}
 }
 
@@ -79,17 +121,46 @@ func (th *TaskHandler) TaskByIDHandler(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case http.MethodGet:
-		_, _ = w.Write([]byte("Not implement."))
+		getTaskByID(w)
 	case http.MethodDelete:
-		err := th.Service.DeleteTask(id)
-		if err != nil {
-			http.Error(w, "Failed to delete task: "+err.Error(), http.StatusInternalServerError)
-			return
-		}
-		_, _ = w.Write([]byte(fmt.Sprintf("Delete task %d.", id)))
+		deleteTaskByID(th, id, w)
 	default:
 		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
 	}
+}
+
+// @Summary      Удалить задачу по ID
+// @Description  Удаляет задачу по её ID
+// @Tags         tasks
+// @Param        id   path      int  true  "ID задачи"
+// @Success      200  {string}  string  "Delete task {id}."
+// @Failure      400  {string}  string  "Invalid id"
+// @Failure      404  {string}  string  "Task not found"
+// @Router       /tasks/{id} [delete]
+func deleteTaskByID(th *TaskHandler, id int, w http.ResponseWriter) {
+	err := th.Service.DeleteTask(id)
+	if err != nil {
+		logger.L().Warn("Failed to delete task:", zap.Error(err))
+		http.Error(w, "Failed to delete task: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	msg := fmt.Sprintf("Delete task %d.", id)
+	_, _ = w.Write([]byte(msg))
+	logger.L().Info(msg)
+}
+
+// @Summary      Получить задачу по ID
+// @Description  Возвращает задачу по её ID
+// @Tags         tasks
+// @Produce      json
+// @Param        id   path      int  true  "ID задачи"
+// @Success      200  {object}  model.Task
+// @Failure      400  {string}  string  "Invalid id"
+// @Failure      404  {string}  string  "Task not found"
+// @Router       /tasks/{id} [get]
+func getTaskByID(w http.ResponseWriter) {
+	_, _ = w.Write([]byte("Not implement."))
 }
 
 func (th *TaskHandler) SlowHandler(w http.ResponseWriter, _ *http.Request) {

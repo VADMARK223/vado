@@ -7,6 +7,7 @@ import (
 	"html/template"
 	"image/color"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 	"vado/internal/gui/common"
@@ -16,10 +17,13 @@ import (
 	"vado/internal/util"
 	"vado/pkg/logger"
 
+	_ "vado/internal/docs"
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 const (
@@ -118,13 +122,12 @@ func StartServer(service service.ITaskService) error {
 	mux := http.NewServeMux() // multiplexer = «распределитель запросов»
 	handler := &http2.TaskHandler{Service: service}
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		//_, _ = w.Write([]byte("Hello from vado!"))
 		tmpl := template.Must(template.ParseFiles("data/index.html"))
 
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		data := PageData{
 			Title:   "Привет из Vado 🚀",
-			Message: "Сервер работает.",
+			Message: fmt.Sprintf("Сервер работает. (%s)", strings.ToUpper(util.GetModeValue())),
 		}
 		err := tmpl.Execute(w, data)
 		if err != nil {
@@ -133,6 +136,7 @@ func StartServer(service service.ITaskService) error {
 	})
 	mux.HandleFunc("/tasks", handler.TasksHandler)
 	mux.HandleFunc("/tasks/", handler.TaskByIDHandler)
+	mux.HandleFunc("/swagger/", httpSwagger.WrapHandler)
 	mux.HandleFunc("/slow", handler.SlowHandler)
 
 	srv = &http.Server{

@@ -79,3 +79,11 @@ docker run -d -p 5555:5555 vado
 
 # Idea
 **Ctrl + Alt + L** Переформатировать код
+
+# Swagger
+`swag init -g ./internal/transport/rest/taskHandler.go -o internal/docs` Генерация
+
+# Stack
+* zap logger
+* fyne
+* Swagger

@@ -119,6 +119,6 @@ func (t *TaskDBRepo) RemoveAll() error {
 		return fmt.Errorf("error delete all tasks: %w", err)
 	}
 
-	logger.L().Debug("Successfully deleted all tasks")
+	logger.L().Debug("Successfully deleted all tasks.")
 	return nil
 }
