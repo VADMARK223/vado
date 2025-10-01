@@ -22,6 +22,15 @@ services:
     networks:
       - kafka-net
 
+  kafka-init:
+    image: wurstmeister/kafka:latest
+    depends_on:
+      - kafka
+    networks:
+      - kafka-net
+    entrypoint: >
+      sh -c "sleep 15 && kafka-topics.sh --create --if-not-exists --zookeeper zookeeper:2181 --replication-factor 1 --partitions 1 --topic tasks"
+
 networks:
   kafka-net:
     driver: bridge
