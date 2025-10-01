@@ -11,6 +11,8 @@ import (
 	"vado/internal/transport/kafka"
 	"vado/internal/util"
 	"vado/pkg/logger"
+
+	"go.uber.org/zap"
 )
 
 func main() {
@@ -19,9 +21,13 @@ func main() {
 
 	log.Info(fmt.Sprintf("Starting CLI mode. (%s)", util.GetModeValue()))
 
+	if err := kafka.CheckKafkaConnection(); err != nil {
+		logger.L().Error("Kafka connection failed", zap.Error(err))
+		return
+	}
+
 	currentTime := time.Now().String()[:19]
 	go kafka.Consume() // Запускаем в фоне consumer
-
 	message := fmt.Sprintf("Message: %s", currentTime)
 	kafka.Produce(message)
 
