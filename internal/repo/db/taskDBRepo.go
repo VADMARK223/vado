@@ -9,6 +9,7 @@ import (
 	"vado/pkg/logger"
 
 	_ "github.com/lib/pq"
+	"go.uber.org/zap"
 )
 
 type TaskDBRepo struct {
@@ -22,9 +23,10 @@ func NewTaskDBRepo(dsn string) *TaskDBRepo {
 		log.Fatal("Err open sql", err)
 	}
 
+	logger.L().Info("Try connect to database...", zap.String("dsn", dsn))
 	err = db.Ping()
 	if err != nil {
-		log.Fatal("Error ping connection: ", err)
+		panic(fmt.Sprintf("Error ping connection: %v", err))
 	}
 
 	logger.L().Info(fmt.Sprintf("Successfully database connected! (%s)", dsn))

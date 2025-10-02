@@ -4,8 +4,10 @@ go 1.25
 
 require (
 	fyne.io/fyne/v2 v2.6.3
+	github.com/joho/godotenv v1.5.1
 	github.com/k0kubun/pp v3.0.1+incompatible
 	github.com/lib/pq v1.10.9
+	github.com/segmentio/kafka-go v0.4.49
 	github.com/swaggo/http-swagger v1.3.4
 	github.com/swaggo/swag v1.16.6
 	go.uber.org/zap v1.27.0
@@ -48,7 +50,6 @@ require (
 	github.com/pierrec/lz4/v4 v4.1.15 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rymdport/portal v0.4.2 // indirect
-	github.com/segmentio/kafka-go v0.4.49 // indirect
 	github.com/srwiley/oksvg v0.0.0-20221011165216-be6e8873101c // indirect
 	github.com/srwiley/rasterx v0.0.0-20220730225603-2ab79fcdd4ef // indirect
 	github.com/stretchr/testify v1.11.1 // indirect

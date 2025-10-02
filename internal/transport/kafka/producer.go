@@ -11,10 +11,11 @@ import (
 )
 
 func Produce(message string) {
-	writer := kafka.NewWriter(kafka.WriterConfig{
-		Brokers: []string{"localhost:9092"},
-		Topic:   "tasks",
-	})
+	writer := &kafka.Writer{
+		Addr:     kafka.TCP("localhost:9092"),
+		Topic:    "tasks",
+		Balancer: &kafka.LeastBytes{}, // Балансировщик для распределения сообщений по партициям (можно использовать другие: Hash, RoundRobin)
+	}
 	defer func(writer *kafka.Writer) {
 		err := writer.Close()
 		if err != nil {

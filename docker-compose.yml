@@ -3,11 +3,10 @@
 services:
   db:
     image: postgres:16
+    container_name: vado_postgres
     restart: unless-stopped
-    environment:
-      POSTGRES_USER: vadmark
-      POSTGRES_PASSWORD: 5125341
-      POSTGRES_DB: vadodb
+    env_file:
+      - vado_db.env
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U vadmark -d vadodb" ]
       interval: 5s
@@ -19,19 +18,15 @@ services:
       - ./db/init:/docker-entrypoint-initdb.d # SQL-скрипты при старте
 
   app:
+    container_name: vado_app
     build:
       context: .
       dockerfile: Dockerfile
     depends_on:
       db:
         condition: service_healthy # app ждет healthcheck БД
-    environment:
-      DB_HOST: db
-      DB_PORT: 5432
-      DB_USER: vadmark
-      DB_PASSWORD: 5125341
-      DB_NAME: vadodb
-      APP_ENV: production
+    env_file:
+      - vado_db.env
     volumes:
       - ./data:/app/data   # монтируем локальную папку внутрь контейнера
     ports:
