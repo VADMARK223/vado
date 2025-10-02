@@ -140,18 +140,18 @@ func StartServer(service service.ITaskService) error {
 	mux.HandleFunc("/slow", handler.SlowHandler)
 
 	srv = &http.Server{
-		Addr:    ":5555",
+		Addr:    ":5556",
 		Handler: mux,
 	}
 	httpMtx.Unlock()
 
-	logger.L().Info("HTTP-server started on :5555")
+	logger.L().Info("HTTP-server started on :5556")
 
 	// ListenAndServe блокирующий
 	// ErrServerClosed это не ошибка, а сигнал: «Сервер завершён штатно».
 	// Поэтому её нужно отфильтровать, иначе в логах всегда будет «Error: rest: Server closed» даже при нормальной остановке.
 	if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-		fmt.Println("Error:", err)
+		fmt.Println("Errorффф:", err)
 	}
 
 	return nil
