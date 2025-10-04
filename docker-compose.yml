@@ -1,12 +1,10 @@
-#version: "3.9"
-
 services:
   db:
     image: postgres:16
     container_name: vado_postgres
     restart: unless-stopped
     env_file:
-      - vado_db.env
+      - vado_app.env.prod
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U vadmark -d vadodb" ]
       interval: 5s
@@ -65,7 +63,7 @@ services:
       kafka:
         condition: service_healthy
     env_file:
-      - vado_db.env
+      - vado_app.env.prod
     volumes:
       - ./data/app:/app/data   # монтируем локальную папку внутрь контейнера
     ports:

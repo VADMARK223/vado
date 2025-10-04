@@ -1,2 +1,3 @@
 .idea/
-vado_db.env
+vado_app.env.dev
+vado_app.env.prod

@@ -10,14 +10,15 @@ import (
 const TasksFilePath = "./data/tasks.json"
 
 func init() {
-	if os.Getenv("APP_ENV") == "development" {
-		fmt.Println("Load .env file")
-		err := godotenv.Load("vado_db.env")
-		if err != nil {
-			panic("Error loading vado.env file!!!")
-		}
-	} else {
-		fmt.Println("Not load .env file")
+	env := os.Getenv("APP_ENV")
+	if env == "" {
+		panic("APP_ENV is empty.")
+	}
+
+	envFile := fmt.Sprintf("vado_app.env.%s", env)
+
+	if err := godotenv.Load(envFile); err != nil {
+		panic(fmt.Sprintf("Failed to load config %s: %v", envFile, err))
 	}
 }
 
@@ -31,11 +32,7 @@ func getEnv(key string) string {
 // GetDSN Data Source Name (Имя источника данных)
 func GetDSN() string {
 	var host string
-	if os.Getenv("APP_ENV") == "development" {
-		host = "127.0.0.1"
-	} else {
-		host = getEnv("DB_HOST")
-	}
+	host = getEnv("DB_HOST")
 	port := getEnv("DB_PORT")
 	user := getEnv("DB_USER")
 	password := getEnv("DB_PASSWORD")

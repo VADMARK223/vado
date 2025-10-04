@@ -1,3 +1,18 @@
+# Linux
+```shell
+sudo lsof -i :9092
+sudo kill -9 <PID>
+```
+
+# Kafka
+Прочитать сообщения
+```shell
+docker exec -it kafka kafka-console-consumer \
+  --bootstrap-server localhost:9092 \
+  --topic tasks \
+  --from-beginning
+```
+
 # Docker compose
 
 Запуск в фоновом режиме (`-d`) и `--build` пересоберет образ приложения (если код менялся):

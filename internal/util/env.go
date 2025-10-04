@@ -14,5 +14,5 @@ func IsDevMode() bool {
 		panic("APP_ENV is empty.")
 	}
 
-	return env == "development"
+	return env == "dev"
 }
