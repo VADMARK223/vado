@@ -7,14 +7,31 @@ import (
 	"os"
 	"vado/internal/gui/tab/tasks/constant"
 	"vado/internal/model"
+	"vado/internal/util"
+
+	"github.com/k0kubun/pp"
 )
 
 type TaskJSONRepo struct {
 	filePath string
 }
 
-func (r *TaskJSONRepo) GetTask(id int) (model.Task, error) {
-	return model.Task{}, errors.New("not implemented")
+func (r *TaskJSONRepo) GetTask(id int) (*model.Task, error) {
+	data, err := os.ReadFile(constant.TasksFilePath)
+
+	if err != nil {
+		log.Fatal("Error open file:", err)
+	}
+
+	var list model.TaskList
+	err = json.Unmarshal(data, &list)
+
+	for _, task := range list.Tasks {
+		if task.ID == id {
+			return &task, nil
+		}
+	}
+	return nil, err
 }
 
 func NewTaskJSONRepo(path string) *TaskJSONRepo {
@@ -35,8 +52,14 @@ func (r *TaskJSONRepo) FetchAll() (model.TaskList, error) {
 
 func (r *TaskJSONRepo) Save(t model.Task) error {
 	list, _ := r.FetchAll()
+
+	if t.ID == -1 { // generate ID
+		t.ID = util.GenerateMaxID(list)
+	}
+
 	for _, task := range list.Tasks {
 		if task.ID == t.ID {
+			pp.Println("Task already exists")
 			return errors.New("task already exists")
 		}
 	}

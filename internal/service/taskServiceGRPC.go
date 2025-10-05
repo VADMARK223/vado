@@ -53,7 +53,7 @@ func (s *TaskServiceGRPC) DeleteAllTasks(ctx context.Context, _ *taskpb.Empty) (
 }
 
 // toProtoTask - конвертация model.Task в taskpb.Task
-func toProtoTask(t model.Task) *taskpb.Task {
+func toProtoTask(t *model.Task) *taskpb.Task {
 	return &taskpb.Task{
 		Id:          int32(t.ID),
 		Name:        t.Name,
@@ -76,7 +76,7 @@ func fromProtoTask(pt *taskpb.Task) model.Task {
 func toProtoTaskList(tl model.TaskList) *taskpb.TaskList {
 	tasks := make([]*taskpb.Task, len(tl.Tasks))
 	for i, t := range tl.Tasks {
-		tasks[i] = toProtoTask(t)
+		tasks[i] = toProtoTask(&t)
 	}
 	return &taskpb.TaskList{Tasks: tasks}
 }

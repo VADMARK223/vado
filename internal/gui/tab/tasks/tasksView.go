@@ -20,6 +20,7 @@ import (
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
+	"github.com/k0kubun/pp"
 	"go.uber.org/zap"
 )
 
@@ -52,9 +53,7 @@ func NewTasksView(win fyne.Window, s service.ITaskService) fyne.CanvasObject {
 		_ = vt.reloadTasks()
 	})
 	addBtn := common.NewBtn("", theme.ContentAddIcon(), func() {
-		c.ShowAddTaskDialog(win, func(newTask m.Task) {
-			vt.AddTask(newTask)
-		})
+		showTaskDialog(win, vt, nil)
 	})
 	quickAddBtn := common.NewBtn("Быстро", theme.ContentAddIcon(), func() {
 		vt.AddTaskQuick(isJSON)
@@ -113,13 +112,9 @@ func NewTasksView(win fyne.Window, s service.ITaskService) fyne.CanvasObject {
 			taskItem.OnDoubleTap = func() {
 				requestedTask, err := vt.GetTaskByID(t.ID)
 				if err != nil {
-					logger.L().Error(fmt.Sprintf("Get task %d", t.ID), zap.String("Error: ", err.Error()))
-					return
+					logger.L().Info(fmt.Sprintf("Get task %d", t.ID), zap.String("Error: ", err.Error()))
 				}
-				//c.ShowEditTaskDialog(win, t, func(task m.Task) {
-				c.ShowEditTaskDialog(win, requestedTask, func(task m.Task) {
-					logger.L().Debug(fmt.Sprintf("Edit task: %d", task.ID))
-				})
+				showTaskDialog(win, vt, requestedTask)
 			}
 
 			taskItem.OnDelete = func() {
@@ -153,6 +148,17 @@ func NewTasksView(win fyne.Window, s service.ITaskService) fyne.CanvasObject {
 	content := container.NewBorder(topBox, nil, nil, nil, scroll)
 	return content
 
+}
+
+func showTaskDialog(win fyne.Window, vt *ViewTasks, t *m.Task) {
+	c.ShowTaskDialog(win, t, func(task m.Task) {
+		_, _ = pp.Println(task)
+		if task.ID == -1 {
+			vt.AddTask(task)
+		} else {
+			pp.Println("Save task")
+		}
+	})
 }
 
 func (vt *ViewTasks) reloadTasks() error {

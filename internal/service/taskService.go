@@ -11,7 +11,7 @@ var ErrInvalidTask = errors.New("invalid task")
 type ITaskService interface {
 	GetAllTasks() (model.TaskList, error)
 	CreateTask(t model.Task) error
-	GetTaskByID(id int) (model.Task, error)
+	GetTaskByID(id int) (*model.Task, error)
 	DeleteTask(id int) error
 	DeleteAllTasks()
 }
@@ -30,14 +30,10 @@ func (s *TaskService) GetAllTasks() (model.TaskList, error) {
 }
 
 func (s *TaskService) CreateTask(task model.Task) error {
-	// Здесь можно добавить бизнес-логику, например валидацию
-	if task.ID == 0 {
-		return ErrInvalidTask
-	}
 	return s.repo.Save(task)
 }
 
-func (s *TaskService) GetTaskByID(id int) (model.Task, error) {
+func (s *TaskService) GetTaskByID(id int) (*model.Task, error) {
 	return s.repo.GetTask(id)
 }
 
