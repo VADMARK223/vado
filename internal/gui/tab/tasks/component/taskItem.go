@@ -68,7 +68,14 @@ func (ti *TaskItem) SetTask(task m.Task) {
 	text := util.Tpl("%d %s%s", task.ID, task.Name, GetDescText(task.Description))
 	ti.label.SetText(text)
 
-	createdAtText := util.Tpl("Создана: %s", util.FormatTime(task.CreatedAt))
+	var value string
+	if task.CreatedAt != nil {
+		value = util.FormatTime(*task.CreatedAt)
+	} else {
+		value = "-"
+	}
+	ti.createAtLabel.SetText(value)
+	createdAtText := util.Tpl("Создана: %s", value)
 	ti.createAtLabel.SetText(createdAtText)
 }
 

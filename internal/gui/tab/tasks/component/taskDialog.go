@@ -29,7 +29,6 @@ func ShowTaskDialog(parent fyne.Window, task *m.Task, f func(task m.Task)) {
 			if isEdit {
 				return task.ID
 			}
-			//return -1
 			return 0
 		}()
 		outTask := m.Task{
@@ -54,13 +53,25 @@ func ShowTaskDialog(parent fyne.Window, task *m.Task, f func(task m.Task)) {
 		nameEntry.SetText(task.Name)
 		nameEntry.CursorColumn = len(task.Name)
 		descEntry.SetText(task.Description)
-		createAtEntry.SetText(util.FormatTime(task.CreatedAt))
-		var updateAtEntryText string
-		if task.CreatedAt == task.UpdatedAt {
-			updateAtEntryText = "Не изменялась"
+		var temp string
+		if task.CreatedAt == nil {
+			temp = "-"
 		} else {
-			updateAtEntryText = util.FormatTime(task.UpdatedAt)
+			temp = util.FormatTime(*task.CreatedAt)
 		}
+		createAtEntry.SetText(temp)
+		var updateAtEntryText string
+
+		if task.UpdatedAt == nil {
+			updateAtEntryText = "-"
+		} else {
+			if *task.CreatedAt == *task.UpdatedAt {
+				updateAtEntryText = "Не изменялась"
+			} else {
+				updateAtEntryText = util.FormatTime(*task.UpdatedAt)
+			}
+		}
+
 		updateAtEntry.SetText(updateAtEntryText)
 		check.SetChecked(task.Completed)
 		saveBtn.SetText("Сохранить")

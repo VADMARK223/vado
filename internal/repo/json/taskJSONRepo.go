@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log"
 	"os"
+	"time"
 	"vado/internal/gui/tab/tasks/constant"
 	"vado/internal/model"
 	"vado/internal/util"
@@ -50,14 +51,17 @@ func (r *TaskJSONRepo) FetchAll() (model.TaskList, error) {
 
 func (r *TaskJSONRepo) Save(t model.Task) error {
 	list, _ := r.FetchAll()
-	//if t.ID == -1 { // generate ID
-	if t.ID == 0 { // generate ID
+	var now = time.Now()
+	if t.ID == 0 { // новая задача
 		t.ID = util.GenerateMaxID(list)
+		t.CreatedAt = &now
+		t.UpdatedAt = &now
 		list.Tasks = append(list.Tasks, t)
 	} else {
 		updated := false
 		for i, task := range list.Tasks {
 			if task.ID == t.ID {
+				t.UpdatedAt = &now
 				list.Tasks[i] = t
 				updated = true
 				break

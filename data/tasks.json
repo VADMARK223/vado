@@ -2,11 +2,19 @@
   "tasks": [
     {
       "id": 1,
-      "name": "as",
-      "description": "asdasd",
+      "name": "Fast json task",
+      "description": "",
       "completed": true,
-      "created_at": "2025-10-05T23:52:45.185843437+03:00",
-      "updated_at": "2025-10-05T23:52:45.185843437+03:00"
+      "created_at": "2025-10-06T00:43:16.478711757+03:00",
+      "updated_at": "2025-10-06T00:47:04.888109551+03:00"
+    },
+    {
+      "id": 2,
+      "name": "Fast json task",
+      "description": "",
+      "completed": true,
+      "created_at": "2025-10-06T00:43:16.478711757+03:00",
+      "updated_at": "2025-10-06T00:47:04.888109551+03:00"
     }
   ]
 }

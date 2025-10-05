@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"time"
 	"vado/internal/model"
 	"vado/pkg/logger"
 
@@ -67,25 +68,24 @@ func (t *TaskDBRepo) FetchAll() (model.TaskList, error) {
 }
 
 func (t *TaskDBRepo) Save(task model.Task) error {
-	println(">>>>>")
-	println(task.ID)
-	//if task.ID == -1 {
+
 	if task.ID == 0 {
 		// Новая задача — вставляем
 		query := `
-			INSERT INTO tasks (name, description, completed, created_at, updated_at)
-			VALUES ($1, $2, $3, $4, $5)
+			INSERT INTO tasks (name, description, completed)
+			VALUES ($1, $2, $3)
 			RETURNING id
 		`
-		return t.db.QueryRow(query, task.Name, task.Description, task.Completed, task.CreatedAt, task.UpdatedAt).Scan(&task.ID)
+		return t.db.QueryRow(query, task.Name, task.Description, task.Completed).Scan(&task.ID)
 	} else {
 		// Существующая задача — обновляем
+		//*task.UpdatedAt = time.Now()
 		query := `
 			UPDATE tasks
-			SET name = $1, description = $2, completed = $3, created_at = $4, updated_at = $5
-			WHERE id = $6
+			SET name = $1, description = $2, completed = $3, updated_at = $4
+			WHERE id = $5
 		`
-		_, err := t.db.Exec(query, task.Name, task.Description, task.Completed, task.CreatedAt, task.UpdatedAt, task.ID)
+		_, err := t.db.Exec(query, task.Name, task.Description, task.Completed, time.Now(), task.ID)
 		return err
 	}
 }

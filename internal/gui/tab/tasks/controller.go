@@ -1,7 +1,6 @@
 package tasks
 
 import (
-	"time"
 	"vado/internal/model"
 	"vado/pkg/logger"
 	"vado/pkg/util"
@@ -17,8 +16,7 @@ func (vt *ViewTasks) AddTaskQuick(isJSON bool) {
 		return "db"
 	}()
 	newTask := model.Task{
-		ID: 0,
-		//ID:        -1,
+		ID:        0,
 		Name:      util.Tpl("Fast %s task", storeMode),
 		Completed: util.RndBool(),
 	}
@@ -26,14 +24,14 @@ func (vt *ViewTasks) AddTaskQuick(isJSON bool) {
 }
 
 func (vt *ViewTasks) AddTask(t model.Task) {
-	now := time.Now()
-	//if t.ID == -1 { // Новая задача
+	/*now := time.Now()
 	if t.ID == 0 { // Новая задача
+		print("New task")
 		t.CreatedAt = now
 		t.UpdatedAt = now
 	} else {
 		t.UpdatedAt = now
-	}
+	}*/
 	err := vt.service.CreateTask(t)
 	if err != nil {
 		logger.L().Error("Error insert/update task", zap.Error(err))

@@ -49,7 +49,9 @@ func NewTasksView(win fyne.Window, s service.ITaskService) fyne.CanvasObject {
 	}())
 
 	refreshBtn := common.NewBtn("", theme.ViewRefreshIcon(), func() {
+		// TODO: оптимизировать
 		_ = vt.updateUntypedList()
+		_ = vt.resetUntypedList()
 	})
 	addBtn := common.NewBtn("", theme.ContentAddIcon(), func() {
 		showTaskDialog(win, vt, nil)
