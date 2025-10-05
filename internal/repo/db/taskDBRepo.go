@@ -67,12 +67,30 @@ func (t *TaskDBRepo) FetchAll() (model.TaskList, error) {
 }
 
 func (t *TaskDBRepo) Save(task model.Task) error {
-	query := `INSERT INTO tasks (id, name, description, completed) VALUES ($1, $2, $3, $4)`
+	if task.ID == -1 {
+		// Новая задача — вставляем
+		query := `
+			INSERT INTO tasks (name, description, completed)
+			VALUES ($1, $2, $3)
+			RETURNING id
+		`
+		return t.db.QueryRow(query, task.Name, task.Description, task.Completed).Scan(&task.ID)
+	} else {
+		// Существующая задача — обновляем
+		query := `
+			UPDATE tasks
+			SET name = $1, description = $2, completed = $3
+			WHERE id = $4
+		`
+		_, err := t.db.Exec(query, task.Name, task.Description, task.Completed, task.ID)
+		return err
+	}
+	/*query := `INSERT INTO tasks (id, name, description, completed) VALUES ($1, $2, $3, $4)`
 	_, err := t.db.Exec(query, task.ID, task.Name, task.Description, task.Completed)
 	if err != nil {
 		return fmt.Errorf("error saving task: %w", err)
 	}
-	return nil
+	return nil*/
 }
 
 func (t *TaskDBRepo) GetTask(id int) (*model.Task, error) {

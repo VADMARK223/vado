@@ -8,8 +8,6 @@ import (
 	"vado/internal/gui/tab/tasks/constant"
 	"vado/internal/model"
 	"vado/internal/util"
-
-	"github.com/k0kubun/pp"
 )
 
 type TaskJSONRepo struct {
@@ -55,15 +53,21 @@ func (r *TaskJSONRepo) Save(t model.Task) error {
 
 	if t.ID == -1 { // generate ID
 		t.ID = util.GenerateMaxID(list)
-	}
+		list.Tasks = append(list.Tasks, t)
+	} else {
+		updated := false
+		for i, task := range list.Tasks {
+			if task.ID == t.ID {
+				list.Tasks[i] = t
+				updated = true
+				break
+			}
+		}
 
-	for _, task := range list.Tasks {
-		if task.ID == t.ID {
-			pp.Println("Task already exists")
-			return errors.New("task already exists")
+		if !updated {
+			return errors.New("task not exists")
 		}
 	}
-	list.Tasks = append(list.Tasks, t)
 
 	return r.SaveTasks(list)
 }

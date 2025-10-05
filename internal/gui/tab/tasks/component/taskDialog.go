@@ -2,8 +2,8 @@ package component
 
 import (
 	"strings"
+	"time"
 	m "vado/internal/model"
-	"vado/pkg/logger"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
@@ -19,7 +19,6 @@ func ShowTaskDialog(parent fyne.Window, task *m.Task, f func(task m.Task)) {
 	check := widget.NewCheck("Выполнена", nil)
 	var dlg dialog.Dialog
 	saveBtn := widget.NewButton("", func() {
-		logger.L().Debug("Save task.")
 		taskId := func() int {
 			if isEdit {
 				return task.ID
@@ -42,10 +41,10 @@ func ShowTaskDialog(parent fyne.Window, task *m.Task, f func(task m.Task)) {
 	if isEdit {
 		title = "Редактирование задачи"
 		nameEntry.SetText(task.Name)
+		nameEntry.CursorColumn = len(task.Name)
 		descEntry.SetText(task.Description)
 		check.SetChecked(task.Completed)
 		saveBtn.SetText("Сохранить")
-		saveBtn.Enable()
 	} else {
 		title = "Создание задачи"
 		saveBtn.SetText("Создать")
@@ -56,14 +55,19 @@ func ShowTaskDialog(parent fyne.Window, task *m.Task, f func(task m.Task)) {
 	})
 
 	nameEntry.OnChanged = func(text string) {
-		saveBtn.Enable()
-		if strings.TrimSpace(text) == "" {
-			saveBtn.Disable()
-		}
+		updateSaveBtnEnable(saveBtn, text, task.Name, descEntry.Text, task.Description, check.Checked, task.Completed)
+	}
+
+	descEntry.OnChanged = func(text string) {
+		updateSaveBtnEnable(saveBtn, nameEntry.Text, task.Name, text, task.Description, check.Checked, task.Completed)
+	}
+
+	check.OnChanged = func(checked bool) {
+		updateSaveBtnEnable(saveBtn, nameEntry.Text, task.Name, descEntry.Text, task.Description, check.Checked, task.Completed)
 	}
 
 	form := widget.NewForm(
-		widget.NewFormItem("Название", nameEntry),
+		widget.NewFormItem("Название *", nameEntry),
 		widget.NewFormItem("Описание", descEntry),
 		widget.NewFormItem("", check),
 	)
@@ -73,4 +77,31 @@ func ShowTaskDialog(parent fyne.Window, task *m.Task, f func(task m.Task)) {
 	dlg = dialog.NewCustomWithoutButtons(title, content, parent)
 	dlg.Resize(fyne.NewSize(400, 180))
 	dlg.Show()
+
+	// Через короткое время после показа диалога — установить фокус
+	time.AfterFunc(100*time.Millisecond, func() {
+		fyne.Do(func() {
+			fyne.CurrentApp().Driver().CanvasForObject(nameEntry).Focus(nameEntry)
+		})
+	})
+}
+
+func updateSaveBtnEnable(btn *widget.Button, newName string, oldName string, newDesc string, oldDesc string, newCheck bool, oldCheck bool) {
+	if getEnableSaveButton(newName, oldName, newDesc, oldDesc, newCheck, oldCheck) {
+		btn.Enable()
+	} else {
+		btn.Disable()
+	}
+}
+
+func getEnableSaveButton(newName string, oldName string, newDesc string, oldDesc string, newCheck bool, oldCheck bool) bool {
+	if strings.TrimSpace(newName) == "" {
+		return false
+	}
+
+	if newName == oldName && newDesc == oldDesc && newCheck == oldCheck {
+		return false
+	}
+
+	return true
 }

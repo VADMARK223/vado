@@ -20,7 +20,6 @@ import (
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
-	"github.com/k0kubun/pp"
 	"go.uber.org/zap"
 )
 
@@ -31,7 +30,7 @@ type ViewTasks struct {
 
 func NewTasksView(win fyne.Window, s service.ITaskService) fyne.CanvasObject {
 	vt := &ViewTasks{service: s, untypedList: binding.NewUntypedList()}
-	err := vt.reloadTasks()
+	err := vt.updateUntypedList()
 	if err != nil {
 		return nil
 	}
@@ -50,7 +49,7 @@ func NewTasksView(win fyne.Window, s service.ITaskService) fyne.CanvasObject {
 	}())
 
 	refreshBtn := common.NewBtn("", theme.ViewRefreshIcon(), func() {
-		_ = vt.reloadTasks()
+		_ = vt.updateUntypedList()
 	})
 	addBtn := common.NewBtn("", theme.ContentAddIcon(), func() {
 		showTaskDialog(win, vt, nil)
@@ -102,7 +101,7 @@ func NewTasksView(win fyne.Window, s service.ITaskService) fyne.CanvasObject {
 					panic(delErr)
 					return
 				}
-				_ = vt.reloadTasks()
+				_ = vt.updateUntypedList()
 				if err != nil {
 					panic(err)
 					return
@@ -152,26 +151,38 @@ func NewTasksView(win fyne.Window, s service.ITaskService) fyne.CanvasObject {
 
 func showTaskDialog(win fyne.Window, vt *ViewTasks, t *m.Task) {
 	c.ShowTaskDialog(win, t, func(task m.Task) {
-		_, _ = pp.Println(task)
-		if task.ID == -1 {
-			vt.AddTask(task)
-		} else {
-			pp.Println("Save task")
+		vt.AddTask(task)
+
+		err := vt.updateUntypedList()
+		if err != nil {
+			logger.L().Error("Error reload tasks.")
+		}
+
+		err = vt.resetUntypedList()
+		if err != nil {
+			logger.L().Error("Error reset list.")
 		}
 	})
 }
 
-func (vt *ViewTasks) reloadTasks() error {
+// updateUntypedList метод обновляет список для визуального отображения
+func (vt *ViewTasks) updateUntypedList() error {
 	tasksList, err := vt.service.GetAllTasks()
 	if err != nil {
 		return err
 	}
 
-	// преобразуем []Task → []any, потому что UntypedList принимает any
 	items := make([]any, len(tasksList.Tasks))
 	for i, t := range tasksList.Tasks {
 		items[i] = t
 	}
 
 	return vt.untypedList.Set(items)
+}
+
+// resetUntypedList метод пересоздает весь список, потому что изменения деталей задач не отображаются, после редактирования
+func (vt *ViewTasks) resetUntypedList() error {
+	cur, _ := vt.untypedList.Get()
+	_ = vt.untypedList.Set([]any{})
+	return vt.untypedList.Set(cur)
 }
