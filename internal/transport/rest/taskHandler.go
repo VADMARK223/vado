@@ -59,7 +59,7 @@ func deleteAllTasks(th *TaskHandler, w http.ResponseWriter, _ *http.Request) {
 // @Accept       json
 // @Produce      plain
 // @Param        task  body      model.Task  true  "Task info"
-// @Success      200   {string}  string      "Task created."
+// @Success      200   {string}  string      "Success."
 // @Router       /tasks [post]
 func createTask(th *TaskHandler, w http.ResponseWriter, r *http.Request) {
 	var task model.Task
@@ -82,7 +82,7 @@ func createTask(th *TaskHandler, w http.ResponseWriter, r *http.Request) {
 	}
 
 	_, _ = pp.Println("Created task", task)
-	_, err = w.Write([]byte("Task created."))
+	_, err = w.Write([]byte("Success."))
 	if err != nil {
 		http.Error(w, "failed to write: "+err.Error(), http.StatusInternalServerError)
 		return
