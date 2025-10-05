@@ -15,11 +15,13 @@ func init() {
 		panic("APP_ENV is empty.")
 	}
 
-	envFile := fmt.Sprintf("vado_app.env.%s", env)
-
-	if err := godotenv.Load(envFile); err != nil {
-		panic(fmt.Sprintf("Failed to load config %s: %v", envFile, err))
+	if env == "dev" {
+		envFile := fmt.Sprintf("vado_app.env.%s", env)
+		if err := godotenv.Load(envFile); err != nil {
+			panic(fmt.Sprintf("Failed to load config %s: %v", envFile, err))
+		}
 	}
+
 }
 
 func getEnv(key string) string {

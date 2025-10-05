@@ -33,8 +33,8 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
-#      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092  # Изменено для Docker-сети
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092  # Изменено для Docker-сети
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092  # Изменено для Docker-сети
+#      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092  # Изменено для Docker-сети
       KAFKA_LOG_DIRS: /var/lib/kafka/data
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
@@ -50,7 +50,18 @@ services:
       interval: 10s
       timeout: 10s
       retries: 5
-
+  redpanda-console:
+    image: docker.redpanda.com/redpandadata/console:v3.2.2
+    container_name: redpanda-console
+    ports:
+      - "8080:8080"
+    environment:
+      - KAFKA_BROKERS=kafka:9092
+    depends_on:
+      kafka:
+        condition: service_healthy
+    networks:
+      - vado-network
 
   app:
     container_name: vado_app
@@ -65,9 +76,11 @@ services:
     env_file:
       - vado_app.env.prod
     volumes:
-      - ./data/app:/app/data   # монтируем локальную папку внутрь контейнера
+      - ./data/app:/app/data/app   # Монтируем только подпапку app
     ports:
-      - "5555:5555"   # если приложение слушает веб-порт
+      - "5555:5556"   # если приложение слушает веб-порт
+    networks:
+      - vado-network
 
 volumes:
   db_data:
