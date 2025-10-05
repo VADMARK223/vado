@@ -9,6 +9,7 @@ import (
 	m "vado/internal/model"
 	"vado/internal/service"
 	util2 "vado/internal/util"
+	"vado/pkg/logger"
 	"vado/pkg/util"
 
 	"fyne.io/fyne/v2"
@@ -19,6 +20,7 @@ import (
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
+	"go.uber.org/zap"
 )
 
 type ViewTasks struct {
@@ -26,12 +28,14 @@ type ViewTasks struct {
 	untypedList binding.UntypedList
 }
 
-func NewTasksView(win fyne.Window, s service.ITaskService, isJSON bool) fyne.CanvasObject {
+func NewTasksView(win fyne.Window, s service.ITaskService) fyne.CanvasObject {
 	vt := &ViewTasks{service: s, untypedList: binding.NewUntypedList()}
 	err := vt.reloadTasks()
 	if err != nil {
 		return nil
 	}
+
+	isJSON := util2.IsJSONMode()
 
 	modeLbl := widget.NewRichTextFromMarkdown(func() string {
 		var mode string
@@ -53,7 +57,7 @@ func NewTasksView(win fyne.Window, s service.ITaskService, isJSON bool) fyne.Can
 		})
 	})
 	quickAddBtn := common.NewBtn("Быстро", theme.ContentAddIcon(), func() {
-		vt.AddTaskQuick()
+		vt.AddTaskQuick(isJSON)
 	})
 	updateQuickAddBtnVisibility := func() {
 		if util2.IsFastMode() {
@@ -67,11 +71,6 @@ func NewTasksView(win fyne.Window, s service.ITaskService, isJSON bool) fyne.Can
 
 	util2.OnFastModeChange(func(newValue bool) {
 		updateQuickAddBtnVisibility()
-		//if newValue {
-		//	quickAddBtn.Show()
-		//} else {
-		//	quickAddBtn.Hide()
-		//}
 	})
 
 	deleteAllBtn := common.NewBtn("Удалить все", theme.DeleteIcon(), func() {
@@ -109,6 +108,18 @@ func NewTasksView(win fyne.Window, s service.ITaskService, isJSON bool) fyne.Can
 					panic(err)
 					return
 				}
+			}
+
+			taskItem.OnDoubleTap = func() {
+				requestedTask, err := vt.GetTaskByID(t.ID)
+				if err != nil {
+					logger.L().Error(fmt.Sprintf("Get task %d", t.ID), zap.String("Error: ", err.Error()))
+					return
+				}
+				//c.ShowEditTaskDialog(win, t, func(task m.Task) {
+				c.ShowEditTaskDialog(win, requestedTask, func(task m.Task) {
+					logger.L().Debug(fmt.Sprintf("Edit task: %d", task.ID))
+				})
 			}
 
 			taskItem.OnDelete = func() {

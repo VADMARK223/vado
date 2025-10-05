@@ -11,13 +11,13 @@ import (
 	"vado/internal/repo/db"
 	repoJson "vado/internal/repo/json"
 	"vado/internal/service"
+	"vado/internal/util"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 )
 
-const defaultTabIndex = 0
-const isJSONMode = false
+const defaultTabIndex = 1
 
 func NewTabsView(win fyne.Window) *container.AppTabs {
 	factories := map[*container.TabItem]func() fyne.CanvasObject{}
@@ -25,14 +25,14 @@ func NewTabsView(win fyne.Window) *container.AppTabs {
 	tabs := container.NewAppTabs(
 		common.CreateLazyTabItem("Задания", func() fyne.CanvasObject {
 			var r repo.TaskRepo
-			if isJSONMode {
+			if util.IsJSONMode() {
 				r = repoJson.NewTaskJSONRepo(constant.TasksFilePath)
 			} else {
 				r = db.NewTaskDBRepo(constant.GetDSN())
 			}
 
 			s := service.NewTaskService(r)
-			return tasks.NewTasksView(win, s, isJSONMode)
+			return tasks.NewTasksView(win, s)
 		}, factories),
 		common.CreateLazyTabItem("Настройки", settings.CreateView, factories),
 		common.CreateLazyTabItem("Уроки", lesson.CreateView, factories),

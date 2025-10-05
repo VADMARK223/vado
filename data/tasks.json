@@ -1,28 +1,40 @@
 {
   "tasks": [
     {
-      "id": 9042,
-      "name": "Fast task 9042",
-      "description": "",
+      "id": 1,
+      "name": "Первая задача",
+      "description": "Не выполнена",
+      "completed": false
+    },
+    {
+      "id": 2,
+      "name": "Крутая задача",
+      "description": "Выполнена",
       "completed": true
     },
     {
-      "id": 6702,
-      "name": "Fast task 6702",
+      "id": 4968,
+      "name": "Fast json task 4968",
       "description": "",
       "completed": false
     },
     {
-      "id": 1932,
-      "name": "Fast task 1932",
+      "id": 2265,
+      "name": "Fast json task 2265",
       "description": "",
       "completed": true
     },
     {
-      "id": 6335,
-      "name": "Fast task 6335",
+      "id": 3791,
+      "name": "Fast json task 3791",
       "description": "",
-      "completed": false
+      "completed": true
+    },
+    {
+      "id": 3410,
+      "name": "Fast json task 3410",
+      "description": "",
+      "completed": true
     }
   ]
 }

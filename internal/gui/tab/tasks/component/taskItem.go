@@ -1,6 +1,7 @@
 package component
 
 import (
+	"time"
 	m "vado/internal/model"
 	"vado/pkg/util"
 
@@ -12,12 +13,15 @@ import (
 )
 
 type TaskItem struct {
-	widget.BaseWidget // Встраивание
+	widget.BaseWidget
 
-	check    *widget.Check
-	label    *widget.Label
-	button   *widget.Button
-	OnDelete func()
+	check       *widget.Check
+	label       *widget.Label
+	button      *widget.Button
+	OnDelete    func()
+	OnDoubleTap func()
+
+	lastTap time.Time
 }
 
 func NewTaskItem(text string, onDelete func()) *TaskItem {
@@ -41,6 +45,18 @@ func NewTaskItem(text string, onDelete func()) *TaskItem {
 func (ti *TaskItem) CreateRenderer() fyne.WidgetRenderer {
 	content := container.NewHBox(ti.check, ti.label, layout.NewSpacer(), ti.button)
 	return widget.NewSimpleRenderer(content)
+}
+
+func (ti *TaskItem) Tapped(ev *fyne.PointEvent) {
+	now := time.Now()
+	if now.Sub(ti.lastTap) < 300*time.Millisecond {
+		ti.lastTap = time.Time{}
+		if ti.OnDoubleTap != nil {
+			ti.OnDoubleTap()
+		}
+	} else {
+		ti.lastTap = now
+	}
 }
 
 // SetTask прокидывает данные из представления

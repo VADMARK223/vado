@@ -99,6 +99,7 @@ docker run -d -p 5555:5555 vado
 `swag init -g ./internal/transport/rest/taskHandler.go -o internal/docs` Генерация
 
 # Stack
-* zap logger
-* fyne
+* Zap logger
+* Fyne
 * Swagger
+* Redpanda for Kafka UI

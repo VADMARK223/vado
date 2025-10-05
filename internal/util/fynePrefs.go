@@ -52,3 +52,10 @@ func OnFastModeChange(callback func(newValue bool)) {
 		callback(newValue)
 	})
 }
+
+func IsJSONMode() bool {
+	if fyne.CurrentApp() == nil {
+		return false
+	}
+	return GetBoolPrefByKey(constant.StoreModePref)
+}
