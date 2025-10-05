@@ -35,7 +35,7 @@ func NewTaskDBRepo(dsn string) *TaskDBRepo {
 }
 
 func (t *TaskDBRepo) FetchAll() (model.TaskList, error) {
-	rows, err := t.db.Query("SELECT id, name, description, completed FROM tasks")
+	rows, err := t.db.Query(`SELECT id, name, description, completed FROM tasks ORDER BY created_at`)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -85,12 +85,6 @@ func (t *TaskDBRepo) Save(task model.Task) error {
 		_, err := t.db.Exec(query, task.Name, task.Description, task.Completed, task.ID)
 		return err
 	}
-	/*query := `INSERT INTO tasks (id, name, description, completed) VALUES ($1, $2, $3, $4)`
-	_, err := t.db.Exec(query, task.ID, task.Name, task.Description, task.Completed)
-	if err != nil {
-		return fmt.Errorf("error saving task: %w", err)
-	}
-	return nil*/
 }
 
 func (t *TaskDBRepo) GetTask(id int) (*model.Task, error) {
@@ -133,8 +127,7 @@ func (t *TaskDBRepo) Remove(id int) error {
 }
 
 func (t *TaskDBRepo) RemoveAll() error {
-	// Выполняем удаление
-	_, err := t.db.Exec("TRUNCATE TABLE tasks CASCADE")
+	_, err := t.db.Exec("TRUNCATE TABLE tasks RESTART IDENTITY CASCADE")
 	if err != nil {
 		return fmt.Errorf("error delete all tasks: %w", err)
 	}

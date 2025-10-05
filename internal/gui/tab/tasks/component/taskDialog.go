@@ -14,6 +14,9 @@ import (
 
 func ShowTaskDialog(parent fyne.Window, task *m.Task, f func(task m.Task)) {
 	isEdit := task != nil
+	if task == nil {
+		task = &m.Task{}
+	}
 	nameEntry := widget.NewEntry()
 	descEntry := widget.NewMultiLineEntry()
 	check := widget.NewCheck("Выполнена", nil)

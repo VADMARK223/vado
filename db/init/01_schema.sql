@@ -6,3 +6,5 @@ CREATE TABLE IF NOT EXISTS tasks
     created_at  timestamp default CURRENT_TIMESTAMP,
     completed   boolean   default false
 );
+
+comment on table tasks is 'Task table';
