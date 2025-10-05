@@ -121,7 +121,7 @@ func (th *TaskHandler) TaskByIDHandler(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case http.MethodGet:
-		getTaskByID(w)
+		getTaskByID(th, id, w)
 	case http.MethodDelete:
 		deleteTaskByID(th, id, w)
 	default:
@@ -159,8 +159,16 @@ func deleteTaskByID(th *TaskHandler, id int, w http.ResponseWriter) {
 // @Failure      400  {string}  string  "Invalid id"
 // @Failure      404  {string}  string  "Task not found"
 // @Router       /tasks/{id} [get]
-func getTaskByID(w http.ResponseWriter) {
-	_, _ = w.Write([]byte("Not implement."))
+func getTaskByID(th *TaskHandler, taskId int, w http.ResponseWriter) {
+	task, err := th.Service.GetTaskByID(taskId)
+	if err != nil {
+		_, _ = w.Write([]byte(err.Error()))
+		return
+	}
+	if err := json.NewEncoder(w).Encode(task); err != nil {
+		http.Error(w, "failed to encode response: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 func (th *TaskHandler) SlowHandler(w http.ResponseWriter, _ *http.Request) {

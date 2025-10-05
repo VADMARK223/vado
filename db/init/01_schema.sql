@@ -4,7 +4,8 @@ CREATE TABLE IF NOT EXISTS tasks
     name        varchar(255) not null,
     description text,
     created_at  timestamp default CURRENT_TIMESTAMP,
-    completed   boolean   default false
+    completed   boolean   default false,
+    updated_at  timestamp default CURRENT_TIMESTAMP
 );
 
 comment on table tasks is 'Task table';

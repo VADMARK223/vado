@@ -2,27 +2,11 @@
   "tasks": [
     {
       "id": 1,
-      "name": "Fast json task",
-      "description": "",
-      "completed": true
-    },
-    {
-      "id": 2,
-      "name": "Fast json task",
-      "description": "фывфы",
-      "completed": false
-    },
-    {
-      "id": 3,
-      "name": "Fast json task",
-      "description": "",
-      "completed": false
-    },
-    {
-      "id": 4,
-      "name": "Fast json task",
-      "description": "",
-      "completed": false
+      "name": "as",
+      "description": "asdasd",
+      "completed": true,
+      "created_at": "2025-10-05T23:52:45.185843437+03:00",
+      "updated_at": "2025-10-05T23:52:45.185843437+03:00"
     }
   ]
 }

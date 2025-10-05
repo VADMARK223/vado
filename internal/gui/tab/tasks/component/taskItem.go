@@ -15,11 +15,12 @@ import (
 type TaskItem struct {
 	widget.BaseWidget
 
-	check       *widget.Check
-	label       *widget.Label
-	button      *widget.Button
-	OnDelete    func()
-	OnDoubleTap func()
+	check         *widget.Check
+	label         *widget.Label
+	createAtLabel *widget.Label
+	button        *widget.Button
+	OnDelete      func()
+	OnDoubleTap   func()
 
 	lastTap time.Time
 }
@@ -29,9 +30,10 @@ func NewTaskItem(text string, onDelete func()) *TaskItem {
 	check.Disable()
 
 	ti := &TaskItem{
-		check:    check,
-		label:    widget.NewLabel(text),
-		OnDelete: onDelete,
+		check:         check,
+		label:         widget.NewLabel(text),
+		createAtLabel: widget.NewLabel(""),
+		OnDelete:      onDelete,
 	}
 
 	ti.button = widget.NewButtonWithIcon("", theme.CancelIcon(), func() {
@@ -43,7 +45,7 @@ func NewTaskItem(text string, onDelete func()) *TaskItem {
 }
 
 func (ti *TaskItem) CreateRenderer() fyne.WidgetRenderer {
-	content := container.NewHBox(ti.check, ti.label, layout.NewSpacer(), ti.button)
+	content := container.NewHBox(ti.check, ti.label, layout.NewSpacer(), ti.createAtLabel, ti.button)
 	return widget.NewSimpleRenderer(content)
 }
 
@@ -64,8 +66,10 @@ func (ti *TaskItem) SetTask(task m.Task) {
 	ti.check.SetChecked(task.Completed)
 
 	text := util.Tpl("%d %s%s", task.ID, task.Name, GetDescText(task.Description))
-
 	ti.label.SetText(text)
+
+	createdAtText := util.Tpl("Создана: %s", util.FormatTime(task.CreatedAt))
+	ti.createAtLabel.SetText(createdAtText)
 }
 
 func GetDescText(taskDesc string) string {

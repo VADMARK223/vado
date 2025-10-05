@@ -50,8 +50,8 @@ func (r *TaskJSONRepo) FetchAll() (model.TaskList, error) {
 
 func (r *TaskJSONRepo) Save(t model.Task) error {
 	list, _ := r.FetchAll()
-
-	if t.ID == -1 { // generate ID
+	//if t.ID == -1 { // generate ID
+	if t.ID == 0 { // generate ID
 		t.ID = util.GenerateMaxID(list)
 		list.Tasks = append(list.Tasks, t)
 	} else {

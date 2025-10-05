@@ -35,7 +35,7 @@ func NewTaskDBRepo(dsn string) *TaskDBRepo {
 }
 
 func (t *TaskDBRepo) FetchAll() (model.TaskList, error) {
-	rows, err := t.db.Query(`SELECT id, name, description, completed FROM tasks ORDER BY created_at`)
+	rows, err := t.db.Query(`SELECT id, name, description, completed, created_at, updated_at FROM tasks ORDER BY created_at`)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -49,7 +49,7 @@ func (t *TaskDBRepo) FetchAll() (model.TaskList, error) {
 	var tasks []model.Task
 	for rows.Next() {
 		var t model.Task
-		err := rows.Scan(&t.ID, &t.Name, &t.Description, &t.Completed)
+		err := rows.Scan(&t.ID, &t.Name, &t.Description, &t.Completed, &t.CreatedAt, &t.UpdatedAt)
 		if err != nil {
 			log.Fatal("Task rows scan error:", err)
 		}
@@ -67,34 +67,39 @@ func (t *TaskDBRepo) FetchAll() (model.TaskList, error) {
 }
 
 func (t *TaskDBRepo) Save(task model.Task) error {
-	if task.ID == -1 {
+	println(">>>>>")
+	println(task.ID)
+	//if task.ID == -1 {
+	if task.ID == 0 {
 		// Новая задача — вставляем
 		query := `
-			INSERT INTO tasks (name, description, completed)
-			VALUES ($1, $2, $3)
+			INSERT INTO tasks (name, description, completed, created_at, updated_at)
+			VALUES ($1, $2, $3, $4, $5)
 			RETURNING id
 		`
-		return t.db.QueryRow(query, task.Name, task.Description, task.Completed).Scan(&task.ID)
+		return t.db.QueryRow(query, task.Name, task.Description, task.Completed, task.CreatedAt, task.UpdatedAt).Scan(&task.ID)
 	} else {
 		// Существующая задача — обновляем
 		query := `
 			UPDATE tasks
-			SET name = $1, description = $2, completed = $3
-			WHERE id = $4
+			SET name = $1, description = $2, completed = $3, created_at = $4, updated_at = $5
+			WHERE id = $6
 		`
-		_, err := t.db.Exec(query, task.Name, task.Description, task.Completed, task.ID)
+		_, err := t.db.Exec(query, task.Name, task.Description, task.Completed, task.CreatedAt, task.UpdatedAt, task.ID)
 		return err
 	}
 }
 
 func (t *TaskDBRepo) GetTask(id int) (*model.Task, error) {
-	query := `SELECT id, name, description, completed FROM tasks WHERE id = $1`
+	query := `SELECT id, name, description, completed, created_at, updated_at FROM tasks WHERE id = $1`
 	var task model.Task
 	err := t.db.QueryRow(query, id).Scan(
 		&task.ID,
 		&task.Name,
 		&task.Description,
 		&task.Completed,
+		&task.CreatedAt,
+		&task.UpdatedAt,
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {

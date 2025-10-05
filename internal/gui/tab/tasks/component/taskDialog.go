@@ -4,6 +4,7 @@ import (
 	"strings"
 	"time"
 	m "vado/internal/model"
+	"vado/pkg/util"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
@@ -19,6 +20,8 @@ func ShowTaskDialog(parent fyne.Window, task *m.Task, f func(task m.Task)) {
 	}
 	nameEntry := widget.NewEntry()
 	descEntry := widget.NewMultiLineEntry()
+	createAtEntry := widget.NewLabel("-")
+	updateAtEntry := widget.NewLabel("-")
 	check := widget.NewCheck("Выполнена", nil)
 	var dlg dialog.Dialog
 	saveBtn := widget.NewButton("", func() {
@@ -26,15 +29,20 @@ func ShowTaskDialog(parent fyne.Window, task *m.Task, f func(task m.Task)) {
 			if isEdit {
 				return task.ID
 			}
-			return -1
+			//return -1
+			return 0
 		}()
-		updatedTask := m.Task{
+		outTask := m.Task{
 			ID:          taskId,
 			Name:        nameEntry.Text,
 			Description: descEntry.Text,
 			Completed:   check.Checked,
 		}
-		f(updatedTask)
+		// Если режим редактирования, то прокидываем дату создания (потом переделать)
+		if isEdit {
+			outTask.CreatedAt = task.CreatedAt
+		}
+		f(outTask)
 		dlg.Hide()
 	})
 	saveBtn.Importance = widget.HighImportance
@@ -46,6 +54,14 @@ func ShowTaskDialog(parent fyne.Window, task *m.Task, f func(task m.Task)) {
 		nameEntry.SetText(task.Name)
 		nameEntry.CursorColumn = len(task.Name)
 		descEntry.SetText(task.Description)
+		createAtEntry.SetText(util.FormatTime(task.CreatedAt))
+		var updateAtEntryText string
+		if task.CreatedAt == task.UpdatedAt {
+			updateAtEntryText = "Не изменялась"
+		} else {
+			updateAtEntryText = util.FormatTime(task.UpdatedAt)
+		}
+		updateAtEntry.SetText(updateAtEntryText)
 		check.SetChecked(task.Completed)
 		saveBtn.SetText("Сохранить")
 	} else {
@@ -73,6 +89,8 @@ func ShowTaskDialog(parent fyne.Window, task *m.Task, f func(task m.Task)) {
 		widget.NewFormItem("Название *", nameEntry),
 		widget.NewFormItem("Описание", descEntry),
 		widget.NewFormItem("", check),
+		widget.NewFormItem("Создана", createAtEntry),
+		widget.NewFormItem("Обновлена", updateAtEntry),
 	)
 
 	content := container.NewVBox(form, container.NewHBox(layout.NewSpacer(), cancelBtn, saveBtn))
