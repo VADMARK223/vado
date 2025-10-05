@@ -7,7 +7,7 @@ import (
 	"vado/internal/model"
 )
 
-func (r *TaskJSONRepo) SaveTasks(tasksList model.TaskList) error {
+func (r *TaskJSONRepo) saveTasks(tasksList model.TaskList) error {
 	err := os.MkdirAll(filepath.Dir(r.filePath), 0755)
 	if err != nil {
 		return err

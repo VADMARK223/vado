@@ -49,7 +49,7 @@ func (r *TaskJSONRepo) FetchAll() (model.TaskList, error) {
 	return list, err
 }
 
-func (r *TaskJSONRepo) Save(t model.Task) error {
+func (r *TaskJSONRepo) InsertUpdate(t model.Task) error {
 	list, _ := r.FetchAll()
 	var now = time.Now()
 	if t.ID == 0 { // новая задача
@@ -73,7 +73,7 @@ func (r *TaskJSONRepo) Save(t model.Task) error {
 		}
 	}
 
-	return r.SaveTasks(list)
+	return r.saveTasks(list)
 }
 
 func (r *TaskJSONRepo) Remove(id int) error {
@@ -85,11 +85,11 @@ func (r *TaskJSONRepo) Remove(id int) error {
 		}
 	}
 	list.Tasks = newTasks
-	return r.SaveTasks(list)
+	return r.saveTasks(list)
 }
 
 func (r *TaskJSONRepo) RemoveAll() error {
 	list, _ := r.FetchAll()
 	list.Tasks = []model.Task{}
-	return r.SaveTasks(list)
+	return r.saveTasks(list)
 }

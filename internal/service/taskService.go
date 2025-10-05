@@ -30,7 +30,7 @@ func (s *TaskService) GetAllTasks() (model.TaskList, error) {
 }
 
 func (s *TaskService) CreateTask(task model.Task) error {
-	return s.repo.Save(task)
+	return s.repo.InsertUpdate(task)
 }
 
 func (s *TaskService) GetTaskByID(id int) (*model.Task, error) {

@@ -67,7 +67,7 @@ func (t *TaskDBRepo) FetchAll() (model.TaskList, error) {
 	return list, nil
 }
 
-func (t *TaskDBRepo) Save(task model.Task) error {
+func (t *TaskDBRepo) InsertUpdate(task model.Task) error {
 
 	if task.ID == 0 {
 		// Новая задача — вставляем
