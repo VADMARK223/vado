@@ -1,10 +1,11 @@
-package json
+package repo
 
 import (
 	"encoding/json"
 	"errors"
 	"log"
 	"os"
+	"path/filepath"
 	"time"
 	"vado/internal/gui/tab/tasks/constant"
 	"vado/internal/model"
@@ -92,4 +93,16 @@ func (r *TaskJSONRepo) RemoveAll() error {
 	list, _ := r.FetchAll()
 	list.Tasks = []model.Task{}
 	return r.saveTasks(list)
+}
+
+func (r *TaskJSONRepo) saveTasks(tasksList model.TaskList) error {
+	err := os.MkdirAll(filepath.Dir(r.filePath), 0755)
+	if err != nil {
+		return err
+	}
+	data, err := json.MarshalIndent(tasksList, "", "  ")
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(r.filePath, data, 0644)
 }

@@ -1,12 +1,9 @@
 package service
 
 import (
-	"errors"
 	"vado/internal/model"
 	"vado/internal/repo"
 )
-
-var ErrInvalidTask = errors.New("invalid task")
 
 type ITaskService interface {
 	GetAllTasks() (model.TaskList, error)

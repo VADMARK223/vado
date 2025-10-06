@@ -7,8 +7,8 @@ import (
 )
 
 type TaskServiceGRPC struct {
-	Service ITaskService
 	taskpb.UnimplementedTaskServiceServer
+	Service ITaskService
 }
 
 func NewTaskServiceGRPC(s ITaskService) *TaskServiceGRPC {

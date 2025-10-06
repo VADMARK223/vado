@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"time"
+	"vado/internal/constant"
 	"vado/internal/gui/common"
 	"vado/internal/pb/taskpb"
 
@@ -16,28 +17,29 @@ import (
 
 func NewClientBoxGRPC(win fyne.Window) fyne.CanvasObject {
 	btn := common.NewBtn("Запросить кол-во заданий", nil, func() {
-		conn, err := grpc.NewClient("localhost:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
+
+		conn, err := grpc.NewClient(fmt.Sprintf("localhost%s", constant.GrpcPort), grpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
 			log.Fatalf("did not connect: %v", err)
 		}
 		defer func(conn *grpc.ClientConn) {
 			_ = conn.Close()
-		}(conn) // Закрываем сразу после вызова
+		}(conn)
 
 		client := taskpb.NewTaskServiceClient(conn)
 
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 		defer cancel()
 
-		resp, err := client.GetAllTasks(ctx, &taskpb.Empty{})
+		resp, err := client.GetAllTasks(ctx, nil)
 		if err != nil {
 			fmt.Printf("could not get tasks: %v\n", err)
 			return
 		}
-		for _, t := range resp.Tasks {
+		/*for _, t := range resp.Tasks {
 			fmt.Printf("Task: %d %s (%s) completed=%v\n",
 				t.Id, t.Name, t.Description, t.Completed)
-		}
+		}*/
 
 		dialog.ShowInformation("Ответ gRPC", fmt.Sprintf("Заданий: %d", len(resp.Tasks)), win)
 	})

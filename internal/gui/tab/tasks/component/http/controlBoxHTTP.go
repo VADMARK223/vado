@@ -1,4 +1,4 @@
-package component
+package http
 
 import (
 	"context"
@@ -12,6 +12,7 @@ import (
 	"time"
 	"vado/internal/gui/common"
 	constant2 "vado/internal/gui/constant"
+	"vado/internal/gui/tab/tasks/component"
 	"vado/internal/service"
 	http2 "vado/internal/transport/rest"
 	"vado/internal/util"
@@ -89,7 +90,7 @@ func NewControlBoxHTTP(service service.ITaskService) fyne.CanvasObject {
 
 			})
 
-			time.Sleep(time.Millisecond * GuiUpdateMillisecond)
+			time.Sleep(time.Millisecond * component.GuiUpdateMillisecond)
 		}
 	}()
 
@@ -102,7 +103,7 @@ func NewControlBoxHTTP(service service.ITaskService) fyne.CanvasObject {
 
 func startOnTapped(service service.ITaskService) {
 	go func() {
-		if err := StartServer(service); err != nil {
+		if err := StartHTTPServer(service); err != nil {
 			fmt.Println("Start server error:", err)
 		}
 	}()
@@ -113,7 +114,7 @@ type PageData struct {
 	Message string
 }
 
-func StartServer(service service.ITaskService) error {
+func StartHTTPServer(service service.ITaskService) error {
 	httpMtx.Lock()
 	if srv != nil {
 		return errors.New("server already running")

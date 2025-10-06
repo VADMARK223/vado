@@ -3,10 +3,9 @@ package main
 import (
 	"fmt"
 	"time"
-	"vado/internal/gui/tab/tasks/component"
+	"vado/internal/gui/tab/tasks/component/http"
 	"vado/internal/gui/tab/tasks/constant"
 	"vado/internal/repo"
-	"vado/internal/repo/db"
 	"vado/internal/service"
 	"vado/internal/transport/kafka"
 	"vado/internal/util"
@@ -36,9 +35,9 @@ func main() {
 
 func startServer() {
 	var r repo.TaskRepo
-	r = db.NewTaskDBRepo(constant.GetDSN())
+	r = repo.NewTaskDBRepo(constant.GetDSN())
 	var s service.ITaskService = service.NewTaskService(r)
-	err := component.StartServer(s)
+	err := http.StartHTTPServer(s)
 	if err != nil {
 		fmt.Println(fmt.Sprintf("Error start server: %s", err.Error()))
 	}

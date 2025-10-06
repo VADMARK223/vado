@@ -4,6 +4,17 @@ sudo lsof -i :9092
 sudo kill -9 <PID>
 ```
 
+# gRPC
+Генерация из .proto файла классов go
+```shell
+protoc -I=proto \
+  --go_out=./internal/pb/taskpb \
+  --go_opt=paths=source_relative \
+  --go-grpc_out=./internal/pb/taskpb \
+  --go-grpc_opt=paths=source_relative \
+  proto/task.proto
+```
+
 # Kafka
 Прочитать сообщения
 ```shell

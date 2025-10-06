@@ -7,6 +7,7 @@ import (
 	"net"
 	"sync"
 	"time"
+	constant2 "vado/internal/constant"
 	"vado/internal/gui/common"
 	"vado/internal/gui/constant"
 	"vado/internal/gui/tab/tasks/component"
@@ -79,7 +80,7 @@ func startServerGRPC(s service.ITaskService) {
 	}
 
 	var err error
-	listener, err = net.Listen("tcp", ":50051")
+	listener, err = net.Listen("tcp", constant2.GrpcPort)
 	if err != nil {
 		log.Printf("failed to listen: %v", err)
 		return
@@ -91,7 +92,7 @@ func startServerGRPC(s service.ITaskService) {
 	reflection.Register(grpcServer)
 
 	go func() {
-		logger.L().Info("gRPC-server started on :50051")
+		logger.L().Info(fmt.Sprintf("gRPC-server started on %s", constant2.GrpcPort))
 
 		if err := grpcServer.Serve(listener); err != nil {
 			log.Printf("failed to serve: %v", err)
