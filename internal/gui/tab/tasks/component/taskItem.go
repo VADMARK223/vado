@@ -49,7 +49,7 @@ func (ti *TaskItem) CreateRenderer() fyne.WidgetRenderer {
 	return widget.NewSimpleRenderer(content)
 }
 
-func (ti *TaskItem) Tapped(ev *fyne.PointEvent) {
+func (ti *TaskItem) Tapped(_ *fyne.PointEvent) {
 	now := time.Now()
 	if now.Sub(ti.lastTap) < 300*time.Millisecond {
 		ti.lastTap = time.Time{}

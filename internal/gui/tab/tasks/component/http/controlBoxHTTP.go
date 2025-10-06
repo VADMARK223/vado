@@ -25,6 +25,7 @@ import (
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 	httpSwagger "github.com/swaggo/http-swagger"
+	"go.uber.org/zap"
 )
 
 const (
@@ -61,36 +62,42 @@ func NewControlBoxHTTP(service service.ITaskService) fyne.CanvasObject {
 	waitLbl := widget.NewLabel("Остановка сервера...")
 	waitLbl.Hide()
 
+	//ctx, cancel := context.WithCancel(context.Background())
+
 	go func() {
+		ticker := time.NewTicker(time.Millisecond * component.GuiUpdateMillisecond)
 		for {
-			httpMtx.Lock()
-			running := srv == nil
-			inProcess := stopInProcess
-			httpMtx.Unlock()
+			select {
+			//case <-ctx.Done():
+			//	return
+			case <-ticker.C:
+				httpMtx.Lock()
+				running := srv == nil
+				inProcess := stopInProcess
+				httpMtx.Unlock()
 
-			fyne.Do(func() {
-				if running {
-					waitLbl.Hide()
-					startBtn.Enable()
-					stopBtn.Disable()
-					statusIndicator.SetFillColor(constant2.Red())
-				} else {
-					if inProcess {
-						waitLbl.Show()
-						startBtn.Disable()
-						stopBtn.Disable()
-						statusIndicator.SetFillColor(constant2.Orange())
-					} else {
+				fyne.Do(func() {
+					if running {
 						waitLbl.Hide()
-						startBtn.Disable()
-						stopBtn.Enable()
-						statusIndicator.SetFillColor(constant2.Green())
+						startBtn.Enable()
+						stopBtn.Disable()
+						statusIndicator.SetFillColor(constant2.Red())
+					} else {
+						if inProcess {
+							waitLbl.Show()
+							startBtn.Disable()
+							stopBtn.Disable()
+							statusIndicator.SetFillColor(constant2.Orange())
+						} else {
+							waitLbl.Hide()
+							startBtn.Disable()
+							stopBtn.Enable()
+							statusIndicator.SetFillColor(constant2.Green())
+						}
 					}
-				}
 
-			})
-
-			time.Sleep(time.Millisecond * component.GuiUpdateMillisecond)
+				})
+			}
 		}
 	}()
 
@@ -98,6 +105,8 @@ func NewControlBoxHTTP(service service.ITaskService) fyne.CanvasObject {
 		startOnTapped(service)
 	}
 
+	//time.Sleep(time.Second * 5)
+	//cancel()
 	return container.NewHBox(lbl, startBtn, stopBtn, container.NewCenter(statusIndicator), waitLbl)
 }
 
@@ -152,7 +161,7 @@ func StartHTTPServer(service service.ITaskService) error {
 	// ErrServerClosed это не ошибка, а сигнал: «Сервер завершён штатно».
 	// Поэтому её нужно отфильтровать, иначе в логах всегда будет «Error: rest: Server closed» даже при нормальной остановке.
 	if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-		fmt.Println("Errorффф:", err)
+		logger.L().Error("HTTP server error", zap.Error(err))
 	}
 
 	return nil
@@ -161,10 +170,12 @@ func StartHTTPServer(service service.ITaskService) error {
 func stopServer() {
 	httpMtx.Lock()
 	s := srv
-	if s == nil {
-		panic("Server is nil!")
-	}
 	httpMtx.Unlock()
+
+	if s == nil {
+		logger.L().Warn("Server already stopped")
+		return
+	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), shutdownSecond*time.Second)
 	defer func() {

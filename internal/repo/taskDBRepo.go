@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -36,14 +37,17 @@ func NewTaskDBRepo(dsn string) *TaskDBRepo {
 }
 
 func (t *TaskDBRepo) FetchAll() (model.TaskList, error) {
-	rows, err := t.db.Query(`SELECT id, name, description, completed, created_at, updated_at FROM tasks ORDER BY created_at`)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	rows, err := t.db.QueryContext(ctx, `SELECT id, name, description, completed, created_at, updated_at FROM tasks ORDER BY created_at`)
 	if err != nil {
-		log.Fatal(err)
+		logger.L().Error("Error query tasks:", zap.Error(err))
 	}
 	defer func(rows *sql.Rows) {
 		err := rows.Close()
 		if err != nil {
-			log.Fatal(err)
+			logger.L().Error("Error query tasks:", zap.Error(err))
 		}
 	}(rows)
 
@@ -52,13 +56,13 @@ func (t *TaskDBRepo) FetchAll() (model.TaskList, error) {
 		var t model.Task
 		err := rows.Scan(&t.ID, &t.Name, &t.Description, &t.Completed, &t.CreatedAt, &t.UpdatedAt)
 		if err != nil {
-			log.Fatal("Task rows scan error:", err)
+			logger.L().Error("Task rows scan error:", zap.Error(err))
 		}
 		tasks = append(tasks, t)
 	}
 
 	if err = rows.Err(); err != nil {
-		log.Fatal(err)
+		logger.L().Error("Task rows error:", zap.Error(err))
 	}
 
 	var list model.TaskList

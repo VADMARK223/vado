@@ -99,12 +99,13 @@ func NewTasksView(win fyne.Window, s service.ITaskService) fyne.CanvasObject {
 			doDelete := func() {
 				delErr := vt.service.DeleteTask(t.ID)
 				if delErr != nil {
-					panic(delErr)
+					logger.L().Error("Failed to delete task", zap.Error(delErr))
+					dialog.ShowError(delErr, win)
 					return
 				}
 				_ = vt.updateUntypedList()
 				if err != nil {
-					panic(err)
+					logger.L().Error("Failed to update list", zap.Error(err))
 					return
 				}
 			}
