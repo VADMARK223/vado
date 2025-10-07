@@ -33,12 +33,12 @@ const (
 )
 
 var (
-	srv           *http.Server // Глобальный сервер, один на все вызовы
+	srv1          *http.Server
 	httpMtx       sync.Mutex
 	stopInProcess = false // Сервер в процессе остановки
 )
 
-func NewControlBoxHTTP(service service.ITaskService) fyne.CanvasObject {
+func NewControlBoxHTTP(ctx *util.AppContext, service service.ITaskService) fyne.CanvasObject {
 	lbl := widget.NewLabel("Сервер HTTP:")
 	startBtn := common.NewBtn("Старт", theme.MediaPlayIcon(), nil)
 	startBtn.Disable()
@@ -62,14 +62,10 @@ func NewControlBoxHTTP(service service.ITaskService) fyne.CanvasObject {
 	waitLbl := widget.NewLabel("Остановка сервера...")
 	waitLbl.Hide()
 
-	//ctx, cancel := context.WithCancel(context.Background())
-
 	go func() {
 		ticker := time.NewTicker(time.Millisecond * component.GuiUpdateMillisecond)
 		for {
 			select {
-			//case <-ctx.Done():
-			//	return
 			case <-ticker.C:
 				httpMtx.Lock()
 				running := srv == nil
@@ -105,8 +101,6 @@ func NewControlBoxHTTP(service service.ITaskService) fyne.CanvasObject {
 		startOnTapped(service)
 	}
 
-	//time.Sleep(time.Second * 5)
-	//cancel()
 	return container.NewHBox(lbl, startBtn, stopBtn, container.NewCenter(statusIndicator), waitLbl)
 }
 

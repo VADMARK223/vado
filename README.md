@@ -32,6 +32,7 @@ sudo kill -9 <PID>
 
 # gRPC
 Генерация из .proto файла классов go
+1. Задачи
 ```shell
 protoc -I=proto \
   --go_out=./internal/pb/taskpb \
@@ -39,6 +40,10 @@ protoc -I=proto \
   --go-grpc_out=./internal/pb/taskpb \
   --go-grpc_opt=paths=source_relative \
   proto/task.proto
+```
+2. Пользователи
+```shell
+   protoc --go_out=./ --go-grpc_out=./ proto/user.proto
 ```
 
 # Kafka

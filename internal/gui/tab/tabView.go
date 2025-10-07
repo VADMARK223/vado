@@ -18,7 +18,7 @@ import (
 
 const defaultTabIndex = 2
 
-func NewTabsView(win fyne.Window) *container.AppTabs {
+func NewTabsView(appCtx *util.AppContext, win fyne.Window) *container.AppTabs {
 	factories := map[*container.TabItem]func() fyne.CanvasObject{}
 
 	tabs := container.NewAppTabs(
@@ -27,14 +27,16 @@ func NewTabsView(win fyne.Window) *container.AppTabs {
 			if util.IsJSONMode() {
 				r = repo.NewTaskJSONRepo(constant.TasksFilePath)
 			} else {
-				r = repo.NewTaskDBRepo(constant.GetDSN())
+				r = repo.NewTaskDBRepo(appCtx.DB)
 			}
 
 			s := service.NewTaskService(r)
-			return tasks.NewTasksView(win, s)
+			return tasks.NewTasksView(appCtx, win, s)
 		}, factories),
 		common.CreateLazyTabItem("Настройки", settings.CreateView, factories),
-		common.CreateLazyTabItem("Админка", admin.NewAdminView, factories),
+		common.CreateLazyTabItem("Админка", func() fyne.CanvasObject {
+			return admin.NewAdminView(appCtx, win)
+		}, factories),
 		common.CreateLazyTabItem("Уроки", lesson.CreateView, factories),
 		common.CreateLazyTabItem("Тяжелая вкладка", heavy.NewHeavyView, factories),
 	)

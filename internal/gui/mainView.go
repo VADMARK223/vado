@@ -9,6 +9,7 @@ import (
 	tabs "vado/internal/gui/tab"
 	"vado/internal/gui/tab/settings"
 	"vado/internal/util"
+	"vado/pkg/logger"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -16,9 +17,11 @@ import (
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
+	"go.uber.org/zap"
 )
 
-func ShowMainApp() {
+func ShowMainApp(appCtx *util.AppContext) {
+	logger.L().Info("Starting GUI mode.", zap.String("mode", util.GetModeValue()))
 	a := app.NewWithID("io.vado")
 	mainWindow := a.NewWindow("Vado")
 
@@ -34,7 +37,7 @@ func ShowMainApp() {
 	)
 
 	bottomBar := container.NewHBox(objs...)
-	root := container.NewBorder(nil, bottomBar, nil, nil, tabs.NewTabsView(mainWindow))
+	root := container.NewBorder(nil, bottomBar, nil, nil, tabs.NewTabsView(appCtx, mainWindow))
 	mainWindow.SetContent(root)
 
 	mainWindow.Canvas().SetOnTypedKey(func(k *fyne.KeyEvent) {

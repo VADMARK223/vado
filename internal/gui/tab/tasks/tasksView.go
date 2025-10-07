@@ -6,7 +6,6 @@ import (
 	"vado/internal/gui/common"
 	component2 "vado/internal/gui/tab/tasks/component"
 	"vado/internal/gui/tab/tasks/component/grpc"
-	"vado/internal/gui/tab/tasks/component/http"
 	m "vado/internal/model"
 	"vado/internal/service"
 	util2 "vado/internal/util"
@@ -29,7 +28,7 @@ type ViewTasks struct {
 	untypedList binding.UntypedList
 }
 
-func NewTasksView(win fyne.Window, s service.ITaskService) fyne.CanvasObject {
+func NewTasksView(appCtx *util2.AppContext, win fyne.Window, s service.ITaskService) fyne.CanvasObject {
 	vt := &ViewTasks{service: s, untypedList: binding.NewUntypedList()}
 	err := vt.updateUntypedList()
 	if err != nil {
@@ -145,10 +144,9 @@ func NewTasksView(win fyne.Window, s service.ITaskService) fyne.CanvasObject {
 			title.Text = util.Tpl("Список заданий (Всего: %d)", tasksListLen)
 		}
 	}))
-	topBox := container.NewVBox(http.NewControlBoxHTTP(vt.service), grpc.NewControlBoxGRPC(vt.service, win), controlBox, title)
+	topBox := container.NewVBox( /*http.NewControlBoxHTTP(appCtx, vt.service),*/ grpc.NewControlBoxGRPC(vt.service, win), controlBox, title)
 	content := container.NewBorder(topBox, nil, nil, nil, scroll)
 	return content
-
 }
 
 func showTaskDialog(win fyne.Window, vt *ViewTasks, t *m.Task) {

@@ -3,10 +3,6 @@ package main
 import (
 	"fmt"
 	"time"
-	"vado/internal/gui/tab/tasks/component/http"
-	"vado/internal/gui/tab/tasks/constant"
-	"vado/internal/repo"
-	"vado/internal/service"
 	"vado/internal/transport/kafka"
 	"vado/internal/util"
 	"vado/pkg/logger"
@@ -30,15 +26,15 @@ func main() {
 	message := fmt.Sprintf("Message: %s", currentTime)
 	kafka.Produce(message)
 
-	startServer()
+	//startServer()
 }
 
-func startServer() {
-	var r repo.TaskRepo
-	r = repo.NewTaskDBRepo(constant.GetDSN())
-	var s service.ITaskService = service.NewTaskService(r)
-	err := http.StartHTTPServer(s)
-	if err != nil {
-		fmt.Println(fmt.Sprintf("Error start server: %s", err.Error()))
-	}
-}
+//func startServer() {
+//	var r repo.TaskRepo
+//	r = repo.NewTaskDBRepo(constant.GetDSN())
+//	var s service.ITaskService = service.NewTaskService(r)
+//	err := http.StartHTTPServer(s)
+//	if err != nil {
+//		fmt.Println(fmt.Sprintf("Error start server: %s", err.Error()))
+//	}
+//}

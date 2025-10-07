@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"log"
 	"time"
 	"vado/internal/model"
 	"vado/pkg/logger"
@@ -15,25 +14,11 @@ import (
 )
 
 type TaskDBRepo struct {
-	dataSourceName string
-	db             *sql.DB
+	db *sql.DB
 }
 
-func NewTaskDBRepo(dsn string) *TaskDBRepo {
-	db, err := sql.Open("postgres", dsn)
-	if err != nil {
-		log.Fatal("Err open sql", err)
-	}
-
-	logger.L().Info("Try connect to database...", zap.String("dsn", dsn))
-	err = db.Ping()
-	if err != nil {
-		panic(fmt.Sprintf("Error ping connection: %v", err))
-	}
-
-	logger.L().Info(fmt.Sprintf("Successfully database connected! (%s)", dsn))
-
-	return &TaskDBRepo{dataSourceName: dsn, db: db}
+func NewTaskDBRepo(db *sql.DB) *TaskDBRepo {
+	return &TaskDBRepo{db: db}
 }
 
 func (t *TaskDBRepo) FetchAll() (model.TaskList, error) {
@@ -72,15 +57,15 @@ func (t *TaskDBRepo) FetchAll() (model.TaskList, error) {
 }
 
 func (t *TaskDBRepo) InsertUpdate(task model.Task) error {
-
 	if task.ID == 0 {
 		// Новая задача — вставляем
 		query := `
-			INSERT INTO tasks (name, description, completed)
-			VALUES ($1, $2, $3)
+			INSERT INTO tasks (name, description, completed, user_id)
+			VALUES ($1, $2, $3, $4)
 			RETURNING id
 		`
-		return t.db.QueryRow(query, task.Name, task.Description, task.Completed).Scan(&task.ID)
+		// TODO 1 это id VADMARK
+		return t.db.QueryRow(query, task.Name, task.Description, task.Completed, 1).Scan(&task.ID)
 	} else {
 		// Существующая задача — обновляем
 		//*task.UpdatedAt = time.Now()
