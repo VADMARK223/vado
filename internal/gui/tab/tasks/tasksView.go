@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"image/color"
 	"vado/internal/gui/common"
-	c "vado/internal/gui/tab/tasks/component"
+	component2 "vado/internal/gui/tab/tasks/component"
 	"vado/internal/gui/tab/tasks/component/grpc"
 	"vado/internal/gui/tab/tasks/component/http"
 	m "vado/internal/model"
@@ -87,13 +87,13 @@ func NewTasksView(win fyne.Window, s service.ITaskService) fyne.CanvasObject {
 	list := widget.NewListWithData(
 		vt.untypedList,
 		func() fyne.CanvasObject {
-			return c.NewTaskItem("", nil)
+			return component2.NewTaskItem("", nil)
 		},
 		func(item binding.DataItem, obj fyne.CanvasObject) {
 			task, _ := item.(binding.Untyped).Get()
 			t := task.(m.Task)
 
-			taskItem := obj.(*c.TaskItem)
+			taskItem := obj.(*component2.TaskItem)
 			taskItem.SetTask(t)
 
 			doDelete := func() {
@@ -152,7 +152,7 @@ func NewTasksView(win fyne.Window, s service.ITaskService) fyne.CanvasObject {
 }
 
 func showTaskDialog(win fyne.Window, vt *ViewTasks, t *m.Task) {
-	c.ShowTaskDialog(win, t, func(task m.Task) {
+	component2.ShowTaskDialog(win, t, func(task m.Task) {
 		vt.AddTask(task)
 
 		err := vt.updateUntypedList()

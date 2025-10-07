@@ -1,7 +1,6 @@
 package logger
 
 import (
-	"fmt"
 	"vado/internal/util"
 
 	"go.uber.org/zap"
@@ -33,7 +32,6 @@ func Init() (*zap.Logger, error) {
 // L возвращает текущий логгер (или заглушку)
 func L() *zap.Logger {
 	if log == nil {
-		fmt.Println("Logger not initialized.")
 		return zap.NewNop()
 	}
 	return log

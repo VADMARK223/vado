@@ -3,6 +3,7 @@ package constant
 import (
 	"fmt"
 	"os"
+	"vado/pkg/logger"
 
 	"github.com/joho/godotenv"
 )
@@ -12,7 +13,7 @@ const TasksFilePath = "./data/tasks.json"
 func init() {
 	env := os.Getenv("APP_ENV")
 	if env == "" {
-		panic("APP_ENV is empty.")
+		logger.L().Info("APP_ENV is empty.")
 	}
 
 	if env == "dev" {
