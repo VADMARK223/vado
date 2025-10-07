@@ -24,14 +24,6 @@ func (vt *ViewTasks) AddTaskQuick(isJSON bool) {
 }
 
 func (vt *ViewTasks) AddTask(t model.Task) {
-	/*now := time.Now()
-	if t.ID == 0 { // Новая задача
-		print("New task")
-		t.CreatedAt = now
-		t.UpdatedAt = now
-	} else {
-		t.UpdatedAt = now
-	}*/
 	err := vt.service.CreateTask(t)
 	if err != nil {
 		logger.L().Error("Error insert/update task", zap.Error(err))

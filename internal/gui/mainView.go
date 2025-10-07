@@ -21,25 +21,12 @@ import (
 func ShowMainApp() {
 	a := app.NewWithID("io.vado")
 	mainWindow := a.NewWindow("Vado")
+
+	userInfo := widget.NewRichTextFromMarkdown(fmt.Sprintf("Пользователь: **%s**", "VADMARK"))
 	modeTxt := widget.NewRichTextFromMarkdown(fmt.Sprintf("Режим: **%s**", strings.ToUpper(util.GetModeValue())))
 
-	fastModeTxt := widget.NewRichTextFromMarkdown(getModeTxt(util.IsFastMode()))
-	util.OnFastModeChange(func(newValue bool) {
-		fastModeTxt.ParseMarkdown(getModeTxt(newValue))
-	})
-	fastBlock := func() []fyne.CanvasObject {
-		if util.IsFastMode() {
-			return []fyne.CanvasObject{
-				fastModeTxt,
-				settings.NewFastModeCheck(false),
-			}
-		}
-		return nil
-	}
-
-	objs := []fyne.CanvasObject{layout.NewSpacer()}
-
-	objs = append(objs, fastBlock()...)
+	objs := []fyne.CanvasObject{userInfo, layout.NewSpacer()}
+	objs = append(objs, createFastBlock()...)
 	objs = append(objs,
 		modeTxt,
 		widget.NewRichTextFromMarkdown(fmt.Sprintf("Версия: **%s**", c.Version)),
@@ -58,6 +45,21 @@ func ShowMainApp() {
 
 	mainWindow.Resize(fyne.NewSize(700, 400))
 	mainWindow.ShowAndRun()
+}
+
+func createFastBlock() []fyne.CanvasObject {
+	fastModeTxt := widget.NewRichTextFromMarkdown(getModeTxt(util.IsFastMode()))
+	util.OnFastModeChange(func(newValue bool) {
+		fastModeTxt.ParseMarkdown(getModeTxt(newValue))
+	})
+
+	if util.IsFastMode() {
+		return []fyne.CanvasObject{
+			fastModeTxt,
+			settings.NewFastModeCheck(false),
+		}
+	}
+	return nil
 }
 
 func getModeTxt(isMode bool) string {

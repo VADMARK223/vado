@@ -2,6 +2,7 @@ package tab
 
 import (
 	"vado/internal/gui/common"
+	"vado/internal/gui/tab/admin"
 	"vado/internal/gui/tab/heavy"
 	"vado/internal/gui/tab/lesson"
 	"vado/internal/gui/tab/settings"
@@ -15,7 +16,7 @@ import (
 	"fyne.io/fyne/v2/container"
 )
 
-const defaultTabIndex = 0
+const defaultTabIndex = 2
 
 func NewTabsView(win fyne.Window) *container.AppTabs {
 	factories := map[*container.TabItem]func() fyne.CanvasObject{}
@@ -33,6 +34,7 @@ func NewTabsView(win fyne.Window) *container.AppTabs {
 			return tasks.NewTasksView(win, s)
 		}, factories),
 		common.CreateLazyTabItem("Настройки", settings.CreateView, factories),
+		common.CreateLazyTabItem("Админка", admin.NewAdminView, factories),
 		common.CreateLazyTabItem("Уроки", lesson.CreateView, factories),
 		common.CreateLazyTabItem("Тяжелая вкладка", heavy.NewHeavyView, factories),
 	)

@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package userpb;
+option go_package = "vado/internal/pb/userpb;userpb";
+
+message User {
+  int64 id = 1;
+  string username = 2;
+}
+
+message CreateUserRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message CreateUserResponse {
+  User user = 1;
+}
+
+service CreateUser {
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
+}
