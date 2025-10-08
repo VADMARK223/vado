@@ -1,7 +1,7 @@
 package task
 
-type TaskRepo interface {
-	FetchAll() (TaskList, error)
+type Repo interface {
+	FetchAll() (List, error)
 	InsertUpdate(task Task) error
 	Remove(id int) error
 	GetTask(id int) (*Task, error)

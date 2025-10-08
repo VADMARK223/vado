@@ -28,21 +28,7 @@ type GRPCServer struct {
 }
 
 func NewServerGRPC(userService *user.Service, taskService task.ITaskService, port string) *GRPCServer {
-	//grpcServer := grpc.NewServer()
-
-	// Регистрируем User Service
-	//userHandler := userGRPC.NewUserGRPCHandler(userService)
-	//userpb.RegisterCreateUserServer(grpcServer, userHandler)
-	//
-	// Регистрируем Task Service
-	//taskHandler := taskGRPC.NewTaskGRPCHandler(taskService)
-	//taskpb.RegisterTaskServiceServer(grpcServer, taskHandler)
-
-	// Включаем reflection для grpcurl и других инструментов
-	//reflection.Register(grpcServer)
-
 	return &GRPCServer{
-		//Server:      grpcServer,
 		port:        port,
 		userService: userService,
 		taskService: taskService,
@@ -71,7 +57,6 @@ func (s *GRPCServer) Start() error {
 		return fmt.Errorf("server already running")
 	}
 
-	// пересоздаём grpc.Server при каждом запуске
 	s.createServerInstance()
 
 	lis, err := net.Listen("tcp", s.port)

@@ -4,15 +4,15 @@ import (
 	"database/sql"
 )
 
-type UserDBRepo struct {
+type DBRepo struct {
 	db *sql.DB
 }
 
-func NewUserDBRepo(db *sql.DB) *UserDBRepo {
-	return &UserDBRepo{db: db}
+func NewUserDBRepo(db *sql.DB) *DBRepo {
+	return &DBRepo{db: db}
 }
 
-func (u *UserDBRepo) CreateUser(user User) error {
+func (u *DBRepo) CreateUser(user User) error {
 	query := `
 			INSERT INTO users (username,password)
 			VALUES ($1, $2)

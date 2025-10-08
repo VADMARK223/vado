@@ -6,7 +6,6 @@ import (
 	m "vado/internal/domain/task"
 	"vado/internal/gui/common"
 	component2 "vado/internal/gui/tab/tasks/component"
-	"vado/internal/gui/tab/tasks/component/grpc"
 	"vado/internal/server/context"
 	util2 "vado/internal/util"
 	"vado/pkg/logger"
@@ -144,7 +143,7 @@ func NewTasksView(appCtx *context.AppContext, win fyne.Window) fyne.CanvasObject
 			title.Text = util.Tpl("Список заданий (Всего: %d)", tasksListLen)
 		}
 	}))
-	topBox := container.NewVBox( /*http.NewControlBoxHTTP(appCtx, vt.service),*/ grpc.NewControlBoxGRPC(appCtx, win), controlBox, title)
+	topBox := container.NewVBox( /*http.NewControlBoxHTTP(appCtx, vt.service),*/ controlBox, title)
 	content := container.NewBorder(topBox, nil, nil, nil, scroll)
 	return content
 }

@@ -32,7 +32,7 @@ func PBTaskToDomain(pb *taskpb.Task) *task.Task {
 }
 
 // DomainTaskListToPB конвертирует список задач domain в protobuf
-func DomainTaskListToPB(list task.TaskList) *taskpb.TaskList {
+func DomainTaskListToPB(list task.List) *taskpb.TaskList {
 	pbTasks := make([]*taskpb.Task, 0, len(list.Tasks))
 	for _, t := range list.Tasks {
 		pbTasks = append(pbTasks, DomainTaskToPB(&t))

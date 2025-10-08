@@ -32,9 +32,10 @@ func main() {
 	}
 	defer grpcServer.Stop()
 
-	httpCtx, err := context.InitHTTPContext(userService, taskService)
+	httpCtx := context.CreateHTTPContext(userService, taskService)
+	err := httpCtx.Start()
 	if err != nil {
-		logger.L().Error("Error init http server:", zap.Error(err))
+		logger.L().Error("HTTP server error", zap.Error(err))
 		return
 	}
 	if httpCtx.ServerHTTP != nil {

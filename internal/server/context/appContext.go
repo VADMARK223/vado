@@ -3,6 +3,7 @@ package context
 import (
 	"database/sql"
 	"net/http"
+	"sync"
 	"vado/internal/domain/task"
 	"vado/internal/domain/user"
 	"vado/internal/server"
@@ -21,4 +22,7 @@ type HttpContext struct {
 	ServerHTTP  *http.Server
 	UserService *user.Service
 	TaskService *task.Service
+
+	running bool
+	mu      sync.RWMutex
 }

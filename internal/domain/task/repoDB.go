@@ -12,15 +12,15 @@ import (
 	"go.uber.org/zap"
 )
 
-type TaskDBRepo struct {
+type DBRepo struct {
 	db *sql.DB
 }
 
-func NewTaskDBRepo(db *sql.DB) *TaskDBRepo {
-	return &TaskDBRepo{db: db}
+func NewTaskDBRepo(db *sql.DB) *DBRepo {
+	return &DBRepo{db: db}
 }
 
-func (t *TaskDBRepo) FetchAll() (TaskList, error) {
+func (t *DBRepo) FetchAll() (List, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -49,13 +49,13 @@ func (t *TaskDBRepo) FetchAll() (TaskList, error) {
 		logger.L().Error("Task rows error:", zap.Error(err))
 	}
 
-	var list TaskList
+	var list List
 	list.Tasks = tasks
 
 	return list, nil
 }
 
-func (t *TaskDBRepo) InsertUpdate(task Task) error {
+func (t *DBRepo) InsertUpdate(task Task) error {
 	if task.ID == 0 {
 		// Новая задача — вставляем
 		query := `
@@ -78,7 +78,7 @@ func (t *TaskDBRepo) InsertUpdate(task Task) error {
 	}
 }
 
-func (t *TaskDBRepo) GetTask(id int) (*Task, error) {
+func (t *DBRepo) GetTask(id int) (*Task, error) {
 	query := `SELECT id, name, description, completed, created_at, updated_at FROM tasks WHERE id = $1`
 	var task Task
 	err := t.db.QueryRow(query, id).Scan(
@@ -100,7 +100,7 @@ func (t *TaskDBRepo) GetTask(id int) (*Task, error) {
 	return &task, nil
 }
 
-func (t *TaskDBRepo) Remove(id int) error {
+func (t *DBRepo) Remove(id int) error {
 	query := `DELETE FROM tasks WHERE id = $1`
 	result, err := t.db.Exec(query, id)
 	if err != nil {
@@ -119,7 +119,7 @@ func (t *TaskDBRepo) Remove(id int) error {
 	return nil
 }
 
-func (t *TaskDBRepo) RemoveAll() error {
+func (t *DBRepo) RemoveAll() error {
 	_, err := t.db.Exec("TRUNCATE TABLE tasks RESTART IDENTITY CASCADE")
 	if err != nil {
 		return fmt.Errorf("error delete all tasks: %w", err)

@@ -5,10 +5,11 @@ import (
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
-	"fyne.io/fyne/v2/widget"
 )
 
 func NewAdminView(appCtx *context.AppContext, win fyne.Window) fyne.CanvasObject {
-	box := container.NewVBox(widget.NewLabel("Админка"), NewUserControl(appCtx, win))
+	grpc := NewBoxGRPC(appCtx, win)
+	http := NewBoxHTTP(appCtx, win)
+	box := container.NewVBox(http, grpc, NewUserControl(appCtx, win))
 	return box
 }

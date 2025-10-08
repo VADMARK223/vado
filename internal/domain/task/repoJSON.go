@@ -9,18 +9,18 @@ import (
 	"time"
 )
 
-type TaskJSONRepo struct {
+type JSONRepo struct {
 	filePath string
 }
 
-func (r *TaskJSONRepo) GetTask(id int) (*Task, error) {
+func (r *JSONRepo) GetTask(id int) (*Task, error) {
 	data, err := os.ReadFile(r.filePath)
 
 	if err != nil {
 		log.Fatal("Error open file:", err)
 	}
 
-	var list TaskList
+	var list List
 	err = json.Unmarshal(data, &list)
 
 	for _, task := range list.Tasks {
@@ -31,23 +31,23 @@ func (r *TaskJSONRepo) GetTask(id int) (*Task, error) {
 	return nil, err
 }
 
-func NewTaskJSONRepo(path string) *TaskJSONRepo {
-	return &TaskJSONRepo{filePath: path}
+func NewTaskJSONRepo(path string) *JSONRepo {
+	return &JSONRepo{filePath: path}
 }
 
-func (r *TaskJSONRepo) FetchAll() (TaskList, error) {
+func (r *JSONRepo) FetchAll() (List, error) {
 	data, err := os.ReadFile(r.filePath)
 
 	if err != nil {
 		log.Fatal("Error open file:", err)
 	}
 
-	var list TaskList
+	var list List
 	err = json.Unmarshal(data, &list)
 	return list, err
 }
 
-func (r *TaskJSONRepo) InsertUpdate(t Task) error {
+func (r *JSONRepo) InsertUpdate(t Task) error {
 	list, _ := r.FetchAll()
 	var now = time.Now()
 	if t.ID == 0 { // новая задача
@@ -74,7 +74,7 @@ func (r *TaskJSONRepo) InsertUpdate(t Task) error {
 	return r.saveTasks(list)
 }
 
-func (r *TaskJSONRepo) Remove(id int) error {
+func (r *JSONRepo) Remove(id int) error {
 	list, _ := r.FetchAll()
 	newTasks := make([]Task, 0)
 	for _, t := range list.Tasks {
@@ -86,13 +86,13 @@ func (r *TaskJSONRepo) Remove(id int) error {
 	return r.saveTasks(list)
 }
 
-func (r *TaskJSONRepo) RemoveAll() error {
+func (r *JSONRepo) RemoveAll() error {
 	list, _ := r.FetchAll()
 	list.Tasks = []Task{}
 	return r.saveTasks(list)
 }
 
-func (r *TaskJSONRepo) saveTasks(tasksList TaskList) error {
+func (r *JSONRepo) saveTasks(tasksList List) error {
 	err := os.MkdirAll(filepath.Dir(r.filePath), 0755)
 	if err != nil {
 		return err
@@ -104,7 +104,7 @@ func (r *TaskJSONRepo) saveTasks(tasksList TaskList) error {
 	return os.WriteFile(r.filePath, data, 0644)
 }
 
-func generateMaxID(list TaskList) int {
+func generateMaxID(list List) int {
 	maxID := 0
 	for _, task := range list.Tasks {
 		if task.ID > maxID {

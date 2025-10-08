@@ -1,7 +1,7 @@
 package task
 
 type ITaskService interface {
-	GetAllTasks() (TaskList, error)
+	GetAllTasks() (List, error)
 	CreateTask(t Task) error
 	GetTaskByID(id int) (*Task, error)
 	DeleteTask(id int) error
@@ -9,14 +9,14 @@ type ITaskService interface {
 }
 
 type Service struct {
-	Repo TaskRepo
+	Repo Repo
 }
 
-func NewTaskService(repo TaskRepo) *Service {
+func NewTaskService(repo Repo) *Service {
 	return &Service{Repo: repo}
 }
 
-func (s *Service) GetAllTasks() (TaskList, error) {
+func (s *Service) GetAllTasks() (List, error) {
 	return s.Repo.FetchAll()
 }
 

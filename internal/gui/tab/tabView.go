@@ -23,7 +23,7 @@ func NewTabsView(appCtx *context.AppContext, win fyne.Window) *container.AppTabs
 
 	tabs := container.NewAppTabs(
 		common.CreateLazyTabItem("Задания", func() fyne.CanvasObject {
-			var r task2.TaskRepo
+			var r task2.Repo
 			if util.IsJSONMode() {
 				r = task2.NewTaskJSONRepo(constant.TasksFilePath)
 			} else {
