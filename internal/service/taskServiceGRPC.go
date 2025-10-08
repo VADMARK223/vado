@@ -4,14 +4,15 @@ import (
 	"context"
 	"vado/internal/model"
 	"vado/internal/pb/taskpb"
+	"vado/internal/service/task"
 )
 
 type TaskServiceGRPC struct {
 	taskpb.UnimplementedTaskServiceServer
-	Service ITaskService
+	Service task.ITaskService
 }
 
-func NewTaskServiceGRPC(s ITaskService) *TaskServiceGRPC {
+func NewTaskServiceGRPC(s task.ITaskService) *TaskServiceGRPC {
 	return &TaskServiceGRPC{Service: s}
 }
 

@@ -13,6 +13,7 @@ import (
 	"vado/internal/gui/tab/tasks/component"
 	"vado/internal/pb/taskpb"
 	"vado/internal/service"
+	"vado/internal/service/task"
 	"vado/internal/util"
 	"vado/pkg/logger"
 
@@ -30,7 +31,7 @@ var (
 	listener   net.Listener
 )
 
-func NewControlBoxGRPC(s service.ITaskService, win fyne.Window) fyne.CanvasObject {
+func NewControlBoxGRPC(s task.ITaskService, win fyne.Window) fyne.CanvasObject {
 	lbl := widget.NewLabel("Сервер GRPC:")
 
 	startBtn := common.NewBtn("Старт", theme.MediaPlayIcon(), func() {
@@ -70,7 +71,7 @@ func NewControlBoxGRPC(s service.ITaskService, win fyne.Window) fyne.CanvasObjec
 	return container.NewHBox(lbl, startBtn, stopBtn, container.NewCenter(statusIndicator), NewClientBoxGRPC(win))
 }
 
-func startServerGRPC(s service.ITaskService) {
+func startServerGRPC(s task.ITaskService) {
 	mu.Lock()
 	defer mu.Unlock()
 

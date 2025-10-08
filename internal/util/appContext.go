@@ -3,6 +3,7 @@ package util
 import (
 	"database/sql"
 	"net/http"
+	"vado/internal/service/task"
 	"vado/internal/service/user"
 
 	"go.uber.org/zap"
@@ -17,4 +18,5 @@ type AppContext struct {
 type HttpContext struct {
 	ServerHTTP  *http.Server
 	UserService *user.Service
+	TaskService *task.Service
 }

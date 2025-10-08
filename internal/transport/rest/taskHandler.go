@@ -14,7 +14,7 @@ import (
 	"strings"
 	"time"
 	"vado/internal/model"
-	"vado/internal/service"
+	"vado/internal/service/task"
 	"vado/pkg/logger"
 
 	"github.com/k0kubun/pp"
@@ -26,7 +26,7 @@ const (
 )
 
 type TaskHandler struct {
-	Service service.ITaskService
+	Service task.ITaskService
 }
 
 func (th *TaskHandler) TasksHandler(w http.ResponseWriter, r *http.Request) {

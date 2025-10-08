@@ -8,23 +8,23 @@ import (
 	"strings"
 	"sync"
 	"vado/internal/model"
+	"vado/internal/service/task"
 	"vado/internal/service/user"
+	http2 "vado/internal/transport/rest"
 	"vado/internal/util"
 	"vado/pkg/logger"
 
+	httpSwagger "github.com/swaggo/http-swagger"
 	"go.uber.org/zap"
 )
 
-var (
-	//serverHTTP *http.Server
-	httpMtx sync.Mutex
-)
+var httpMtx sync.Mutex
 
-// func InitHTTPContext(taskService service.ITaskService, userService *user.UserService) (*util.HttpContext, error) {
-func InitHTTPContext(userService *user.Service) (*util.HttpContext, error) {
+func InitHTTPContext(userService *user.Service, taskService *task.Service) (*util.HttpContext, error) {
 	httpMtx.Lock()
 	httpCtx := &util.HttpContext{}
 	httpCtx.UserService = userService
+	httpCtx.TaskService = taskService
 
 	if httpCtx.ServerHTTP != nil {
 		return httpCtx, errors.New("serverHTTP already running")
@@ -45,13 +45,11 @@ func InitHTTPContext(userService *user.Service) (*util.HttpContext, error) {
 		}
 	})
 
-	/*handler := &http2.TaskHandler{Service: taskService}
-	mux.HandleFunc("/tasks", handler.TasksHandler)
-	mux.HandleFunc("/tasks/", handler.TaskByIDHandler)
+	taskHandler := &http2.TaskHandler{Service: taskService}
+	mux.HandleFunc("/tasks", taskHandler.TasksHandler)
+	mux.HandleFunc("/tasks/", taskHandler.TaskByIDHandler)
 	mux.HandleFunc("/swagger/", httpSwagger.WrapHandler)
-	mux.HandleFunc("/slow", handler.SlowHandler)
-
-	*/
+	mux.HandleFunc("/slow", taskHandler.SlowHandler)
 
 	mux.HandleFunc("/users", func(w http.ResponseWriter, r *http.Request) {
 		newUser := model.User{Username: "test", Password: "test"}

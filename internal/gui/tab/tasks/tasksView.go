@@ -7,7 +7,7 @@ import (
 	component2 "vado/internal/gui/tab/tasks/component"
 	"vado/internal/gui/tab/tasks/component/grpc"
 	m "vado/internal/model"
-	"vado/internal/service"
+	"vado/internal/service/task"
 	util2 "vado/internal/util"
 	"vado/pkg/logger"
 	"vado/pkg/util"
@@ -24,12 +24,12 @@ import (
 )
 
 type ViewTasks struct {
-	service     service.ITaskService
+	service     task.ITaskService
 	untypedList binding.UntypedList
 }
 
-func NewTasksView(appCtx *util2.AppContext, win fyne.Window, s service.ITaskService) fyne.CanvasObject {
-	vt := &ViewTasks{service: s, untypedList: binding.NewUntypedList()}
+func NewTasksView(appCtx *util2.AppContext, win fyne.Window) fyne.CanvasObject {
+	vt := &ViewTasks{service: appCtx.HttpContext.TaskService, untypedList: binding.NewUntypedList()}
 	err := vt.updateUntypedList()
 	if err != nil {
 		return nil

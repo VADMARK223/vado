@@ -13,7 +13,7 @@ import (
 	"vado/internal/gui/common"
 	constant2 "vado/internal/gui/constant"
 	"vado/internal/gui/tab/tasks/component"
-	"vado/internal/service"
+	"vado/internal/service/task"
 	http2 "vado/internal/transport/rest"
 	"vado/internal/util"
 	"vado/pkg/logger"
@@ -38,7 +38,7 @@ var (
 	stopInProcess = false // Сервер в процессе остановки
 )
 
-func NewControlBoxHTTP(ctx *util.AppContext, service service.ITaskService) fyne.CanvasObject {
+func NewControlBoxHTTP(ctx *util.AppContext, service task.ITaskService) fyne.CanvasObject {
 	lbl := widget.NewLabel("Сервер HTTP:")
 	startBtn := common.NewBtn("Старт", theme.MediaPlayIcon(), nil)
 	startBtn.Disable()
@@ -104,7 +104,7 @@ func NewControlBoxHTTP(ctx *util.AppContext, service service.ITaskService) fyne.
 	return container.NewHBox(lbl, startBtn, stopBtn, container.NewCenter(statusIndicator), waitLbl)
 }
 
-func startOnTapped(service service.ITaskService) {
+func startOnTapped(service task.ITaskService) {
 	go func() {
 		if err := StartHTTPServer(service); err != nil {
 			fmt.Println("Start server error:", err)
@@ -117,7 +117,7 @@ type PageData struct {
 	Message string
 }
 
-func StartHTTPServer(service service.ITaskService) error {
+func StartHTTPServer(service task.ITaskService) error {
 	httpMtx.Lock()
 	if srv != nil {
 		return errors.New("server already running")
