@@ -1,4 +1,4 @@
-package server
+package context
 
 import (
 	"errors"
@@ -8,7 +8,7 @@ import (
 	"strings"
 	"sync"
 	"vado/internal/domain/task"
-	http2 "vado/internal/domain/task/transport"
+	http2 "vado/internal/domain/task/transport/rest"
 	"vado/internal/domain/user"
 	"vado/internal/util"
 	"vado/pkg/logger"
@@ -19,9 +19,9 @@ import (
 
 var httpMtx sync.Mutex
 
-func InitHTTPContext(userService *user.Service, taskService *task.Service) (*util.HttpContext, error) {
+func InitHTTPContext(userService *user.Service, taskService *task.Service) (*HttpContext, error) {
 	httpMtx.Lock()
-	httpCtx := &util.HttpContext{}
+	httpCtx := &HttpContext{}
 	httpCtx.UserService = userService
 	httpCtx.TaskService = taskService
 

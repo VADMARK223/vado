@@ -8,6 +8,7 @@ import (
 	gui "vado/internal/gui/common"
 	tabs "vado/internal/gui/tab"
 	"vado/internal/gui/tab/settings"
+	"vado/internal/server/context"
 	"vado/internal/util"
 	"vado/pkg/logger"
 
@@ -20,7 +21,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func ShowMainApp(appCtx *util.AppContext) {
+func ShowMainApp(appCtx *context.AppContext) {
 	logger.L().Info("Starting GUI mode.", zap.String("mode", util.GetModeValue()))
 	a := app.NewWithID("io.vado")
 	mainWindow := a.NewWindow("Vado")

@@ -1,4 +1,4 @@
-package transport
+package rest
 
 // @title           Vado API
 // @version         1.0

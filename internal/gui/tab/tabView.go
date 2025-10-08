@@ -9,6 +9,7 @@ import (
 	"vado/internal/gui/tab/settings"
 	"vado/internal/gui/tab/tasks"
 	"vado/internal/gui/tab/tasks/constant"
+	"vado/internal/server/context"
 	"vado/internal/util"
 
 	"fyne.io/fyne/v2"
@@ -17,7 +18,7 @@ import (
 
 const defaultTabIndex = 2
 
-func NewTabsView(appCtx *util.AppContext, win fyne.Window) *container.AppTabs {
+func NewTabsView(appCtx *context.AppContext, win fyne.Window) *container.AppTabs {
 	factories := map[*container.TabItem]func() fyne.CanvasObject{}
 
 	tabs := container.NewAppTabs(

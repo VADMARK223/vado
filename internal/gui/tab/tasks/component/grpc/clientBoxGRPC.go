@@ -38,13 +38,10 @@ func NewClientBoxGRPC(win fyne.Window) fyne.CanvasObject {
 
 		resp, err := client.GetAllTasks(ctx, nil)
 		if err != nil {
-			fmt.Printf("could not get tasks: %v\n", err)
+			dialog.ShowError(err, win)
+			logger.L().Error("gRPC request failed", zap.Error(err))
 			return
 		}
-		/*for _, t := range resp.Tasks {
-			fmt.Printf("Task: %d %s (%s) completed=%v\n",
-				t.Id, t.Name, t.Description, t.Completed)
-		}*/
 
 		dialog.ShowInformation("Ответ gRPC", fmt.Sprintf("Заданий: %d", len(resp.Tasks)), win)
 	})

@@ -1,15 +1,9 @@
 package admin
 
 import (
-	"fmt"
-	"log"
-	"net"
-	constant2 "vado/internal/constant"
 	"vado/internal/domain/user"
 	"vado/internal/gui/common"
-	"vado/internal/pb/userpb"
-	"vado/internal/server"
-	"vado/internal/util"
+	"vado/internal/server/context"
 	"vado/pkg/logger"
 
 	"fyne.io/fyne/v2"
@@ -17,11 +11,9 @@ import (
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/widget"
 	"go.uber.org/zap"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
 )
 
-func NewUserControl(appCtx *util.AppContext, win fyne.Window) fyne.CanvasObject {
+func NewUserControl(appCtx *context.AppContext, win fyne.Window) fyne.CanvasObject {
 	usernameEntry := widget.NewEntry()
 	usernameEntry.SetPlaceHolder("Введите имя пользователя")
 
@@ -44,19 +36,18 @@ func NewUserControl(appCtx *util.AppContext, win fyne.Window) fyne.CanvasObject 
 		createBtn,
 	)
 
-	fmt.Println(server.GrpcServer)
-	if util.AutoStartServerGRPC() {
-		startServerGRPC()
-	}
+	//if util.AutoStartServerGRPC() {
+	//	startServerGRPC()
+	//}
 
 	return grid
 }
 
-type UserServiceServer struct {
-	userpb.UnimplementedCreateUserServer
-}
+//type UserServiceServer struct {
+//	userpb.UnimplementedCreateUserServer
+//}
 
-func startServerGRPC() {
+/*func startServerGRPC() {
 	fmt.Println("GRPC server started.")
 	server.GrpcServerMutex.Lock()
 	defer server.GrpcServerMutex.Unlock()
@@ -85,4 +76,4 @@ func startServerGRPC() {
 			log.Printf("failed to serve: %v", err)
 		}
 	}()
-}
+}*/

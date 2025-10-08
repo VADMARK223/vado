@@ -11,10 +11,11 @@ import (
 	"sync"
 	"time"
 	"vado/internal/domain/task"
-	http2 "vado/internal/domain/task/transport"
+	http2 "vado/internal/domain/task/transport/rest"
 	"vado/internal/gui/common"
 	constant2 "vado/internal/gui/constant"
 	"vado/internal/gui/tab/tasks/component"
+	context2 "vado/internal/server/context"
 	"vado/internal/util"
 	"vado/pkg/logger"
 
@@ -38,7 +39,7 @@ var (
 	stopInProcess = false // Сервер в процессе остановки
 )
 
-func NewControlBoxHTTP(ctx *util.AppContext, service task.ITaskService) fyne.CanvasObject {
+func NewControlBoxHTTP(ctx *context2.AppContext, service task.ITaskService) fyne.CanvasObject {
 	lbl := widget.NewLabel("Сервер HTTP:")
 	startBtn := common.NewBtn("Старт", theme.MediaPlayIcon(), nil)
 	startBtn.Disable()

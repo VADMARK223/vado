@@ -1,10 +1,11 @@
-package util
+package context
 
 import (
 	"database/sql"
 	"net/http"
 	"vado/internal/domain/task"
 	"vado/internal/domain/user"
+	"vado/internal/server"
 
 	"go.uber.org/zap"
 )
@@ -13,6 +14,7 @@ type AppContext struct {
 	DB          *sql.DB
 	Logger      *zap.Logger
 	HttpContext *HttpContext
+	GRPC        *server.GRPCServer
 }
 
 type HttpContext struct {

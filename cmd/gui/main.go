@@ -2,11 +2,11 @@ package main
 
 import (
 	"database/sql"
-	task2 "vado/internal/domain/task"
-	user2 "vado/internal/domain/user"
+	t "vado/internal/domain/task"
+	u "vado/internal/domain/user"
 	"vado/internal/gui"
 	"vado/internal/server"
-	"vado/internal/util"
+	"vado/internal/server/context"
 	"vado/pkg/logger"
 
 	"go.uber.org/zap"
@@ -21,21 +21,33 @@ func main() {
 		_ = db.Close()
 	}(db)
 
-	userService := user2.NewUserService(user2.NewUserDBRepo(db))
-	taskService := task2.NewTaskService(task2.NewTaskDBRepo(db))
-	http, err := server.InitHTTPContext(userService, taskService)
+	// Инициализируем сервисы
+	userService := u.NewUserService(u.NewUserDBRepo(db))
+	taskService := t.NewTaskService(t.NewTaskDBRepo(db))
+
+	// Запускаем gRPC
+	grpcServer := server.NewServerGRPC(userService, taskService, ":50051")
+	if err := grpcServer.Start(); err != nil {
+		logger.L().Error("gRPC server error", zap.Error(err))
+	}
+	defer grpcServer.Stop()
+
+	httpCtx, err := context.InitHTTPContext(userService, taskService)
 	if err != nil {
 		logger.L().Error("Error init http server:", zap.Error(err))
 		return
 	}
-	defer func() {
-		_ = http.ServerHTTP.Close()
-	}()
+	if httpCtx.ServerHTTP != nil {
+		defer func() {
+			_ = httpCtx.ServerHTTP.Close()
+		}()
+	}
 
-	appCtx := &util.AppContext{
+	appCtx := &context.AppContext{
 		DB:          db,
 		Logger:      log,
-		HttpContext: http,
+		HttpContext: httpCtx,
+		GRPC:        grpcServer,
 	}
 
 	gui.ShowMainApp(appCtx)
