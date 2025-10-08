@@ -1,6 +1,7 @@
 package tab
 
 import (
+	task2 "vado/internal/domain/task"
 	"vado/internal/gui/common"
 	"vado/internal/gui/tab/admin"
 	"vado/internal/gui/tab/heavy"
@@ -8,8 +9,6 @@ import (
 	"vado/internal/gui/tab/settings"
 	"vado/internal/gui/tab/tasks"
 	"vado/internal/gui/tab/tasks/constant"
-	"vado/internal/repo"
-	"vado/internal/repo/task"
 	"vado/internal/util"
 
 	"fyne.io/fyne/v2"
@@ -23,11 +22,11 @@ func NewTabsView(appCtx *util.AppContext, win fyne.Window) *container.AppTabs {
 
 	tabs := container.NewAppTabs(
 		common.CreateLazyTabItem("Задания", func() fyne.CanvasObject {
-			var r repo.TaskRepo
+			var r task2.TaskRepo
 			if util.IsJSONMode() {
-				r = task.NewTaskJSONRepo(constant.TasksFilePath)
+				r = task2.NewTaskJSONRepo(constant.TasksFilePath)
 			} else {
-				r = task.NewTaskDBRepo(appCtx.DB)
+				r = task2.NewTaskDBRepo(appCtx.DB)
 			}
 			appCtx.HttpContext.TaskService.Repo = r
 			//s := task2.NewTaskService(r)

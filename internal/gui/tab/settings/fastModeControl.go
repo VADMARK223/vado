@@ -16,9 +16,7 @@ func NewFastModeCheck(inSettings bool) *widget.Check {
 	devModeCheck := widget.NewCheck(func() string {
 		if inSettings {
 			var text = "Режим быстрой отладки GUI"
-			if !util.IsDevMode() {
-				text += fmt.Sprintf(" (Недоступно в %s)", strings.ToUpper(util.GetModeValue()))
-			}
+			text += fmt.Sprintf(" (Недоступно в %s)", strings.ToUpper(util.GetModeValue()))
 			return text
 		} else {
 			return "Быстрая отладка"
@@ -27,9 +25,7 @@ func NewFastModeCheck(inSettings bool) *widget.Check {
 	}(), func(checked bool) {
 		prefs.SetBool(constant.FastModePref, checked)
 	})
-	if !util.IsDevMode() {
-		devModeCheck.Disable()
-	}
+	devModeCheck.Disable()
 
 	util.OnFastModeChange(func(newValue bool) {
 		devModeCheck.SetChecked(newValue)

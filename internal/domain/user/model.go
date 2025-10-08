@@ -1,6 +1,9 @@
-package model
+package user
 
-import "time"
+import (
+	"time"
+	"vado/internal/domain/task"
+)
 
 type User struct {
 	ID        uint   `gorm:"primaryKey"`
@@ -8,7 +11,7 @@ type User struct {
 	Password  string `gorm:"not null"`
 	Email     string `gorm:"unique"`
 	Roles     []Role `gorm:"many2many:user_roles"`
-	Tasks     []Task
+	Tasks     []task.Task
 	CreatedAt time.Time
 }
 

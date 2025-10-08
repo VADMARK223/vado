@@ -3,7 +3,7 @@ package component
 import (
 	"strings"
 	"time"
-	m "vado/internal/model"
+	t "vado/internal/domain/task"
 	"vado/pkg/util"
 
 	"fyne.io/fyne/v2"
@@ -13,10 +13,10 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-func ShowTaskDialog(parent fyne.Window, task *m.Task, f func(task m.Task)) {
-	isEdit := task != nil
-	if task == nil {
-		task = &m.Task{}
+func ShowTaskDialog(parent fyne.Window, taskIn *t.Task, f func(t.Task)) {
+	isEdit := taskIn != nil
+	if taskIn == nil {
+		taskIn = &t.Task{}
 	}
 	nameEntry := widget.NewEntry()
 	descEntry := widget.NewMultiLineEntry()
@@ -27,11 +27,11 @@ func ShowTaskDialog(parent fyne.Window, task *m.Task, f func(task m.Task)) {
 	saveBtn := widget.NewButton("", func() {
 		taskId := func() int {
 			if isEdit {
-				return task.ID
+				return taskIn.ID
 			}
 			return 0
 		}()
-		outTask := m.Task{
+		outTask := t.Task{
 			ID:          taskId,
 			Name:        nameEntry.Text,
 			Description: descEntry.Text,
@@ -39,7 +39,7 @@ func ShowTaskDialog(parent fyne.Window, task *m.Task, f func(task m.Task)) {
 		}
 		// Если режим редактирования, то прокидываем дату создания (потом переделать)
 		if isEdit {
-			outTask.CreatedAt = task.CreatedAt
+			outTask.CreatedAt = taskIn.CreatedAt
 		}
 		f(outTask)
 		dlg.Hide()
@@ -50,30 +50,30 @@ func ShowTaskDialog(parent fyne.Window, task *m.Task, f func(task m.Task)) {
 	var title string
 	if isEdit {
 		title = "Редактирование задачи"
-		nameEntry.SetText(task.Name)
-		nameEntry.CursorColumn = len(task.Name)
-		descEntry.SetText(task.Description)
+		nameEntry.SetText(taskIn.Name)
+		nameEntry.CursorColumn = len(taskIn.Name)
+		descEntry.SetText(taskIn.Description)
 		var temp string
-		if task.CreatedAt == nil {
+		if taskIn.CreatedAt == nil {
 			temp = "-"
 		} else {
-			temp = util.FormatTime(*task.CreatedAt)
+			temp = util.FormatTime(*taskIn.CreatedAt)
 		}
 		createAtEntry.SetText(temp)
 		var updateAtEntryText string
 
-		if task.UpdatedAt == nil {
+		if taskIn.UpdatedAt == nil {
 			updateAtEntryText = "-"
 		} else {
-			if *task.CreatedAt == *task.UpdatedAt {
+			if *taskIn.CreatedAt == *taskIn.UpdatedAt {
 				updateAtEntryText = "Не изменялась"
 			} else {
-				updateAtEntryText = util.FormatTime(*task.UpdatedAt)
+				updateAtEntryText = util.FormatTime(*taskIn.UpdatedAt)
 			}
 		}
 
 		updateAtEntry.SetText(updateAtEntryText)
-		check.SetChecked(task.Completed)
+		check.SetChecked(taskIn.Completed)
 		saveBtn.SetText("Сохранить")
 	} else {
 		title = "Создание задачи"
@@ -85,15 +85,15 @@ func ShowTaskDialog(parent fyne.Window, task *m.Task, f func(task m.Task)) {
 	})
 
 	nameEntry.OnChanged = func(text string) {
-		updateSaveBtnEnable(saveBtn, text, task.Name, descEntry.Text, task.Description, check.Checked, task.Completed)
+		updateSaveBtnEnable(saveBtn, text, taskIn.Name, descEntry.Text, taskIn.Description, check.Checked, taskIn.Completed)
 	}
 
 	descEntry.OnChanged = func(text string) {
-		updateSaveBtnEnable(saveBtn, nameEntry.Text, task.Name, text, task.Description, check.Checked, task.Completed)
+		updateSaveBtnEnable(saveBtn, nameEntry.Text, taskIn.Name, text, taskIn.Description, check.Checked, taskIn.Completed)
 	}
 
 	check.OnChanged = func(checked bool) {
-		updateSaveBtnEnable(saveBtn, nameEntry.Text, task.Name, descEntry.Text, task.Description, check.Checked, task.Completed)
+		updateSaveBtnEnable(saveBtn, nameEntry.Text, taskIn.Name, descEntry.Text, taskIn.Description, check.Checked, taskIn.Completed)
 	}
 
 	form := widget.NewForm(

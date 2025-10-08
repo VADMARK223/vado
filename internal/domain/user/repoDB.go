@@ -2,7 +2,6 @@ package user
 
 import (
 	"database/sql"
-	"vado/internal/model"
 )
 
 type UserDBRepo struct {
@@ -13,7 +12,7 @@ func NewUserDBRepo(db *sql.DB) *UserDBRepo {
 	return &UserDBRepo{db: db}
 }
 
-func (u *UserDBRepo) CreateUser(user model.User) error {
+func (u *UserDBRepo) CreateUser(user User) error {
 	query := `
 			INSERT INTO users (username,password)
 			VALUES ($1, $2)

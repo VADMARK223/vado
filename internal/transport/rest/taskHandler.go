@@ -13,7 +13,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"vado/internal/model"
+	task2 "vado/internal/domain/task"
 	"vado/internal/service/task"
 	"vado/pkg/logger"
 
@@ -62,7 +62,7 @@ func deleteAllTasks(th *TaskHandler, w http.ResponseWriter, _ *http.Request) {
 // @Success      200   {string}  string      "Success."
 // @Router       /tasks [post]
 func createTask(th *TaskHandler, w http.ResponseWriter, r *http.Request) {
-	var task model.Task
+	var task task2.Task
 	if err := json.NewDecoder(r.Body).Decode(&task); err != nil {
 		http.Error(w, "bad request: "+err.Error(), http.StatusBadRequest)
 		return

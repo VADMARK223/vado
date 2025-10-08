@@ -3,8 +3,8 @@ package util
 import (
 	"database/sql"
 	"net/http"
+	"vado/internal/domain/user"
 	"vado/internal/service/task"
-	"vado/internal/service/user"
 
 	"go.uber.org/zap"
 )

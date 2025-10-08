@@ -5,8 +5,8 @@ import (
 	"log"
 	"net"
 	constant2 "vado/internal/constant"
+	"vado/internal/domain/user"
 	"vado/internal/gui/common"
-	"vado/internal/model"
 	"vado/internal/pb/userpb"
 	"vado/internal/server"
 	"vado/internal/util"
@@ -29,7 +29,7 @@ func NewUserControl(appCtx *util.AppContext, win fyne.Window) fyne.CanvasObject 
 	passwordEntry.SetPlaceHolder("Введите пароль пользователя")
 
 	createBtn := common.NewBtn("Создать", nil, func() {
-		newUser := model.User{Username: usernameEntry.Text, Password: passwordEntry.Text}
+		newUser := user.User{Username: usernameEntry.Text, Password: passwordEntry.Text}
 		err := appCtx.HttpContext.UserService.CreateUser(newUser)
 		if err != nil {
 			dialog.ShowError(err, win)

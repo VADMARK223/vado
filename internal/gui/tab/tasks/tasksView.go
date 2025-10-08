@@ -3,10 +3,10 @@ package tasks
 import (
 	"fmt"
 	"image/color"
+	m "vado/internal/domain/task"
 	"vado/internal/gui/common"
 	component2 "vado/internal/gui/tab/tasks/component"
 	"vado/internal/gui/tab/tasks/component/grpc"
-	m "vado/internal/model"
 	"vado/internal/service/task"
 	util2 "vado/internal/util"
 	"vado/pkg/logger"

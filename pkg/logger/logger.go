@@ -1,8 +1,6 @@
 package logger
 
 import (
-	"vado/internal/util"
-
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -11,14 +9,12 @@ var log *zap.Logger
 
 // Init инициализирует глобальный логгер
 func Init() (*zap.Logger, error) {
-	idDevMode := util.IsDevMode()
 	var cfg zap.Config
-	if idDevMode {
-		cfg = zap.NewDevelopmentConfig()
-		cfg.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
-	} else {
-		cfg = zap.NewProductionConfig()
-	}
+	cfg = zap.NewDevelopmentConfig()
+	cfg.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
+	//} else {
+	//	cfg = zap.NewProductionConfig()
+	//}
 	cfg.Level = zap.NewAtomicLevelAt(zap.DebugLevel)
 
 	l, err := cfg.Build()

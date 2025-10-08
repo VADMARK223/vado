@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"time"
-	"vado/internal/model"
 	"vado/pkg/logger"
 
 	_ "github.com/lib/pq"
@@ -21,7 +20,7 @@ func NewTaskDBRepo(db *sql.DB) *TaskDBRepo {
 	return &TaskDBRepo{db: db}
 }
 
-func (t *TaskDBRepo) FetchAll() (model.TaskList, error) {
+func (t *TaskDBRepo) FetchAll() (TaskList, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -36,9 +35,9 @@ func (t *TaskDBRepo) FetchAll() (model.TaskList, error) {
 		}
 	}(rows)
 
-	var tasks []model.Task
+	var tasks []Task
 	for rows.Next() {
-		var t model.Task
+		var t Task
 		err := rows.Scan(&t.ID, &t.Name, &t.Description, &t.Completed, &t.CreatedAt, &t.UpdatedAt)
 		if err != nil {
 			logger.L().Error("Task rows scan error:", zap.Error(err))
@@ -50,13 +49,13 @@ func (t *TaskDBRepo) FetchAll() (model.TaskList, error) {
 		logger.L().Error("Task rows error:", zap.Error(err))
 	}
 
-	var list model.TaskList
+	var list TaskList
 	list.Tasks = tasks
 
 	return list, nil
 }
 
-func (t *TaskDBRepo) InsertUpdate(task model.Task) error {
+func (t *TaskDBRepo) InsertUpdate(task Task) error {
 	if task.ID == 0 {
 		// Новая задача — вставляем
 		query := `
@@ -79,9 +78,9 @@ func (t *TaskDBRepo) InsertUpdate(task model.Task) error {
 	}
 }
 
-func (t *TaskDBRepo) GetTask(id int) (*model.Task, error) {
+func (t *TaskDBRepo) GetTask(id int) (*Task, error) {
 	query := `SELECT id, name, description, completed, created_at, updated_at FROM tasks WHERE id = $1`
-	var task model.Task
+	var task Task
 	err := t.db.QueryRow(query, id).Scan(
 		&task.ID,
 		&task.Name,

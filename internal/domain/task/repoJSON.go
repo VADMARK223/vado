@@ -7,23 +7,20 @@ import (
 	"os"
 	"path/filepath"
 	"time"
-	"vado/internal/gui/tab/tasks/constant"
-	"vado/internal/model"
-	"vado/internal/util"
 )
 
 type TaskJSONRepo struct {
 	filePath string
 }
 
-func (r *TaskJSONRepo) GetTask(id int) (*model.Task, error) {
-	data, err := os.ReadFile(constant.TasksFilePath)
+func (r *TaskJSONRepo) GetTask(id int) (*Task, error) {
+	data, err := os.ReadFile(r.filePath)
 
 	if err != nil {
 		log.Fatal("Error open file:", err)
 	}
 
-	var list model.TaskList
+	var list TaskList
 	err = json.Unmarshal(data, &list)
 
 	for _, task := range list.Tasks {
@@ -38,23 +35,23 @@ func NewTaskJSONRepo(path string) *TaskJSONRepo {
 	return &TaskJSONRepo{filePath: path}
 }
 
-func (r *TaskJSONRepo) FetchAll() (model.TaskList, error) {
-	data, err := os.ReadFile(constant.TasksFilePath)
+func (r *TaskJSONRepo) FetchAll() (TaskList, error) {
+	data, err := os.ReadFile(r.filePath)
 
 	if err != nil {
 		log.Fatal("Error open file:", err)
 	}
 
-	var list model.TaskList
+	var list TaskList
 	err = json.Unmarshal(data, &list)
 	return list, err
 }
 
-func (r *TaskJSONRepo) InsertUpdate(t model.Task) error {
+func (r *TaskJSONRepo) InsertUpdate(t Task) error {
 	list, _ := r.FetchAll()
 	var now = time.Now()
 	if t.ID == 0 { // новая задача
-		t.ID = util.GenerateMaxID(list)
+		t.ID = generateMaxID(list)
 		t.CreatedAt = &now
 		t.UpdatedAt = &now
 		list.Tasks = append(list.Tasks, t)
@@ -79,7 +76,7 @@ func (r *TaskJSONRepo) InsertUpdate(t model.Task) error {
 
 func (r *TaskJSONRepo) Remove(id int) error {
 	list, _ := r.FetchAll()
-	newTasks := make([]model.Task, 0)
+	newTasks := make([]Task, 0)
 	for _, t := range list.Tasks {
 		if id != t.ID {
 			newTasks = append(newTasks, t)
@@ -91,11 +88,11 @@ func (r *TaskJSONRepo) Remove(id int) error {
 
 func (r *TaskJSONRepo) RemoveAll() error {
 	list, _ := r.FetchAll()
-	list.Tasks = []model.Task{}
+	list.Tasks = []Task{}
 	return r.saveTasks(list)
 }
 
-func (r *TaskJSONRepo) saveTasks(tasksList model.TaskList) error {
+func (r *TaskJSONRepo) saveTasks(tasksList TaskList) error {
 	err := os.MkdirAll(filepath.Dir(r.filePath), 0755)
 	if err != nil {
 		return err
@@ -105,4 +102,14 @@ func (r *TaskJSONRepo) saveTasks(tasksList model.TaskList) error {
 		return err
 	}
 	return os.WriteFile(r.filePath, data, 0644)
+}
+
+func generateMaxID(list TaskList) int {
+	maxID := 0
+	for _, task := range list.Tasks {
+		if task.ID > maxID {
+			maxID = task.ID
+		}
+	}
+	return maxID + 1
 }

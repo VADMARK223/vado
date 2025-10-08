@@ -16,9 +16,6 @@ func GetBoolPrefByKey(key string) bool {
 }
 
 func IsFastMode() bool {
-	if !IsDevMode() {
-		return IsDevMode()
-	}
 	if fyne.CurrentApp() == nil {
 		return false
 	}

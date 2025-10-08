@@ -2,12 +2,11 @@ package main
 
 import (
 	"database/sql"
+	task2 "vado/internal/domain/task"
+	user2 "vado/internal/domain/user"
 	"vado/internal/gui"
-	task2 "vado/internal/repo/task"
-	user2 "vado/internal/repo/user"
 	"vado/internal/server"
 	"vado/internal/service/task"
-	"vado/internal/service/user"
 	"vado/internal/util"
 	"vado/pkg/logger"
 
@@ -23,7 +22,7 @@ func main() {
 		_ = db.Close()
 	}(db)
 
-	userService := user.NewUserService(user2.NewUserDBRepo(db))
+	userService := user2.NewUserService(user2.NewUserDBRepo(db))
 	taskService := task.NewTaskService(task2.NewTaskDBRepo(db))
 	http, err := server.InitHTTPContext(userService, taskService)
 	if err != nil {

@@ -7,9 +7,8 @@ import (
 	"net/http"
 	"strings"
 	"sync"
-	"vado/internal/model"
+	"vado/internal/domain/user"
 	"vado/internal/service/task"
-	"vado/internal/service/user"
 	http2 "vado/internal/transport/rest"
 	"vado/internal/util"
 	"vado/pkg/logger"
@@ -52,7 +51,7 @@ func InitHTTPContext(userService *user.Service, taskService *task.Service) (*uti
 	mux.HandleFunc("/slow", taskHandler.SlowHandler)
 
 	mux.HandleFunc("/users", func(w http.ResponseWriter, r *http.Request) {
-		newUser := model.User{Username: "test", Password: "test"}
+		newUser := user.User{Username: "test", Password: "test"}
 		err := userService.CreateUser(newUser)
 		if err != nil {
 			logger.L().Error("create user failed", zap.Error(err))

@@ -2,7 +2,7 @@ package component
 
 import (
 	"time"
-	m "vado/internal/model"
+	m "vado/internal/domain/task"
 	"vado/pkg/util"
 
 	"fyne.io/fyne/v2"

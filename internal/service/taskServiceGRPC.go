@@ -2,7 +2,7 @@ package service
 
 import (
 	"context"
-	"vado/internal/model"
+	task2 "vado/internal/domain/task"
 	"vado/internal/pb/taskpb"
 	"vado/internal/service/task"
 )
@@ -54,7 +54,7 @@ func (s *TaskServiceGRPC) DeleteAllTasks(ctx context.Context, _ *taskpb.Empty) (
 }
 
 // toProtoTask - конвертация model.Task в taskpb.Task
-func toProtoTask(t *model.Task) *taskpb.Task {
+func toProtoTask(t *task2.Task) *taskpb.Task {
 	return &taskpb.Task{
 		Id:          int32(t.ID),
 		Name:        t.Name,
@@ -64,8 +64,8 @@ func toProtoTask(t *model.Task) *taskpb.Task {
 }
 
 // fromProtoTask — конвертация taskpb.Task в model.Task
-func fromProtoTask(pt *taskpb.Task) model.Task {
-	return model.Task{
+func fromProtoTask(pt *taskpb.Task) task2.Task {
+	return task2.Task{
 		ID:          int(pt.Id),
 		Name:        pt.Name,
 		Description: pt.Description,
@@ -74,7 +74,7 @@ func fromProtoTask(pt *taskpb.Task) model.Task {
 }
 
 // toProtoTaskList — конвертация model.TaskList в taskpb.TaskList
-func toProtoTaskList(tl model.TaskList) *taskpb.TaskList {
+func toProtoTaskList(tl task2.TaskList) *taskpb.TaskList {
 	tasks := make([]*taskpb.Task, len(tl.Tasks))
 	for i, t := range tl.Tasks {
 		tasks[i] = toProtoTask(&t)
@@ -83,16 +83,16 @@ func toProtoTaskList(tl model.TaskList) *taskpb.TaskList {
 }
 
 // fromProtoTaskList — конвертация taskpb.TaskList в model.TaskList
-func fromProtoTaskList(ptl *taskpb.TaskList) model.TaskList {
-	tasks := make([]model.Task, len(ptl.Tasks))
+func fromProtoTaskList(ptl *taskpb.TaskList) task2.TaskList {
+	tasks := make([]task2.Task, len(ptl.Tasks))
 	for i, t := range ptl.Tasks {
 		tasks[i] = fromProtoTask(t)
 	}
-	return model.TaskList{Tasks: tasks}
+	return task2.TaskList{Tasks: tasks}
 }
 
-func toModelTask(t *taskpb.Task) model.Task {
-	return model.Task{
+func toModelTask(t *taskpb.Task) task2.Task {
+	return task2.Task{
 		ID:          int(t.Id),
 		Name:        t.Name,
 		Description: t.Description,
