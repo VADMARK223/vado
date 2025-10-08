@@ -33,4 +33,9 @@ RUN chmod +x wait-for-postgres.sh
 
 # сперва ждём БД, потом запускаем бинарь
 ENTRYPOINT ["./wait-for-postgres.sh"]
+
+# Можно переопределить адрес брокера через ENV
+ENV KAFKA_BROKER=kafka:29092
+ENV KAFKA_TOPIC=tasks
+
 CMD ["./vado-go"]

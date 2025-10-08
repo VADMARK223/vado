@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 	"time"
 	"vado/internal/util"
 	"vado/pkg/logger"
@@ -12,15 +13,18 @@ import (
 )
 
 func main() {
-	fmt.Println("Hello, world!")
 	log1, _ := logger.Init()
 	defer logger.Sync()
 
 	log1.Info(fmt.Sprintf("Starting CLI mode. (%s)", util.GetModeValue()))
 
 	// Настройки подключения
-	broker := "localhost:9092"
-	topic := "tasks"
+	//broker := "localhost:9092" // Для локальной отладки
+	//broker := "localhost:9092" // Для локальной отладки
+	broker := getenv("KAFKA_BROKER", "localhost:9092")
+	topic := getenv("KAFKA_TOPIC", "tasks")
+
+	fmt.Printf("Broker: %s, Topic: %s\n", broker, topic)
 
 	// ======== 1. Producer ========
 	brokers := []string{broker}
@@ -38,7 +42,7 @@ func main() {
 	}(writer)
 
 	msg := kafka.Message{
-		Key:   []byte("task-4"),
+		Key:   []byte("task-5!!!"),
 		Value: []byte(`{"id":1,"name":"Do homework","done":false}`),
 		Time:  time.Now(),
 	}
@@ -77,6 +81,13 @@ func main() {
 	fmt.Printf("📩 Получено сообщение:\n  key=%s\n  value=%s\n", string(m.Key), string(m.Value))
 
 	//startServer()
+}
+
+func getenv(key, def string) string {
+	if val := os.Getenv(key); val != "" {
+		return val
+	}
+	return def
 }
 
 //func startServer() {
