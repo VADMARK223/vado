@@ -2,42 +2,49 @@ package kafka
 
 import (
 	"context"
+	"fmt"
+	"log"
 	"time"
-	"vado/pkg/logger"
 
 	"github.com/segmentio/kafka-go"
-	"go.uber.org/zap"
 )
 
-func Produce(message string) {
-	brokers := GetKafkaBrokers()
-	logger.L().Info("Kafka producer starting", zap.Strings("brokers", brokers))
+type Producer struct {
+	writer *kafka.Writer
+}
 
-	writer := &kafka.Writer{
-		Addr:                   kafka.TCP(brokers...),
-		Topic:                  "tasks",
-		Balancer:               &kafka.LeastBytes{}, // Балансировщик для распределения сообщений по партициям (можно использовать другие: Hash, RoundRobin)
-		AllowAutoTopicCreation: true,                // Автосоздание топика
-	}
-	defer func(writer *kafka.Writer) {
-		err := writer.Close()
-		if err != nil {
-			logger.L().Error("Error close writer:", zap.Error(err))
-		}
-	}(writer)
+func NewProducer(cfg *Config) *Producer {
+	/*return &Producer{
+		writer: kafka.NewWriter(kafka.WriterConfig{
+			Brokers:  cfg.Brokers,
+			Topic:    cfg.Topic,
+			Balancer: &kafka.LeastBytes{},
+		}),
+	}*/
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	err := writer.WriteMessages(ctx,
-		kafka.Message{
-			Key:   []byte(time.Now().Format(time.RFC3339)),
-			Value: []byte(message),
+	return &Producer{
+		writer: &kafka.Writer{
+			Addr:                   kafka.TCP(cfg.Brokers...),
+			Topic:                  "tasks",
+			Balancer:               &kafka.LeastBytes{}, // Балансировщик для распределения сообщений по партициям (можно использовать другие: Hash, RoundRobin)
+			AllowAutoTopicCreation: true,                // Авто создание топика
 		},
-	)
-	if err != nil {
-		logger.L().Error("Failed to write message:", zap.Error(err))
-		return
 	}
-	logger.L().Info("Message sent to Kafka:", zap.String("message", message))
+}
+
+func (p *Producer) Close() {
+	_ = p.writer.Close()
+}
+
+func (p *Producer) Send(key, value string) error {
+	msg := kafka.Message{
+		Key:   []byte(key),
+		Value: []byte(value),
+		Time:  time.Now(),
+	}
+	if err := p.writer.WriteMessages(context.Background(), msg); err != nil {
+		return fmt.Errorf("failed to send message: %w", err)
+	}
+	log.Printf("✅ sent message: key=%s value=%s", key, value)
+	return nil
 }
