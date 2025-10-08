@@ -1,34 +1,30 @@
 package task
 
-import (
-	"vado/internal/domain/task"
-)
-
 type ITaskService interface {
-	GetAllTasks() (task.TaskList, error)
-	CreateTask(t task.Task) error
-	GetTaskByID(id int) (*task.Task, error)
+	GetAllTasks() (TaskList, error)
+	CreateTask(t Task) error
+	GetTaskByID(id int) (*Task, error)
 	DeleteTask(id int) error
 	DeleteAllTasks()
 }
 
 type Service struct {
-	Repo task.TaskRepo
+	Repo TaskRepo
 }
 
-func NewTaskService(repo task.TaskRepo) *Service {
+func NewTaskService(repo TaskRepo) *Service {
 	return &Service{Repo: repo}
 }
 
-func (s *Service) GetAllTasks() (task.TaskList, error) {
+func (s *Service) GetAllTasks() (TaskList, error) {
 	return s.Repo.FetchAll()
 }
 
-func (s *Service) CreateTask(task task.Task) error {
+func (s *Service) CreateTask(task Task) error {
 	return s.Repo.InsertUpdate(task)
 }
 
-func (s *Service) GetTaskByID(id int) (*task.Task, error) {
+func (s *Service) GetTaskByID(id int) (*Task, error) {
 	return s.Repo.GetTask(id)
 }
 

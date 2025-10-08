@@ -8,12 +8,11 @@ import (
 	"sync"
 	"time"
 	constant2 "vado/internal/constant"
+	"vado/internal/domain/task"
 	"vado/internal/gui/common"
 	"vado/internal/gui/constant"
 	"vado/internal/gui/tab/tasks/component"
 	"vado/internal/pb/taskpb"
-	"vado/internal/service"
-	"vado/internal/service/task"
 	"vado/internal/util"
 	"vado/pkg/logger"
 
@@ -88,7 +87,7 @@ func startServerGRPC(s task.ITaskService) {
 	}
 
 	grpcServer = grpc.NewServer()
-	serviceGRPC := service.NewTaskServiceGRPC(s)
+	serviceGRPC := task.NewTaskServiceGRPC(s)
 	taskpb.RegisterTaskServiceServer(grpcServer, serviceGRPC)
 	reflection.Register(grpcServer)
 

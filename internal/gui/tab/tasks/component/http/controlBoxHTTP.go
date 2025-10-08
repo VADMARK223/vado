@@ -10,11 +10,11 @@ import (
 	"strings"
 	"sync"
 	"time"
+	"vado/internal/domain/task"
+	http2 "vado/internal/domain/task/transport"
 	"vado/internal/gui/common"
 	constant2 "vado/internal/gui/constant"
 	"vado/internal/gui/tab/tasks/component"
-	"vado/internal/service/task"
-	http2 "vado/internal/transport/rest"
 	"vado/internal/util"
 	"vado/pkg/logger"
 

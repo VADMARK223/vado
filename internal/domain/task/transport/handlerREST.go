@@ -1,4 +1,4 @@
-package rest
+package transport
 
 // @title           Vado API
 // @version         1.0
@@ -14,7 +14,6 @@ import (
 	"strings"
 	"time"
 	task2 "vado/internal/domain/task"
-	"vado/internal/service/task"
 	"vado/pkg/logger"
 
 	"github.com/k0kubun/pp"
@@ -26,7 +25,7 @@ const (
 )
 
 type TaskHandler struct {
-	Service task.ITaskService
+	Service task2.ITaskService
 }
 
 func (th *TaskHandler) TasksHandler(w http.ResponseWriter, r *http.Request) {

@@ -1,18 +1,16 @@
-package service
+package task
 
 import (
 	"context"
-	task2 "vado/internal/domain/task"
 	"vado/internal/pb/taskpb"
-	"vado/internal/service/task"
 )
 
 type TaskServiceGRPC struct {
 	taskpb.UnimplementedTaskServiceServer
-	Service task.ITaskService
+	Service ITaskService
 }
 
-func NewTaskServiceGRPC(s task.ITaskService) *TaskServiceGRPC {
+func NewTaskServiceGRPC(s ITaskService) *TaskServiceGRPC {
 	return &TaskServiceGRPC{Service: s}
 }
 
@@ -54,7 +52,7 @@ func (s *TaskServiceGRPC) DeleteAllTasks(ctx context.Context, _ *taskpb.Empty) (
 }
 
 // toProtoTask - конвертация model.Task в taskpb.Task
-func toProtoTask(t *task2.Task) *taskpb.Task {
+func toProtoTask(t *Task) *taskpb.Task {
 	return &taskpb.Task{
 		Id:          int32(t.ID),
 		Name:        t.Name,
@@ -64,8 +62,8 @@ func toProtoTask(t *task2.Task) *taskpb.Task {
 }
 
 // fromProtoTask — конвертация taskpb.Task в model.Task
-func fromProtoTask(pt *taskpb.Task) task2.Task {
-	return task2.Task{
+func fromProtoTask(pt *taskpb.Task) Task {
+	return Task{
 		ID:          int(pt.Id),
 		Name:        pt.Name,
 		Description: pt.Description,
@@ -74,7 +72,7 @@ func fromProtoTask(pt *taskpb.Task) task2.Task {
 }
 
 // toProtoTaskList — конвертация model.TaskList в taskpb.TaskList
-func toProtoTaskList(tl task2.TaskList) *taskpb.TaskList {
+func toProtoTaskList(tl TaskList) *taskpb.TaskList {
 	tasks := make([]*taskpb.Task, len(tl.Tasks))
 	for i, t := range tl.Tasks {
 		tasks[i] = toProtoTask(&t)
@@ -83,16 +81,16 @@ func toProtoTaskList(tl task2.TaskList) *taskpb.TaskList {
 }
 
 // fromProtoTaskList — конвертация taskpb.TaskList в model.TaskList
-func fromProtoTaskList(ptl *taskpb.TaskList) task2.TaskList {
-	tasks := make([]task2.Task, len(ptl.Tasks))
+func fromProtoTaskList(ptl *taskpb.TaskList) TaskList {
+	tasks := make([]Task, len(ptl.Tasks))
 	for i, t := range ptl.Tasks {
 		tasks[i] = fromProtoTask(t)
 	}
-	return task2.TaskList{Tasks: tasks}
+	return TaskList{Tasks: tasks}
 }
 
-func toModelTask(t *taskpb.Task) task2.Task {
-	return task2.Task{
+func toModelTask(t *taskpb.Task) Task {
+	return Task{
 		ID:          int(t.Id),
 		Name:        t.Name,
 		Description: t.Description,

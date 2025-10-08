@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"strings"
 	"sync"
+	"vado/internal/domain/task"
+	http2 "vado/internal/domain/task/transport"
 	"vado/internal/domain/user"
-	"vado/internal/service/task"
-	http2 "vado/internal/transport/rest"
 	"vado/internal/util"
 	"vado/pkg/logger"
 

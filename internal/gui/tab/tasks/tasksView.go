@@ -7,7 +7,6 @@ import (
 	"vado/internal/gui/common"
 	component2 "vado/internal/gui/tab/tasks/component"
 	"vado/internal/gui/tab/tasks/component/grpc"
-	"vado/internal/service/task"
 	util2 "vado/internal/util"
 	"vado/pkg/logger"
 	"vado/pkg/util"
@@ -24,7 +23,7 @@ import (
 )
 
 type ViewTasks struct {
-	service     task.ITaskService
+	service     m.ITaskService
 	untypedList binding.UntypedList
 }
 

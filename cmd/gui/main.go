@@ -6,7 +6,6 @@ import (
 	user2 "vado/internal/domain/user"
 	"vado/internal/gui"
 	"vado/internal/server"
-	"vado/internal/service/task"
 	"vado/internal/util"
 	"vado/pkg/logger"
 
@@ -23,7 +22,7 @@ func main() {
 	}(db)
 
 	userService := user2.NewUserService(user2.NewUserDBRepo(db))
-	taskService := task.NewTaskService(task2.NewTaskDBRepo(db))
+	taskService := task2.NewTaskService(task2.NewTaskDBRepo(db))
 	http, err := server.InitHTTPContext(userService, taskService)
 	if err != nil {
 		logger.L().Error("Error init http server:", zap.Error(err))
