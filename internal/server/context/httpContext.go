@@ -28,10 +28,6 @@ func CreateHTTPContext(userService *user.Service, taskService *task.Service) *Ht
 		TaskService: taskService,
 	}
 
-	/*if err := httpCtx.Start(); err != nil {
-		return nil, fmt.Errorf("failed to start HTTP server: %w", err)
-	}*/
-
 	return httpCtx
 }
 

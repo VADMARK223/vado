@@ -33,7 +33,7 @@ func NewBoxHTTP(ctx *appCtx.AppContext, win fyne.Window) fyne.CanvasObject {
 	// Фоновое обновление статуса
 	go func() {
 		for {
-			running := ctx.HttpContext.IsRunning()
+			running := ctx.HTTP.IsRunning()
 
 			fyne.Do(func() {
 				if running {
@@ -59,12 +59,12 @@ func NewBoxHTTP(ctx *appCtx.AppContext, win fyne.Window) fyne.CanvasObject {
 }
 
 func startServerHTTP(ctx *appCtx.AppContext) {
-	err := ctx.HttpContext.Start()
+	err := ctx.HTTP.Start()
 	if err != nil {
 		logger.L().Warn("Error start server http", zap.Error(err))
 	}
 }
 
 func stopServerHTTP(ctx *appCtx.AppContext) {
-	ctx.HttpContext.Stop()
+	ctx.HTTP.Stop()
 }

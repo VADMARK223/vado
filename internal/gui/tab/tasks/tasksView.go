@@ -28,7 +28,7 @@ type ViewTasks struct {
 }
 
 func NewTasksView(appCtx *context.AppContext, win fyne.Window) fyne.CanvasObject {
-	vt := &ViewTasks{service: appCtx.HttpContext.TaskService, untypedList: binding.NewUntypedList()}
+	vt := &ViewTasks{service: appCtx.HTTP.TaskService, untypedList: binding.NewUntypedList()}
 	err := vt.updateUntypedList()
 	if err != nil {
 		return nil

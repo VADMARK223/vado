@@ -22,7 +22,7 @@ func NewUserControl(appCtx *context.AppContext, win fyne.Window) fyne.CanvasObje
 
 	createBtn := common.NewBtn("Создать", nil, func() {
 		newUser := user.User{Username: usernameEntry.Text, Password: passwordEntry.Text}
-		err := appCtx.HttpContext.UserService.CreateUser(newUser)
+		err := appCtx.HTTP.UserService.CreateUser(newUser)
 		if err != nil {
 			dialog.ShowError(err, win)
 			logger.L().Error("create user failed", zap.Error(err))

@@ -12,10 +12,10 @@ import (
 )
 
 type AppContext struct {
-	DB          *sql.DB
-	Logger      *zap.Logger
-	HttpContext *HttpContext
-	GRPC        *server.GRPCServer
+	DB     *sql.DB
+	Logger *zap.Logger
+	HTTP   *HttpContext
+	GRPC   *server.GRPCServer
 }
 
 type HttpContext struct {

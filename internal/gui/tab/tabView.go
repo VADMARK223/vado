@@ -16,7 +16,7 @@ import (
 	"fyne.io/fyne/v2/container"
 )
 
-const defaultTabIndex = 2
+const defaultTabIndex = 0
 
 func NewTabsView(appCtx *context.AppContext, win fyne.Window) *container.AppTabs {
 	factories := map[*container.TabItem]func() fyne.CanvasObject{}
@@ -29,8 +29,7 @@ func NewTabsView(appCtx *context.AppContext, win fyne.Window) *container.AppTabs
 			} else {
 				r = task2.NewTaskDBRepo(appCtx.DB)
 			}
-			appCtx.HttpContext.TaskService.Repo = r
-			//s := task2.NewTaskService(r)
+			appCtx.HTTP.TaskService.Repo = r
 			return tasks.NewTasksView(appCtx, win)
 		}, factories),
 		common.CreateLazyTabItem("Настройки", settings.CreateView, factories),

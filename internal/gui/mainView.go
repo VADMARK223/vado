@@ -21,10 +21,10 @@ import (
 	"go.uber.org/zap"
 )
 
-func ShowMainApp(appCtx *context.AppContext) {
+func ShowApp(ctx *context.AppContext) {
 	logger.L().Info("Starting GUI mode.", zap.String("mode", util.GetModeValue()))
 	a := app.NewWithID("io.vado")
-	mainWindow := a.NewWindow("Vado")
+	w := a.NewWindow("Vado")
 
 	userInfo := widget.NewRichTextFromMarkdown(fmt.Sprintf("Пользователь: **%s**", "VADMARK"))
 	modeTxt := widget.NewRichTextFromMarkdown(fmt.Sprintf("Режим: **%s**", strings.ToUpper(util.GetModeValue())))
@@ -34,21 +34,50 @@ func ShowMainApp(appCtx *context.AppContext) {
 	objs = append(objs,
 		modeTxt,
 		widget.NewRichTextFromMarkdown(fmt.Sprintf("Версия: **%s**", c.Version)),
-		gui.NewBtn("", theme.LogoutIcon(), func() { mainWindow.Close() }),
+		gui.NewBtn("", theme.LogoutIcon(), func() { w.Close() }),
 	)
 
 	bottomBar := container.NewHBox(objs...)
-	root := container.NewBorder(nil, bottomBar, nil, nil, tabs.NewTabsView(appCtx, mainWindow))
-	mainWindow.SetContent(root)
+	root := container.NewBorder(nil, bottomBar, nil, nil, tabs.NewTabsView(ctx, w))
+	w.SetContent(root)
 
-	mainWindow.Canvas().SetOnTypedKey(func(k *fyne.KeyEvent) {
+	w.Canvas().SetOnTypedKey(func(k *fyne.KeyEvent) {
 		if k.Name == fyne.KeyEscape {
-			mainWindow.Close()
+			closeWindow(ctx, w)
 		}
 	})
 
-	mainWindow.Resize(fyne.NewSize(700, 400))
-	mainWindow.ShowAndRun()
+	autoStartServers(ctx)
+
+	w.SetCloseIntercept(func() {
+		closeWindow(ctx, w)
+
+	})
+	w.Resize(fyne.NewSize(700, 400))
+	w.ShowAndRun()
+}
+
+func closeWindow(ctx *context.AppContext, w fyne.Window) {
+	ctx.HTTP.Stop()
+	ctx.GRPC.Stop()
+	w.Close()
+}
+
+func autoStartServers(ctx *context.AppContext) {
+	if util.AutoStartServerHTTP() {
+		err := ctx.HTTP.Start()
+		if err != nil {
+			logger.L().Error("HTTP server error", zap.Error(err))
+			return
+		}
+	}
+
+	if util.AutoStartServerGRPC() {
+		if err := ctx.GRPC.Start(); err != nil {
+			logger.L().Error("gRPC server error", zap.Error(err))
+		}
+	}
+
 }
 
 func createFastBlock() []fyne.CanvasObject {
