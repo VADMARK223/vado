@@ -25,12 +25,10 @@ func main() {
 	log1.Info(fmt.Sprintf("Starting CLI mode. (%s)", util.GetModeValue()))
 
 	// Настройки подключения
-	//broker := "localhost:9092" // Для локальной отладки
-	//broker := "localhost:9092" // Для локальной отладки
 	broker := getenv("KAFKA_BROKER", "localhost:9092")
 	topic := getenv("KAFKA_TOPIC", "tasks")
 
-	fmt.Printf("Broker: %s, Topic: %s\n", broker, topic)
+	fmt.Printf("Broker1: %s, Topic: %s\n", broker, topic)
 
 	// ======== 1. Producer ========
 	brokers := []string{broker}
@@ -86,7 +84,9 @@ func main() {
 
 	fmt.Printf("📩 Получено сообщение:\n  key=%s\n  value=%s\n", string(m.Key), string(m.Value))
 
-	//connectServers()
+	connectServers()
+
+	select {}
 }
 
 func connectServers() {
