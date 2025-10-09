@@ -2,14 +2,20 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"log"
 	"os"
 	"time"
+	t "vado/internal/domain/task"
+	u "vado/internal/domain/user"
+	"vado/internal/server"
+	context2 "vado/internal/server/context"
 	"vado/internal/util"
 	"vado/pkg/logger"
 
 	"github.com/segmentio/kafka-go"
+	"go.uber.org/zap"
 )
 
 func main() {
@@ -80,7 +86,28 @@ func main() {
 
 	fmt.Printf("📩 Получено сообщение:\n  key=%s\n  value=%s\n", string(m.Key), string(m.Value))
 
-	//startServer()
+	//connectServers()
+}
+
+func connectServers() {
+	db := server.InitDB()
+	defer func(db *sql.DB) {
+		_ = db.Close()
+	}(db)
+
+	startServerHTTP(db)
+}
+
+func startServerHTTP(db *sql.DB) {
+	userService := u.NewUserService(u.NewUserDBRepo(db))
+	taskService := t.NewTaskService(t.NewTaskDBRepo(db))
+	httpCxt := context2.CreateHTTPContext(userService, taskService)
+
+	err := httpCxt.Start()
+	if err != nil {
+		logger.L().Error("HTTP server error", zap.Error(err))
+		return
+	}
 }
 
 func getenv(key, def string) string {

@@ -22,7 +22,6 @@ func init() {
 			panic(fmt.Sprintf("Failed to load config %s: %v", envFile, err))
 		}
 	}
-
 }
 
 func getEnv(key string) string {

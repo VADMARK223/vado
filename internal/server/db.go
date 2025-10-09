@@ -12,6 +12,7 @@ import (
 
 func InitDB() *sql.DB {
 	dsn := constant.GetDSN()
+	fmt.Printf("Try connect to database: %s\n", dsn)
 	db, err := sql.Open("postgres", dsn)
 	if err != nil {
 		log.Fatal("Err open sql", err)
