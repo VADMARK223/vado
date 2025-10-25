@@ -33,7 +33,7 @@ func NewTabsView(appCtx *context.AppContext, win fyne.Window) *container.AppTabs
 			return tasks.NewTasksView(appCtx, win)
 		}, factories),
 		common.CreateLazyTabItem("Настройки", settings.CreateView, factories),
-		common.CreateLazyTabItem("Админка", func() fyne.CanvasObject {
+		common.CreateLazyTabItem("Админка_", func() fyne.CanvasObject {
 			return admin.NewAdminView(appCtx, win)
 		}, factories),
 		common.CreateLazyTabItem("Уроки", lesson.CreateView, factories),
